@@ -1,0 +1,120 @@
+{
+	
+	var GLOBAL_UNDESTURBENCE_CHECKER = 7777777;
+	var _SYMBOL_SIZE_Y_FIXING_COEF = 1.52;
+
+	/*===========================================*\
+	|=============== STL LIBRARY =================|
+	\*===========================================*/
+
+	func printn[var A = -7777.777][var B = -7777.777][var C = -7777.777] {
+		? (A != -7777.777) {
+			__PUT_NUMBER__ A;
+			__PUT_CHAR__ ' ';
+		}
+
+		? (B != -7777.777) {
+			__PUT_NUMBER__ B;
+			__PUT_CHAR__ ' ';
+		}
+
+		? (C != -7777.777) {
+			__PUT_NUMBER__ C;
+			__PUT_CHAR__ ' ';
+		}
+
+		__PUT_NUMBER__;
+	}
+
+	func printn_arr[var arr = arr][var size = size] {
+		var i = 0;
+		>| (i < size - 1) {
+			__PUT_NUMBER__ arr[i];
+			__PUT_CHAR__ ' ';
+			i = i + 1;
+		}
+		__PUT_NUMBER__ arr[i];
+	}
+
+	func _n __PUT_NUMBER__;
+
+	func printc[var A = -7777.777][var B = -7777.777][var C = -7777.777] {
+		? (A != -7777.777) {
+			__PUT_CHAR__ A;
+			__PUT_CHAR__ ' ';
+		}
+
+		? (B != -7777.777) {
+			__PUT_CHAR__ B;
+			__PUT_CHAR__ ' ';
+		}
+
+		? (C != -7777.777) {
+			__PUT_CHAR__ C;
+			__PUT_CHAR__ ' ';
+		}
+
+		__PUT_NUMBER__;
+	}
+
+	func abs[var x] {
+		? (x >= 0) ret x; : ret -x;
+	}
+
+	var _SCREEN_W = 80;
+	var _SCREEN_H = 30;
+
+	func init_2d[var h][var w] {
+		var arr = #h;
+		var arr_data = #(h * w);
+		>> (var i = 0 | i < h | i = i + 1) {
+			arr[i] = arr_data + w * i;
+		}
+
+		ret arr;
+	}
+
+	func g_init {
+		__G_INIT__ _SCREEN_W _SCREEN_H;
+	}
+
+	func g_tick {
+		__G_TICK__;
+	}
+
+	func put_pxl[x][y][c] {
+		var pos = x * _SCREEN_W + y;
+		ret __PUT_PIXEL__ pos c;
+	}
+
+	/*===========================================*\
+	|=============== STL LIBRARY =================|
+	\*===========================================*/
+
+	func draw_circle[x][y][r][c] {
+		>> (var i = 0 | i < _SCREEN_H | i = i + 1) {
+			>> (var j = 0 | j < _SCREEN_W | j = j + 1) {
+				var dist = ((x - i)^2 + ((y - j) / _SYMBOL_SIZE_Y_FIXING_COEF)^2) ^ 0.5;
+				? (dist < r) put_pxl[i][j];
+			}
+		}
+	}
+
+	func main {
+		g_init;
+
+		>| (1) {
+			var max_r = % 1 15; // random
+			var y = % 0 _SCREEN_W;
+			var x = % 0 _SCREEN_H;
+			>> (var r = max_r | r > 0 | r -= 1) {
+				var c = % 0 11;
+				draw_circle;
+				g_tick;
+			}
+		}
+	}
+
+	printn[main];
+
+}
