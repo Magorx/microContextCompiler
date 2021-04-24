@@ -5,6 +5,8 @@
 #include "general/warnings.h"
 
 #include "compiler.h"
+#include "reg_stack.h"
+#include "byte_buffer.h"
 
 int main(const int argc, const char **argv) {
 	const char *input_file  = "prog.ctx";
@@ -20,7 +22,7 @@ int main(const int argc, const char **argv) {
 	}
 
 	if (argc > 3 && !strcmp(argv[3], "-v")) {
-		verbosity = 1; 
+		verbosity = 1;
 	}
 
 	File file = {};

@@ -1041,7 +1041,9 @@ id_table(),
 cycles_end_stack(),
 if_cnt(0),
 while_cnt(0),
-for_cnt(0)
+for_cnt(0),
+regstack(),
+bbuf()
 {}
 
 Compiler::~Compiler() {}
@@ -1056,6 +1058,8 @@ void Compiler::ctor() {
 	if_cnt    = 0;
 	while_cnt = 0;
 	for_cnt   = 0;
+
+	regstack.ctor();
 }
 
 Compiler *Compiler::NEW() {
