@@ -16,8 +16,8 @@
 #define cmd_PUSH_IMM8  0x6A
 #define cmd_PUSH_IMM16 0x68
 
-#define cmd_CALL_REL 0xE8
-#define cmd_RET      0xC3
+#define cmd_CALL_REL32 0xE8
+#define cmd_RET        0xC3
 
 #define cmd_JE_REL8  0x74
 #define cmd_JNE_REL8 0x75
@@ -35,11 +35,8 @@
 #define cmd_JGE_REL32 0x0F, 0x8D
 #define cmd_JMP_REL32 0xE9
 
-#define cmd_XCHG_RAXRBX 0x48, 0x93
-
-struct cmd_MovCommand {
-    unsigned char bytecode[3];
-};
+#define REG_RSP_DISPL(x) REG_RSP, (x)
+#define REG_RBP_DISPL(x) REG_RBP, (x)
 
 {{TABLES}}
 

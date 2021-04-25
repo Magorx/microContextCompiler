@@ -29,7 +29,7 @@ void ByteBuffer::reallocate(size_t add_size) {
     capacity *= 2;
 }
 
-void ByteBuffer::put(byte *mem, size_t mem_size) {
+void ByteBuffer::put(const byte *mem, size_t mem_size) {
     assert(mem);
     reallocate(mem_size);
 
@@ -46,7 +46,12 @@ void ByteBuffer::put(byte mem) {
     ++size;
 }
 
-void ByteBuffer::put_with_offset(byte *mem, size_t mem_size, size_t offset) {
+void ByteBuffer::put(byte mem1, byte mem2) {
+    put(mem1);
+    put(mem2);
+}
+
+void ByteBuffer::put_with_offset(const byte *mem, size_t mem_size, size_t offset) {
     assert(mem);
     reallocate(mem_size);
 
@@ -59,4 +64,12 @@ size_t ByteBuffer::get_size() const {
 
 const byte *ByteBuffer::get_data() const {
     return data;
+}
+
+void ByteBuffer::hexdump(FILE *file) const {
+    fprintf(file, "[----------\n");
+    for (int i = 0; i < size; ++i) {
+        fprintf(file, "%02x ", data[i]);
+    }
+    fprintf(file, "\n----------]\n");
 }

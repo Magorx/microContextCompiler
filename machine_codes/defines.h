@@ -1324,40 +1324,56 @@
 #define cmd_MOV_R13IMM32 0x41, 0xbd
 #define cmd_MOV_R14IMM32 0x41, 0xbe
 #define cmd_MOV_R15IMM32 0x41, 0xbf
+#define cmd_MOV_RAXIMM64 0x48, 0xc7, 0xc0
+#define cmd_MOV_RCXIMM64 0x48, 0xc7, 0xc1
+#define cmd_MOV_RDXIMM64 0x48, 0xc7, 0xc2
+#define cmd_MOV_RBXIMM64 0x48, 0xc7, 0xc3
+#define cmd_MOV_RSPIMM64 0x48, 0xc7, 0xc4
+#define cmd_MOV_RBPIMM64 0x48, 0xc7, 0xc5
+#define cmd_MOV_RSIIMM64 0x48, 0xc7, 0xc6
+#define cmd_MOV_RDIIMM64 0x48, 0xc7, 0xc7
+#define cmd_MOV_R8IMM64 0x49, 0xc7, 0xc0
+#define cmd_MOV_R9IMM64 0x49, 0xc7, 0xc1
+#define cmd_MOV_R10IMM64 0x49, 0xc7, 0xc2
+#define cmd_MOV_R11IMM64 0x49, 0xc7, 0xc3
+#define cmd_MOV_R12IMM64 0x49, 0xc7, 0xc4
+#define cmd_MOV_R13IMM64 0x49, 0xc7, 0xc5
+#define cmd_MOV_R14IMM64 0x49, 0xc7, 0xc6
+#define cmd_MOV_R15IMM64 0x49, 0xc7, 0xc7
 
-#define cmd_POP_RAX 0x58
-#define cmd_POP_RCX 0x59
-#define cmd_POP_RDX 0x5a
-#define cmd_POP_RBX 0x5b
-#define cmd_POP_RSP 0x5c
-#define cmd_POP_RBP 0x5d
-#define cmd_POP_RSI 0x5e
-#define cmd_POP_RDI 0x5f
-#define cmd_POP_R8 0x60
-#define cmd_POP_R9 0x61
-#define cmd_POP_R10 0x62
-#define cmd_POP_R11 0x63
-#define cmd_POP_R12 0x64
-#define cmd_POP_R13 0x65
-#define cmd_POP_R14 0x66
-#define cmd_POP_R15 0x67
+#define cmd_POP_RAX 0x58, 0x90 
+#define cmd_POP_RCX 0x59, 0x90 
+#define cmd_POP_RDX 0x5a, 0x90 
+#define cmd_POP_RBX 0x5b, 0x90 
+#define cmd_POP_RSP 0x5c, 0x90 
+#define cmd_POP_RBP 0x5d, 0x90 
+#define cmd_POP_RSI 0x5e, 0x90 
+#define cmd_POP_RDI 0x5f, 0x90 
+#define cmd_POP_R8 0x41, 0x58
+#define cmd_POP_R9 0x41, 0x59
+#define cmd_POP_R10 0x41, 0x5a
+#define cmd_POP_R11 0x41, 0x5b
+#define cmd_POP_R12 0x41, 0x5c
+#define cmd_POP_R13 0x41, 0x5d
+#define cmd_POP_R14 0x41, 0x5e
+#define cmd_POP_R15 0x41, 0x5f
 
-#define cmd_PUSH_RAX 0x50
-#define cmd_PUSH_RCX 0x51
-#define cmd_PUSH_RDX 0x52
-#define cmd_PUSH_RBX 0x53
-#define cmd_PUSH_RSP 0x54
-#define cmd_PUSH_RBP 0x55
-#define cmd_PUSH_RSI 0x56
-#define cmd_PUSH_RDI 0x57
-#define cmd_PUSH_R8 0x58
-#define cmd_PUSH_R9 0x59
-#define cmd_PUSH_R10 0x5a
-#define cmd_PUSH_R11 0x5b
-#define cmd_PUSH_R12 0x5c
-#define cmd_PUSH_R13 0x5d
-#define cmd_PUSH_R14 0x5e
-#define cmd_PUSH_R15 0x5f
+#define cmd_PUSH_RAX 0x50, 0x90 
+#define cmd_PUSH_RCX 0x51, 0x90 
+#define cmd_PUSH_RDX 0x52, 0x90 
+#define cmd_PUSH_RBX 0x53, 0x90 
+#define cmd_PUSH_RSP 0x54, 0x90 
+#define cmd_PUSH_RBP 0x55, 0x90 
+#define cmd_PUSH_RSI 0x56, 0x90 
+#define cmd_PUSH_RDI 0x57, 0x90 
+#define cmd_PUSH_R8 0x41, 0x50
+#define cmd_PUSH_R9 0x41, 0x51
+#define cmd_PUSH_R10 0x41, 0x52
+#define cmd_PUSH_R11 0x41, 0x53
+#define cmd_PUSH_R12 0x41, 0x54
+#define cmd_PUSH_R13 0x41, 0x55
+#define cmd_PUSH_R14 0x41, 0x56
+#define cmd_PUSH_R15 0x41, 0x57
 
 #define cmd_ADD_RAXIMM8 0x48, 0x83, 0xc0
 #define cmd_ADD_RCXIMM8 0x48, 0x83, 0xc1
@@ -1983,14 +1999,14 @@
 #define cmd_IMUL_RAXRBP 0x48, 0xf, 0xaf, 0xc5
 #define cmd_IMUL_RAXRSI 0x48, 0xf, 0xaf, 0xc6
 #define cmd_IMUL_RAXRDI 0x48, 0xf, 0xaf, 0xc7
-#define cmd_IMUL_RAXR8 0x4c, 0xf, 0xaf, 0xc0
-#define cmd_IMUL_RAXR9 0x4c, 0xf, 0xaf, 0xc1
-#define cmd_IMUL_RAXR10 0x4c, 0xf, 0xaf, 0xc2
-#define cmd_IMUL_RAXR11 0x4c, 0xf, 0xaf, 0xc3
-#define cmd_IMUL_RAXR12 0x4c, 0xf, 0xaf, 0xc4
-#define cmd_IMUL_RAXR13 0x4c, 0xf, 0xaf, 0xc5
-#define cmd_IMUL_RAXR14 0x4c, 0xf, 0xaf, 0xc6
-#define cmd_IMUL_RAXR15 0x4c, 0xf, 0xaf, 0xc7
+#define cmd_IMUL_RAXR8 0x49, 0xf, 0xaf, 0xc0
+#define cmd_IMUL_RAXR9 0x49, 0xf, 0xaf, 0xc1
+#define cmd_IMUL_RAXR10 0x49, 0xf, 0xaf, 0xc2
+#define cmd_IMUL_RAXR11 0x49, 0xf, 0xaf, 0xc3
+#define cmd_IMUL_RAXR12 0x49, 0xf, 0xaf, 0xc4
+#define cmd_IMUL_RAXR13 0x49, 0xf, 0xaf, 0xc5
+#define cmd_IMUL_RAXR14 0x49, 0xf, 0xaf, 0xc6
+#define cmd_IMUL_RAXR15 0x49, 0xf, 0xaf, 0xc7
 #define cmd_IMUL_RCXRAX 0x48, 0xf, 0xaf, 0xc8
 #define cmd_IMUL_RCXRCX 0x48, 0xf, 0xaf, 0xc9
 #define cmd_IMUL_RCXRDX 0x48, 0xf, 0xaf, 0xca
@@ -1999,14 +2015,14 @@
 #define cmd_IMUL_RCXRBP 0x48, 0xf, 0xaf, 0xcd
 #define cmd_IMUL_RCXRSI 0x48, 0xf, 0xaf, 0xce
 #define cmd_IMUL_RCXRDI 0x48, 0xf, 0xaf, 0xcf
-#define cmd_IMUL_RCXR8 0x4c, 0xf, 0xaf, 0xc8
-#define cmd_IMUL_RCXR9 0x4c, 0xf, 0xaf, 0xc9
-#define cmd_IMUL_RCXR10 0x4c, 0xf, 0xaf, 0xca
-#define cmd_IMUL_RCXR11 0x4c, 0xf, 0xaf, 0xcb
-#define cmd_IMUL_RCXR12 0x4c, 0xf, 0xaf, 0xcc
-#define cmd_IMUL_RCXR13 0x4c, 0xf, 0xaf, 0xcd
-#define cmd_IMUL_RCXR14 0x4c, 0xf, 0xaf, 0xce
-#define cmd_IMUL_RCXR15 0x4c, 0xf, 0xaf, 0xcf
+#define cmd_IMUL_RCXR8 0x49, 0xf, 0xaf, 0xc8
+#define cmd_IMUL_RCXR9 0x49, 0xf, 0xaf, 0xc9
+#define cmd_IMUL_RCXR10 0x49, 0xf, 0xaf, 0xca
+#define cmd_IMUL_RCXR11 0x49, 0xf, 0xaf, 0xcb
+#define cmd_IMUL_RCXR12 0x49, 0xf, 0xaf, 0xcc
+#define cmd_IMUL_RCXR13 0x49, 0xf, 0xaf, 0xcd
+#define cmd_IMUL_RCXR14 0x49, 0xf, 0xaf, 0xce
+#define cmd_IMUL_RCXR15 0x49, 0xf, 0xaf, 0xcf
 #define cmd_IMUL_RDXRAX 0x48, 0xf, 0xaf, 0xd0
 #define cmd_IMUL_RDXRCX 0x48, 0xf, 0xaf, 0xd1
 #define cmd_IMUL_RDXRDX 0x48, 0xf, 0xaf, 0xd2
@@ -2015,14 +2031,14 @@
 #define cmd_IMUL_RDXRBP 0x48, 0xf, 0xaf, 0xd5
 #define cmd_IMUL_RDXRSI 0x48, 0xf, 0xaf, 0xd6
 #define cmd_IMUL_RDXRDI 0x48, 0xf, 0xaf, 0xd7
-#define cmd_IMUL_RDXR8 0x4c, 0xf, 0xaf, 0xd0
-#define cmd_IMUL_RDXR9 0x4c, 0xf, 0xaf, 0xd1
-#define cmd_IMUL_RDXR10 0x4c, 0xf, 0xaf, 0xd2
-#define cmd_IMUL_RDXR11 0x4c, 0xf, 0xaf, 0xd3
-#define cmd_IMUL_RDXR12 0x4c, 0xf, 0xaf, 0xd4
-#define cmd_IMUL_RDXR13 0x4c, 0xf, 0xaf, 0xd5
-#define cmd_IMUL_RDXR14 0x4c, 0xf, 0xaf, 0xd6
-#define cmd_IMUL_RDXR15 0x4c, 0xf, 0xaf, 0xd7
+#define cmd_IMUL_RDXR8 0x49, 0xf, 0xaf, 0xd0
+#define cmd_IMUL_RDXR9 0x49, 0xf, 0xaf, 0xd1
+#define cmd_IMUL_RDXR10 0x49, 0xf, 0xaf, 0xd2
+#define cmd_IMUL_RDXR11 0x49, 0xf, 0xaf, 0xd3
+#define cmd_IMUL_RDXR12 0x49, 0xf, 0xaf, 0xd4
+#define cmd_IMUL_RDXR13 0x49, 0xf, 0xaf, 0xd5
+#define cmd_IMUL_RDXR14 0x49, 0xf, 0xaf, 0xd6
+#define cmd_IMUL_RDXR15 0x49, 0xf, 0xaf, 0xd7
 #define cmd_IMUL_RBXRAX 0x48, 0xf, 0xaf, 0xd8
 #define cmd_IMUL_RBXRCX 0x48, 0xf, 0xaf, 0xd9
 #define cmd_IMUL_RBXRDX 0x48, 0xf, 0xaf, 0xda
@@ -2031,14 +2047,14 @@
 #define cmd_IMUL_RBXRBP 0x48, 0xf, 0xaf, 0xdd
 #define cmd_IMUL_RBXRSI 0x48, 0xf, 0xaf, 0xde
 #define cmd_IMUL_RBXRDI 0x48, 0xf, 0xaf, 0xdf
-#define cmd_IMUL_RBXR8 0x4c, 0xf, 0xaf, 0xd8
-#define cmd_IMUL_RBXR9 0x4c, 0xf, 0xaf, 0xd9
-#define cmd_IMUL_RBXR10 0x4c, 0xf, 0xaf, 0xda
-#define cmd_IMUL_RBXR11 0x4c, 0xf, 0xaf, 0xdb
-#define cmd_IMUL_RBXR12 0x4c, 0xf, 0xaf, 0xdc
-#define cmd_IMUL_RBXR13 0x4c, 0xf, 0xaf, 0xdd
-#define cmd_IMUL_RBXR14 0x4c, 0xf, 0xaf, 0xde
-#define cmd_IMUL_RBXR15 0x4c, 0xf, 0xaf, 0xdf
+#define cmd_IMUL_RBXR8 0x49, 0xf, 0xaf, 0xd8
+#define cmd_IMUL_RBXR9 0x49, 0xf, 0xaf, 0xd9
+#define cmd_IMUL_RBXR10 0x49, 0xf, 0xaf, 0xda
+#define cmd_IMUL_RBXR11 0x49, 0xf, 0xaf, 0xdb
+#define cmd_IMUL_RBXR12 0x49, 0xf, 0xaf, 0xdc
+#define cmd_IMUL_RBXR13 0x49, 0xf, 0xaf, 0xdd
+#define cmd_IMUL_RBXR14 0x49, 0xf, 0xaf, 0xde
+#define cmd_IMUL_RBXR15 0x49, 0xf, 0xaf, 0xdf
 #define cmd_IMUL_RSPRAX 0x48, 0xf, 0xaf, 0xe0
 #define cmd_IMUL_RSPRCX 0x48, 0xf, 0xaf, 0xe1
 #define cmd_IMUL_RSPRDX 0x48, 0xf, 0xaf, 0xe2
@@ -2047,14 +2063,14 @@
 #define cmd_IMUL_RSPRBP 0x48, 0xf, 0xaf, 0xe5
 #define cmd_IMUL_RSPRSI 0x48, 0xf, 0xaf, 0xe6
 #define cmd_IMUL_RSPRDI 0x48, 0xf, 0xaf, 0xe7
-#define cmd_IMUL_RSPR8 0x4c, 0xf, 0xaf, 0xe0
-#define cmd_IMUL_RSPR9 0x4c, 0xf, 0xaf, 0xe1
-#define cmd_IMUL_RSPR10 0x4c, 0xf, 0xaf, 0xe2
-#define cmd_IMUL_RSPR11 0x4c, 0xf, 0xaf, 0xe3
-#define cmd_IMUL_RSPR12 0x4c, 0xf, 0xaf, 0xe4
-#define cmd_IMUL_RSPR13 0x4c, 0xf, 0xaf, 0xe5
-#define cmd_IMUL_RSPR14 0x4c, 0xf, 0xaf, 0xe6
-#define cmd_IMUL_RSPR15 0x4c, 0xf, 0xaf, 0xe7
+#define cmd_IMUL_RSPR8 0x49, 0xf, 0xaf, 0xe0
+#define cmd_IMUL_RSPR9 0x49, 0xf, 0xaf, 0xe1
+#define cmd_IMUL_RSPR10 0x49, 0xf, 0xaf, 0xe2
+#define cmd_IMUL_RSPR11 0x49, 0xf, 0xaf, 0xe3
+#define cmd_IMUL_RSPR12 0x49, 0xf, 0xaf, 0xe4
+#define cmd_IMUL_RSPR13 0x49, 0xf, 0xaf, 0xe5
+#define cmd_IMUL_RSPR14 0x49, 0xf, 0xaf, 0xe6
+#define cmd_IMUL_RSPR15 0x49, 0xf, 0xaf, 0xe7
 #define cmd_IMUL_RBPRAX 0x48, 0xf, 0xaf, 0xe8
 #define cmd_IMUL_RBPRCX 0x48, 0xf, 0xaf, 0xe9
 #define cmd_IMUL_RBPRDX 0x48, 0xf, 0xaf, 0xea
@@ -2063,14 +2079,14 @@
 #define cmd_IMUL_RBPRBP 0x48, 0xf, 0xaf, 0xed
 #define cmd_IMUL_RBPRSI 0x48, 0xf, 0xaf, 0xee
 #define cmd_IMUL_RBPRDI 0x48, 0xf, 0xaf, 0xef
-#define cmd_IMUL_RBPR8 0x4c, 0xf, 0xaf, 0xe8
-#define cmd_IMUL_RBPR9 0x4c, 0xf, 0xaf, 0xe9
-#define cmd_IMUL_RBPR10 0x4c, 0xf, 0xaf, 0xea
-#define cmd_IMUL_RBPR11 0x4c, 0xf, 0xaf, 0xeb
-#define cmd_IMUL_RBPR12 0x4c, 0xf, 0xaf, 0xec
-#define cmd_IMUL_RBPR13 0x4c, 0xf, 0xaf, 0xed
-#define cmd_IMUL_RBPR14 0x4c, 0xf, 0xaf, 0xee
-#define cmd_IMUL_RBPR15 0x4c, 0xf, 0xaf, 0xef
+#define cmd_IMUL_RBPR8 0x49, 0xf, 0xaf, 0xe8
+#define cmd_IMUL_RBPR9 0x49, 0xf, 0xaf, 0xe9
+#define cmd_IMUL_RBPR10 0x49, 0xf, 0xaf, 0xea
+#define cmd_IMUL_RBPR11 0x49, 0xf, 0xaf, 0xeb
+#define cmd_IMUL_RBPR12 0x49, 0xf, 0xaf, 0xec
+#define cmd_IMUL_RBPR13 0x49, 0xf, 0xaf, 0xed
+#define cmd_IMUL_RBPR14 0x49, 0xf, 0xaf, 0xee
+#define cmd_IMUL_RBPR15 0x49, 0xf, 0xaf, 0xef
 #define cmd_IMUL_RSIRAX 0x48, 0xf, 0xaf, 0xf0
 #define cmd_IMUL_RSIRCX 0x48, 0xf, 0xaf, 0xf1
 #define cmd_IMUL_RSIRDX 0x48, 0xf, 0xaf, 0xf2
@@ -2079,14 +2095,14 @@
 #define cmd_IMUL_RSIRBP 0x48, 0xf, 0xaf, 0xf5
 #define cmd_IMUL_RSIRSI 0x48, 0xf, 0xaf, 0xf6
 #define cmd_IMUL_RSIRDI 0x48, 0xf, 0xaf, 0xf7
-#define cmd_IMUL_RSIR8 0x4c, 0xf, 0xaf, 0xf0
-#define cmd_IMUL_RSIR9 0x4c, 0xf, 0xaf, 0xf1
-#define cmd_IMUL_RSIR10 0x4c, 0xf, 0xaf, 0xf2
-#define cmd_IMUL_RSIR11 0x4c, 0xf, 0xaf, 0xf3
-#define cmd_IMUL_RSIR12 0x4c, 0xf, 0xaf, 0xf4
-#define cmd_IMUL_RSIR13 0x4c, 0xf, 0xaf, 0xf5
-#define cmd_IMUL_RSIR14 0x4c, 0xf, 0xaf, 0xf6
-#define cmd_IMUL_RSIR15 0x4c, 0xf, 0xaf, 0xf7
+#define cmd_IMUL_RSIR8 0x49, 0xf, 0xaf, 0xf0
+#define cmd_IMUL_RSIR9 0x49, 0xf, 0xaf, 0xf1
+#define cmd_IMUL_RSIR10 0x49, 0xf, 0xaf, 0xf2
+#define cmd_IMUL_RSIR11 0x49, 0xf, 0xaf, 0xf3
+#define cmd_IMUL_RSIR12 0x49, 0xf, 0xaf, 0xf4
+#define cmd_IMUL_RSIR13 0x49, 0xf, 0xaf, 0xf5
+#define cmd_IMUL_RSIR14 0x49, 0xf, 0xaf, 0xf6
+#define cmd_IMUL_RSIR15 0x49, 0xf, 0xaf, 0xf7
 #define cmd_IMUL_RDIRAX 0x48, 0xf, 0xaf, 0xf8
 #define cmd_IMUL_RDIRCX 0x48, 0xf, 0xaf, 0xf9
 #define cmd_IMUL_RDIRDX 0x48, 0xf, 0xaf, 0xfa
@@ -2095,14 +2111,14 @@
 #define cmd_IMUL_RDIRBP 0x48, 0xf, 0xaf, 0xfd
 #define cmd_IMUL_RDIRSI 0x48, 0xf, 0xaf, 0xfe
 #define cmd_IMUL_RDIRDI 0x48, 0xf, 0xaf, 0xff
-#define cmd_IMUL_RDIR8 0x4c, 0xf, 0xaf, 0xf8
-#define cmd_IMUL_RDIR9 0x4c, 0xf, 0xaf, 0xf9
-#define cmd_IMUL_RDIR10 0x4c, 0xf, 0xaf, 0xfa
-#define cmd_IMUL_RDIR11 0x4c, 0xf, 0xaf, 0xfb
-#define cmd_IMUL_RDIR12 0x4c, 0xf, 0xaf, 0xfc
-#define cmd_IMUL_RDIR13 0x4c, 0xf, 0xaf, 0xfd
-#define cmd_IMUL_RDIR14 0x4c, 0xf, 0xaf, 0xfe
-#define cmd_IMUL_RDIR15 0x4c, 0xf, 0xaf, 0xff
+#define cmd_IMUL_RDIR8 0x49, 0xf, 0xaf, 0xf8
+#define cmd_IMUL_RDIR9 0x49, 0xf, 0xaf, 0xf9
+#define cmd_IMUL_RDIR10 0x49, 0xf, 0xaf, 0xfa
+#define cmd_IMUL_RDIR11 0x49, 0xf, 0xaf, 0xfb
+#define cmd_IMUL_RDIR12 0x49, 0xf, 0xaf, 0xfc
+#define cmd_IMUL_RDIR13 0x49, 0xf, 0xaf, 0xfd
+#define cmd_IMUL_RDIR14 0x49, 0xf, 0xaf, 0xfe
+#define cmd_IMUL_RDIR15 0x49, 0xf, 0xaf, 0xff
 #define cmd_IMUL_R8RAX 0x49, 0xf, 0xaf, 0xc0
 #define cmd_IMUL_R8RCX 0x49, 0xf, 0xaf, 0xc1
 #define cmd_IMUL_R8RDX 0x49, 0xf, 0xaf, 0xc2
@@ -2111,14 +2127,14 @@
 #define cmd_IMUL_R8RBP 0x49, 0xf, 0xaf, 0xc5
 #define cmd_IMUL_R8RSI 0x49, 0xf, 0xaf, 0xc6
 #define cmd_IMUL_R8RDI 0x49, 0xf, 0xaf, 0xc7
-#define cmd_IMUL_R8R8 0x4d, 0xf, 0xaf, 0xc0
-#define cmd_IMUL_R8R9 0x4d, 0xf, 0xaf, 0xc1
-#define cmd_IMUL_R8R10 0x4d, 0xf, 0xaf, 0xc2
-#define cmd_IMUL_R8R11 0x4d, 0xf, 0xaf, 0xc3
-#define cmd_IMUL_R8R12 0x4d, 0xf, 0xaf, 0xc4
-#define cmd_IMUL_R8R13 0x4d, 0xf, 0xaf, 0xc5
-#define cmd_IMUL_R8R14 0x4d, 0xf, 0xaf, 0xc6
-#define cmd_IMUL_R8R15 0x4d, 0xf, 0xaf, 0xc7
+#define cmd_IMUL_R8R8 0x4a, 0xf, 0xaf, 0xc0
+#define cmd_IMUL_R8R9 0x4a, 0xf, 0xaf, 0xc1
+#define cmd_IMUL_R8R10 0x4a, 0xf, 0xaf, 0xc2
+#define cmd_IMUL_R8R11 0x4a, 0xf, 0xaf, 0xc3
+#define cmd_IMUL_R8R12 0x4a, 0xf, 0xaf, 0xc4
+#define cmd_IMUL_R8R13 0x4a, 0xf, 0xaf, 0xc5
+#define cmd_IMUL_R8R14 0x4a, 0xf, 0xaf, 0xc6
+#define cmd_IMUL_R8R15 0x4a, 0xf, 0xaf, 0xc7
 #define cmd_IMUL_R9RAX 0x49, 0xf, 0xaf, 0xc8
 #define cmd_IMUL_R9RCX 0x49, 0xf, 0xaf, 0xc9
 #define cmd_IMUL_R9RDX 0x49, 0xf, 0xaf, 0xca
@@ -2127,14 +2143,14 @@
 #define cmd_IMUL_R9RBP 0x49, 0xf, 0xaf, 0xcd
 #define cmd_IMUL_R9RSI 0x49, 0xf, 0xaf, 0xce
 #define cmd_IMUL_R9RDI 0x49, 0xf, 0xaf, 0xcf
-#define cmd_IMUL_R9R8 0x4d, 0xf, 0xaf, 0xc8
-#define cmd_IMUL_R9R9 0x4d, 0xf, 0xaf, 0xc9
-#define cmd_IMUL_R9R10 0x4d, 0xf, 0xaf, 0xca
-#define cmd_IMUL_R9R11 0x4d, 0xf, 0xaf, 0xcb
-#define cmd_IMUL_R9R12 0x4d, 0xf, 0xaf, 0xcc
-#define cmd_IMUL_R9R13 0x4d, 0xf, 0xaf, 0xcd
-#define cmd_IMUL_R9R14 0x4d, 0xf, 0xaf, 0xce
-#define cmd_IMUL_R9R15 0x4d, 0xf, 0xaf, 0xcf
+#define cmd_IMUL_R9R8 0x4a, 0xf, 0xaf, 0xc8
+#define cmd_IMUL_R9R9 0x4a, 0xf, 0xaf, 0xc9
+#define cmd_IMUL_R9R10 0x4a, 0xf, 0xaf, 0xca
+#define cmd_IMUL_R9R11 0x4a, 0xf, 0xaf, 0xcb
+#define cmd_IMUL_R9R12 0x4a, 0xf, 0xaf, 0xcc
+#define cmd_IMUL_R9R13 0x4a, 0xf, 0xaf, 0xcd
+#define cmd_IMUL_R9R14 0x4a, 0xf, 0xaf, 0xce
+#define cmd_IMUL_R9R15 0x4a, 0xf, 0xaf, 0xcf
 #define cmd_IMUL_R10RAX 0x49, 0xf, 0xaf, 0xd0
 #define cmd_IMUL_R10RCX 0x49, 0xf, 0xaf, 0xd1
 #define cmd_IMUL_R10RDX 0x49, 0xf, 0xaf, 0xd2
@@ -2143,14 +2159,14 @@
 #define cmd_IMUL_R10RBP 0x49, 0xf, 0xaf, 0xd5
 #define cmd_IMUL_R10RSI 0x49, 0xf, 0xaf, 0xd6
 #define cmd_IMUL_R10RDI 0x49, 0xf, 0xaf, 0xd7
-#define cmd_IMUL_R10R8 0x4d, 0xf, 0xaf, 0xd0
-#define cmd_IMUL_R10R9 0x4d, 0xf, 0xaf, 0xd1
-#define cmd_IMUL_R10R10 0x4d, 0xf, 0xaf, 0xd2
-#define cmd_IMUL_R10R11 0x4d, 0xf, 0xaf, 0xd3
-#define cmd_IMUL_R10R12 0x4d, 0xf, 0xaf, 0xd4
-#define cmd_IMUL_R10R13 0x4d, 0xf, 0xaf, 0xd5
-#define cmd_IMUL_R10R14 0x4d, 0xf, 0xaf, 0xd6
-#define cmd_IMUL_R10R15 0x4d, 0xf, 0xaf, 0xd7
+#define cmd_IMUL_R10R8 0x4a, 0xf, 0xaf, 0xd0
+#define cmd_IMUL_R10R9 0x4a, 0xf, 0xaf, 0xd1
+#define cmd_IMUL_R10R10 0x4a, 0xf, 0xaf, 0xd2
+#define cmd_IMUL_R10R11 0x4a, 0xf, 0xaf, 0xd3
+#define cmd_IMUL_R10R12 0x4a, 0xf, 0xaf, 0xd4
+#define cmd_IMUL_R10R13 0x4a, 0xf, 0xaf, 0xd5
+#define cmd_IMUL_R10R14 0x4a, 0xf, 0xaf, 0xd6
+#define cmd_IMUL_R10R15 0x4a, 0xf, 0xaf, 0xd7
 #define cmd_IMUL_R11RAX 0x49, 0xf, 0xaf, 0xd8
 #define cmd_IMUL_R11RCX 0x49, 0xf, 0xaf, 0xd9
 #define cmd_IMUL_R11RDX 0x49, 0xf, 0xaf, 0xda
@@ -2159,14 +2175,14 @@
 #define cmd_IMUL_R11RBP 0x49, 0xf, 0xaf, 0xdd
 #define cmd_IMUL_R11RSI 0x49, 0xf, 0xaf, 0xde
 #define cmd_IMUL_R11RDI 0x49, 0xf, 0xaf, 0xdf
-#define cmd_IMUL_R11R8 0x4d, 0xf, 0xaf, 0xd8
-#define cmd_IMUL_R11R9 0x4d, 0xf, 0xaf, 0xd9
-#define cmd_IMUL_R11R10 0x4d, 0xf, 0xaf, 0xda
-#define cmd_IMUL_R11R11 0x4d, 0xf, 0xaf, 0xdb
-#define cmd_IMUL_R11R12 0x4d, 0xf, 0xaf, 0xdc
-#define cmd_IMUL_R11R13 0x4d, 0xf, 0xaf, 0xdd
-#define cmd_IMUL_R11R14 0x4d, 0xf, 0xaf, 0xde
-#define cmd_IMUL_R11R15 0x4d, 0xf, 0xaf, 0xdf
+#define cmd_IMUL_R11R8 0x4a, 0xf, 0xaf, 0xd8
+#define cmd_IMUL_R11R9 0x4a, 0xf, 0xaf, 0xd9
+#define cmd_IMUL_R11R10 0x4a, 0xf, 0xaf, 0xda
+#define cmd_IMUL_R11R11 0x4a, 0xf, 0xaf, 0xdb
+#define cmd_IMUL_R11R12 0x4a, 0xf, 0xaf, 0xdc
+#define cmd_IMUL_R11R13 0x4a, 0xf, 0xaf, 0xdd
+#define cmd_IMUL_R11R14 0x4a, 0xf, 0xaf, 0xde
+#define cmd_IMUL_R11R15 0x4a, 0xf, 0xaf, 0xdf
 #define cmd_IMUL_R12RAX 0x49, 0xf, 0xaf, 0xe0
 #define cmd_IMUL_R12RCX 0x49, 0xf, 0xaf, 0xe1
 #define cmd_IMUL_R12RDX 0x49, 0xf, 0xaf, 0xe2
@@ -2175,14 +2191,14 @@
 #define cmd_IMUL_R12RBP 0x49, 0xf, 0xaf, 0xe5
 #define cmd_IMUL_R12RSI 0x49, 0xf, 0xaf, 0xe6
 #define cmd_IMUL_R12RDI 0x49, 0xf, 0xaf, 0xe7
-#define cmd_IMUL_R12R8 0x4d, 0xf, 0xaf, 0xe0
-#define cmd_IMUL_R12R9 0x4d, 0xf, 0xaf, 0xe1
-#define cmd_IMUL_R12R10 0x4d, 0xf, 0xaf, 0xe2
-#define cmd_IMUL_R12R11 0x4d, 0xf, 0xaf, 0xe3
-#define cmd_IMUL_R12R12 0x4d, 0xf, 0xaf, 0xe4
-#define cmd_IMUL_R12R13 0x4d, 0xf, 0xaf, 0xe5
-#define cmd_IMUL_R12R14 0x4d, 0xf, 0xaf, 0xe6
-#define cmd_IMUL_R12R15 0x4d, 0xf, 0xaf, 0xe7
+#define cmd_IMUL_R12R8 0x4a, 0xf, 0xaf, 0xe0
+#define cmd_IMUL_R12R9 0x4a, 0xf, 0xaf, 0xe1
+#define cmd_IMUL_R12R10 0x4a, 0xf, 0xaf, 0xe2
+#define cmd_IMUL_R12R11 0x4a, 0xf, 0xaf, 0xe3
+#define cmd_IMUL_R12R12 0x4a, 0xf, 0xaf, 0xe4
+#define cmd_IMUL_R12R13 0x4a, 0xf, 0xaf, 0xe5
+#define cmd_IMUL_R12R14 0x4a, 0xf, 0xaf, 0xe6
+#define cmd_IMUL_R12R15 0x4a, 0xf, 0xaf, 0xe7
 #define cmd_IMUL_R13RAX 0x49, 0xf, 0xaf, 0xe8
 #define cmd_IMUL_R13RCX 0x49, 0xf, 0xaf, 0xe9
 #define cmd_IMUL_R13RDX 0x49, 0xf, 0xaf, 0xea
@@ -2191,14 +2207,14 @@
 #define cmd_IMUL_R13RBP 0x49, 0xf, 0xaf, 0xed
 #define cmd_IMUL_R13RSI 0x49, 0xf, 0xaf, 0xee
 #define cmd_IMUL_R13RDI 0x49, 0xf, 0xaf, 0xef
-#define cmd_IMUL_R13R8 0x4d, 0xf, 0xaf, 0xe8
-#define cmd_IMUL_R13R9 0x4d, 0xf, 0xaf, 0xe9
-#define cmd_IMUL_R13R10 0x4d, 0xf, 0xaf, 0xea
-#define cmd_IMUL_R13R11 0x4d, 0xf, 0xaf, 0xeb
-#define cmd_IMUL_R13R12 0x4d, 0xf, 0xaf, 0xec
-#define cmd_IMUL_R13R13 0x4d, 0xf, 0xaf, 0xed
-#define cmd_IMUL_R13R14 0x4d, 0xf, 0xaf, 0xee
-#define cmd_IMUL_R13R15 0x4d, 0xf, 0xaf, 0xef
+#define cmd_IMUL_R13R8 0x4a, 0xf, 0xaf, 0xe8
+#define cmd_IMUL_R13R9 0x4a, 0xf, 0xaf, 0xe9
+#define cmd_IMUL_R13R10 0x4a, 0xf, 0xaf, 0xea
+#define cmd_IMUL_R13R11 0x4a, 0xf, 0xaf, 0xeb
+#define cmd_IMUL_R13R12 0x4a, 0xf, 0xaf, 0xec
+#define cmd_IMUL_R13R13 0x4a, 0xf, 0xaf, 0xed
+#define cmd_IMUL_R13R14 0x4a, 0xf, 0xaf, 0xee
+#define cmd_IMUL_R13R15 0x4a, 0xf, 0xaf, 0xef
 #define cmd_IMUL_R14RAX 0x49, 0xf, 0xaf, 0xf0
 #define cmd_IMUL_R14RCX 0x49, 0xf, 0xaf, 0xf1
 #define cmd_IMUL_R14RDX 0x49, 0xf, 0xaf, 0xf2
@@ -2207,14 +2223,14 @@
 #define cmd_IMUL_R14RBP 0x49, 0xf, 0xaf, 0xf5
 #define cmd_IMUL_R14RSI 0x49, 0xf, 0xaf, 0xf6
 #define cmd_IMUL_R14RDI 0x49, 0xf, 0xaf, 0xf7
-#define cmd_IMUL_R14R8 0x4d, 0xf, 0xaf, 0xf0
-#define cmd_IMUL_R14R9 0x4d, 0xf, 0xaf, 0xf1
-#define cmd_IMUL_R14R10 0x4d, 0xf, 0xaf, 0xf2
-#define cmd_IMUL_R14R11 0x4d, 0xf, 0xaf, 0xf3
-#define cmd_IMUL_R14R12 0x4d, 0xf, 0xaf, 0xf4
-#define cmd_IMUL_R14R13 0x4d, 0xf, 0xaf, 0xf5
-#define cmd_IMUL_R14R14 0x4d, 0xf, 0xaf, 0xf6
-#define cmd_IMUL_R14R15 0x4d, 0xf, 0xaf, 0xf7
+#define cmd_IMUL_R14R8 0x4a, 0xf, 0xaf, 0xf0
+#define cmd_IMUL_R14R9 0x4a, 0xf, 0xaf, 0xf1
+#define cmd_IMUL_R14R10 0x4a, 0xf, 0xaf, 0xf2
+#define cmd_IMUL_R14R11 0x4a, 0xf, 0xaf, 0xf3
+#define cmd_IMUL_R14R12 0x4a, 0xf, 0xaf, 0xf4
+#define cmd_IMUL_R14R13 0x4a, 0xf, 0xaf, 0xf5
+#define cmd_IMUL_R14R14 0x4a, 0xf, 0xaf, 0xf6
+#define cmd_IMUL_R14R15 0x4a, 0xf, 0xaf, 0xf7
 #define cmd_IMUL_R15RAX 0x49, 0xf, 0xaf, 0xf8
 #define cmd_IMUL_R15RCX 0x49, 0xf, 0xaf, 0xf9
 #define cmd_IMUL_R15RDX 0x49, 0xf, 0xaf, 0xfa
@@ -2223,14 +2239,14 @@
 #define cmd_IMUL_R15RBP 0x49, 0xf, 0xaf, 0xfd
 #define cmd_IMUL_R15RSI 0x49, 0xf, 0xaf, 0xfe
 #define cmd_IMUL_R15RDI 0x49, 0xf, 0xaf, 0xff
-#define cmd_IMUL_R15R8 0x4d, 0xf, 0xaf, 0xf8
-#define cmd_IMUL_R15R9 0x4d, 0xf, 0xaf, 0xf9
-#define cmd_IMUL_R15R10 0x4d, 0xf, 0xaf, 0xfa
-#define cmd_IMUL_R15R11 0x4d, 0xf, 0xaf, 0xfb
-#define cmd_IMUL_R15R12 0x4d, 0xf, 0xaf, 0xfc
-#define cmd_IMUL_R15R13 0x4d, 0xf, 0xaf, 0xfd
-#define cmd_IMUL_R15R14 0x4d, 0xf, 0xaf, 0xfe
-#define cmd_IMUL_R15R15 0x4d, 0xf, 0xaf, 0xff
+#define cmd_IMUL_R15R8 0x4a, 0xf, 0xaf, 0xf8
+#define cmd_IMUL_R15R9 0x4a, 0xf, 0xaf, 0xf9
+#define cmd_IMUL_R15R10 0x4a, 0xf, 0xaf, 0xfa
+#define cmd_IMUL_R15R11 0x4a, 0xf, 0xaf, 0xfb
+#define cmd_IMUL_R15R12 0x4a, 0xf, 0xaf, 0xfc
+#define cmd_IMUL_R15R13 0x4a, 0xf, 0xaf, 0xfd
+#define cmd_IMUL_R15R14 0x4a, 0xf, 0xaf, 0xfe
+#define cmd_IMUL_R15R15 0x4a, 0xf, 0xaf, 0xff
 
 #define cmd_IDIV_RAX 0x48, 0xf7, 0xf8
 #define cmd_IDIV_RCX 0x48, 0xf7, 0xf9
@@ -3020,12 +3036,29 @@
 #define cmd_TEST_R14R15 0x4d, 0x85, 0xfe
 #define cmd_TEST_R15R15 0x4d, 0x85, 0xff
 
+#define cmd_XCHG_RAXRAX 0x48, 0x90
+#define cmd_XCHG_RAXRCX 0x48, 0x91
+#define cmd_XCHG_RAXRDX 0x48, 0x92
+#define cmd_XCHG_RAXRBX 0x48, 0x93
+#define cmd_XCHG_RAXRSP 0x48, 0x94
+#define cmd_XCHG_RAXRBP 0x48, 0x95
+#define cmd_XCHG_RAXRSI 0x48, 0x96
+#define cmd_XCHG_RAXRDI 0x48, 0x97
+#define cmd_XCHG_RAXR8 0x49, 0x90
+#define cmd_XCHG_RAXR9 0x49, 0x91
+#define cmd_XCHG_RAXR10 0x49, 0x92
+#define cmd_XCHG_RAXR11 0x49, 0x93
+#define cmd_XCHG_RAXR12 0x49, 0x94
+#define cmd_XCHG_RAXR13 0x49, 0x95
+#define cmd_XCHG_RAXR14 0x49, 0x96
+#define cmd_XCHG_RAXR15 0x49, 0x97
+
 
 #define cmd_PUSH_IMM8  0x6A
 #define cmd_PUSH_IMM16 0x68
 
-#define cmd_CALL_REL 0xE8
-#define cmd_RET      0xC3
+#define cmd_CALL_REL32 0xE8
+#define cmd_RET        0xC3
 
 #define cmd_JE_REL8  0x74
 #define cmd_JNE_REL8 0x75
@@ -3043,13 +3076,10 @@
 #define cmd_JGE_REL32 0x0F, 0x8D
 #define cmd_JMP_REL32 0xE9
 
-#define cmd_XCHG_RAXRBX 0x48, 0x93
+#define REG_RSP_DISPL(x) REG_RSP, (x)
+#define REG_RBP_DISPL(x) REG_RBP, (x)
 
-struct cmd_MovCommand {
-    unsigned char bytecode[3];
-};
-
-constexpr cmd_MovCommand cmd_MOV_TABLE[cmd_REGSNUM][cmd_REGSNUM] = {
+constexpr static unsigned char cmd_MOV_TABLE[cmd_REGSNUM][cmd_REGSNUM][3] = {
 { {cmd_MOV_RAXRAX},{cmd_MOV_RAXRCX},{cmd_MOV_RAXRDX},{cmd_MOV_RAXRBX},{cmd_MOV_RAXRSP},{cmd_MOV_RAXRBP},{cmd_MOV_RAXRSI},{cmd_MOV_RAXRDI},{cmd_MOV_RAXR8},{cmd_MOV_RAXR9},{cmd_MOV_RAXR10},{cmd_MOV_RAXR11},{cmd_MOV_RAXR12},{cmd_MOV_RAXR13},{cmd_MOV_RAXR14},{cmd_MOV_RAXR15},},
 { {cmd_MOV_RCXRAX},{cmd_MOV_RCXRCX},{cmd_MOV_RCXRDX},{cmd_MOV_RCXRBX},{cmd_MOV_RCXRSP},{cmd_MOV_RCXRBP},{cmd_MOV_RCXRSI},{cmd_MOV_RCXRDI},{cmd_MOV_RCXR8},{cmd_MOV_RCXR9},{cmd_MOV_RCXR10},{cmd_MOV_RCXR11},{cmd_MOV_RCXR12},{cmd_MOV_RCXR13},{cmd_MOV_RCXR14},{cmd_MOV_RCXR15},},
 { {cmd_MOV_RDXRAX},{cmd_MOV_RDXRCX},{cmd_MOV_RDXRDX},{cmd_MOV_RDXRBX},{cmd_MOV_RDXRSP},{cmd_MOV_RDXRBP},{cmd_MOV_RDXRSI},{cmd_MOV_RDXRDI},{cmd_MOV_RDXR8},{cmd_MOV_RDXR9},{cmd_MOV_RDXR10},{cmd_MOV_RDXR11},{cmd_MOV_RDXR12},{cmd_MOV_RDXR13},{cmd_MOV_RDXR14},{cmd_MOV_RDXR15},},
@@ -3068,42 +3098,308 @@ constexpr cmd_MovCommand cmd_MOV_TABLE[cmd_REGSNUM][cmd_REGSNUM] = {
 { {cmd_MOV_R15RAX},{cmd_MOV_R15RCX},{cmd_MOV_R15RDX},{cmd_MOV_R15RBX},{cmd_MOV_R15RSP},{cmd_MOV_R15RBP},{cmd_MOV_R15RSI},{cmd_MOV_R15RDI},{cmd_MOV_R15R8},{cmd_MOV_R15R9},{cmd_MOV_R15R10},{cmd_MOV_R15R11},{cmd_MOV_R15R12},{cmd_MOV_R15R13},{cmd_MOV_R15R14},{cmd_MOV_R15R15},},
 };
 
-constexpr char cmd_PUSH_TABLE[cmd_REGSNUM] = {
-cmd_PUSH_RAX,
-cmd_PUSH_RCX,
-cmd_PUSH_RDX,
-cmd_PUSH_RBX,
-cmd_PUSH_RSP,
-cmd_PUSH_RBP,
-cmd_PUSH_RSI,
-cmd_PUSH_RDI,
-cmd_PUSH_R8,
-cmd_PUSH_R9,
-cmd_PUSH_R10,
-cmd_PUSH_R11,
-cmd_PUSH_R12,
-cmd_PUSH_R13,
-cmd_PUSH_R14,
-cmd_PUSH_R15,
+constexpr static unsigned char cmd_PUSH_TABLE[cmd_REGSNUM][2] = {
+{cmd_PUSH_RAX},
+{cmd_PUSH_RCX},
+{cmd_PUSH_RDX},
+{cmd_PUSH_RBX},
+{cmd_PUSH_RSP},
+{cmd_PUSH_RBP},
+{cmd_PUSH_RSI},
+{cmd_PUSH_RDI},
+{cmd_PUSH_R8},
+{cmd_PUSH_R9},
+{cmd_PUSH_R10},
+{cmd_PUSH_R11},
+{cmd_PUSH_R12},
+{cmd_PUSH_R13},
+{cmd_PUSH_R14},
+{cmd_PUSH_R15},
 };
 
-constexpr char cmd_POP_TABLE[cmd_REGSNUM] = {
-cmd_POP_RAX,
-cmd_POP_RCX,
-cmd_POP_RDX,
-cmd_POP_RBX,
-cmd_POP_RSP,
-cmd_POP_RBP,
-cmd_POP_RSI,
-cmd_POP_RDI,
-cmd_POP_R8,
-cmd_POP_R9,
-cmd_POP_R10,
-cmd_POP_R11,
-cmd_POP_R12,
-cmd_POP_R13,
-cmd_POP_R14,
-cmd_POP_R15,
+constexpr static unsigned char cmd_POP_TABLE[cmd_REGSNUM][2] = {
+{cmd_POP_RAX},
+{cmd_POP_RCX},
+{cmd_POP_RDX},
+{cmd_POP_RBX},
+{cmd_POP_RSP},
+{cmd_POP_RBP},
+{cmd_POP_RSI},
+{cmd_POP_RDI},
+{cmd_POP_R8},
+{cmd_POP_R9},
+{cmd_POP_R10},
+{cmd_POP_R11},
+{cmd_POP_R12},
+{cmd_POP_R13},
+{cmd_POP_R14},
+{cmd_POP_R15},
+};
+
+constexpr static unsigned char cmd_MOV_REG_RSPMEM_DISPL32[cmd_REGSNUM][4] = {
+{cmd_MOV_RAXRSP_MEM_DISPL32},
+{cmd_MOV_RCXRSP_MEM_DISPL32},
+{cmd_MOV_RDXRSP_MEM_DISPL32},
+{cmd_MOV_RBXRSP_MEM_DISPL32},
+{cmd_MOV_RSPRSP_MEM_DISPL32},
+{cmd_MOV_RBPRSP_MEM_DISPL32},
+{cmd_MOV_RSIRSP_MEM_DISPL32},
+{cmd_MOV_RDIRSP_MEM_DISPL32},
+{cmd_MOV_R8RSP_MEM_DISPL32},
+{cmd_MOV_R9RSP_MEM_DISPL32},
+{cmd_MOV_R10RSP_MEM_DISPL32},
+{cmd_MOV_R11RSP_MEM_DISPL32},
+{cmd_MOV_R12RSP_MEM_DISPL32},
+{cmd_MOV_R13RSP_MEM_DISPL32},
+{cmd_MOV_R14RSP_MEM_DISPL32},
+{cmd_MOV_R15RSP_MEM_DISPL32},
+};
+
+constexpr static unsigned char cmd_MOV_RSPMEM_REG_DISPL32[cmd_REGSNUM][4] = {
+{cmd_MOV_MEM_RSP_DISPL32RAX},
+{cmd_MOV_MEM_RSP_DISPL32RCX},
+{cmd_MOV_MEM_RSP_DISPL32RDX},
+{cmd_MOV_MEM_RSP_DISPL32RBX},
+{cmd_MOV_MEM_RSP_DISPL32RSP},
+{cmd_MOV_MEM_RSP_DISPL32RBP},
+{cmd_MOV_MEM_RSP_DISPL32RSI},
+{cmd_MOV_MEM_RSP_DISPL32RDI},
+{cmd_MOV_MEM_RSP_DISPL32R8},
+{cmd_MOV_MEM_RSP_DISPL32R9},
+{cmd_MOV_MEM_RSP_DISPL32R10},
+{cmd_MOV_MEM_RSP_DISPL32R11},
+{cmd_MOV_MEM_RSP_DISPL32R12},
+{cmd_MOV_MEM_RSP_DISPL32R13},
+{cmd_MOV_MEM_RSP_DISPL32R14},
+{cmd_MOV_MEM_RSP_DISPL32R15},
+};
+
+constexpr static unsigned char cmd_MOV_REG_RBPMEM_DISPL32[cmd_REGSNUM][3] = {
+{cmd_MOV_RAXRBP_MEM_DISPL32},
+{cmd_MOV_RCXRBP_MEM_DISPL32},
+{cmd_MOV_RDXRBP_MEM_DISPL32},
+{cmd_MOV_RBXRBP_MEM_DISPL32},
+{cmd_MOV_RSPRBP_MEM_DISPL32},
+{cmd_MOV_RBPRBP_MEM_DISPL32},
+{cmd_MOV_RSIRBP_MEM_DISPL32},
+{cmd_MOV_RDIRBP_MEM_DISPL32},
+{cmd_MOV_R8RBP_MEM_DISPL32},
+{cmd_MOV_R9RBP_MEM_DISPL32},
+{cmd_MOV_R10RBP_MEM_DISPL32},
+{cmd_MOV_R11RBP_MEM_DISPL32},
+{cmd_MOV_R12RBP_MEM_DISPL32},
+{cmd_MOV_R13RBP_MEM_DISPL32},
+{cmd_MOV_R14RBP_MEM_DISPL32},
+{cmd_MOV_R15RBP_MEM_DISPL32},
+};
+
+constexpr static unsigned char cmd_MOV_RBPMEM_REG_DISPL32[cmd_REGSNUM][3] = {
+{cmd_MOV_MEM_RBP_DISPL32RAX},
+{cmd_MOV_MEM_RBP_DISPL32RCX},
+{cmd_MOV_MEM_RBP_DISPL32RDX},
+{cmd_MOV_MEM_RBP_DISPL32RBX},
+{cmd_MOV_MEM_RBP_DISPL32RSP},
+{cmd_MOV_MEM_RBP_DISPL32RBP},
+{cmd_MOV_MEM_RBP_DISPL32RSI},
+{cmd_MOV_MEM_RBP_DISPL32RDI},
+{cmd_MOV_MEM_RBP_DISPL32R8},
+{cmd_MOV_MEM_RBP_DISPL32R9},
+{cmd_MOV_MEM_RBP_DISPL32R10},
+{cmd_MOV_MEM_RBP_DISPL32R11},
+{cmd_MOV_MEM_RBP_DISPL32R12},
+{cmd_MOV_MEM_RBP_DISPL32R13},
+{cmd_MOV_MEM_RBP_DISPL32R14},
+{cmd_MOV_MEM_RBP_DISPL32R15},
+};
+
+constexpr static unsigned char cmd_SUBTABLE[cmd_REGSNUM][cmd_REGSNUM][3] = {
+{ {cmd_SUB_RAXRAX},{cmd_SUB_RAXRCX},{cmd_SUB_RAXRDX},{cmd_SUB_RAXRBX},{cmd_SUB_RAXRSP},{cmd_SUB_RAXRBP},{cmd_SUB_RAXRSI},{cmd_SUB_RAXRDI},{cmd_SUB_RAXR8},{cmd_SUB_RAXR9},{cmd_SUB_RAXR10},{cmd_SUB_RAXR11},{cmd_SUB_RAXR12},{cmd_SUB_RAXR13},{cmd_SUB_RAXR14},{cmd_SUB_RAXR15},},
+{ {cmd_SUB_RCXRAX},{cmd_SUB_RCXRCX},{cmd_SUB_RCXRDX},{cmd_SUB_RCXRBX},{cmd_SUB_RCXRSP},{cmd_SUB_RCXRBP},{cmd_SUB_RCXRSI},{cmd_SUB_RCXRDI},{cmd_SUB_RCXR8},{cmd_SUB_RCXR9},{cmd_SUB_RCXR10},{cmd_SUB_RCXR11},{cmd_SUB_RCXR12},{cmd_SUB_RCXR13},{cmd_SUB_RCXR14},{cmd_SUB_RCXR15},},
+{ {cmd_SUB_RDXRAX},{cmd_SUB_RDXRCX},{cmd_SUB_RDXRDX},{cmd_SUB_RDXRBX},{cmd_SUB_RDXRSP},{cmd_SUB_RDXRBP},{cmd_SUB_RDXRSI},{cmd_SUB_RDXRDI},{cmd_SUB_RDXR8},{cmd_SUB_RDXR9},{cmd_SUB_RDXR10},{cmd_SUB_RDXR11},{cmd_SUB_RDXR12},{cmd_SUB_RDXR13},{cmd_SUB_RDXR14},{cmd_SUB_RDXR15},},
+{ {cmd_SUB_RBXRAX},{cmd_SUB_RBXRCX},{cmd_SUB_RBXRDX},{cmd_SUB_RBXRBX},{cmd_SUB_RBXRSP},{cmd_SUB_RBXRBP},{cmd_SUB_RBXRSI},{cmd_SUB_RBXRDI},{cmd_SUB_RBXR8},{cmd_SUB_RBXR9},{cmd_SUB_RBXR10},{cmd_SUB_RBXR11},{cmd_SUB_RBXR12},{cmd_SUB_RBXR13},{cmd_SUB_RBXR14},{cmd_SUB_RBXR15},},
+{ {cmd_SUB_RSPRAX},{cmd_SUB_RSPRCX},{cmd_SUB_RSPRDX},{cmd_SUB_RSPRBX},{cmd_SUB_RSPRSP},{cmd_SUB_RSPRBP},{cmd_SUB_RSPRSI},{cmd_SUB_RSPRDI},{cmd_SUB_RSPR8},{cmd_SUB_RSPR9},{cmd_SUB_RSPR10},{cmd_SUB_RSPR11},{cmd_SUB_RSPR12},{cmd_SUB_RSPR13},{cmd_SUB_RSPR14},{cmd_SUB_RSPR15},},
+{ {cmd_SUB_RBPRAX},{cmd_SUB_RBPRCX},{cmd_SUB_RBPRDX},{cmd_SUB_RBPRBX},{cmd_SUB_RBPRSP},{cmd_SUB_RBPRBP},{cmd_SUB_RBPRSI},{cmd_SUB_RBPRDI},{cmd_SUB_RBPR8},{cmd_SUB_RBPR9},{cmd_SUB_RBPR10},{cmd_SUB_RBPR11},{cmd_SUB_RBPR12},{cmd_SUB_RBPR13},{cmd_SUB_RBPR14},{cmd_SUB_RBPR15},},
+{ {cmd_SUB_RSIRAX},{cmd_SUB_RSIRCX},{cmd_SUB_RSIRDX},{cmd_SUB_RSIRBX},{cmd_SUB_RSIRSP},{cmd_SUB_RSIRBP},{cmd_SUB_RSIRSI},{cmd_SUB_RSIRDI},{cmd_SUB_RSIR8},{cmd_SUB_RSIR9},{cmd_SUB_RSIR10},{cmd_SUB_RSIR11},{cmd_SUB_RSIR12},{cmd_SUB_RSIR13},{cmd_SUB_RSIR14},{cmd_SUB_RSIR15},},
+{ {cmd_SUB_RDIRAX},{cmd_SUB_RDIRCX},{cmd_SUB_RDIRDX},{cmd_SUB_RDIRBX},{cmd_SUB_RDIRSP},{cmd_SUB_RDIRBP},{cmd_SUB_RDIRSI},{cmd_SUB_RDIRDI},{cmd_SUB_RDIR8},{cmd_SUB_RDIR9},{cmd_SUB_RDIR10},{cmd_SUB_RDIR11},{cmd_SUB_RDIR12},{cmd_SUB_RDIR13},{cmd_SUB_RDIR14},{cmd_SUB_RDIR15},},
+{ {cmd_SUB_R8RAX},{cmd_SUB_R8RCX},{cmd_SUB_R8RDX},{cmd_SUB_R8RBX},{cmd_SUB_R8RSP},{cmd_SUB_R8RBP},{cmd_SUB_R8RSI},{cmd_SUB_R8RDI},{cmd_SUB_R8R8},{cmd_SUB_R8R9},{cmd_SUB_R8R10},{cmd_SUB_R8R11},{cmd_SUB_R8R12},{cmd_SUB_R8R13},{cmd_SUB_R8R14},{cmd_SUB_R8R15},},
+{ {cmd_SUB_R9RAX},{cmd_SUB_R9RCX},{cmd_SUB_R9RDX},{cmd_SUB_R9RBX},{cmd_SUB_R9RSP},{cmd_SUB_R9RBP},{cmd_SUB_R9RSI},{cmd_SUB_R9RDI},{cmd_SUB_R9R8},{cmd_SUB_R9R9},{cmd_SUB_R9R10},{cmd_SUB_R9R11},{cmd_SUB_R9R12},{cmd_SUB_R9R13},{cmd_SUB_R9R14},{cmd_SUB_R9R15},},
+{ {cmd_SUB_R10RAX},{cmd_SUB_R10RCX},{cmd_SUB_R10RDX},{cmd_SUB_R10RBX},{cmd_SUB_R10RSP},{cmd_SUB_R10RBP},{cmd_SUB_R10RSI},{cmd_SUB_R10RDI},{cmd_SUB_R10R8},{cmd_SUB_R10R9},{cmd_SUB_R10R10},{cmd_SUB_R10R11},{cmd_SUB_R10R12},{cmd_SUB_R10R13},{cmd_SUB_R10R14},{cmd_SUB_R10R15},},
+{ {cmd_SUB_R11RAX},{cmd_SUB_R11RCX},{cmd_SUB_R11RDX},{cmd_SUB_R11RBX},{cmd_SUB_R11RSP},{cmd_SUB_R11RBP},{cmd_SUB_R11RSI},{cmd_SUB_R11RDI},{cmd_SUB_R11R8},{cmd_SUB_R11R9},{cmd_SUB_R11R10},{cmd_SUB_R11R11},{cmd_SUB_R11R12},{cmd_SUB_R11R13},{cmd_SUB_R11R14},{cmd_SUB_R11R15},},
+{ {cmd_SUB_R12RAX},{cmd_SUB_R12RCX},{cmd_SUB_R12RDX},{cmd_SUB_R12RBX},{cmd_SUB_R12RSP},{cmd_SUB_R12RBP},{cmd_SUB_R12RSI},{cmd_SUB_R12RDI},{cmd_SUB_R12R8},{cmd_SUB_R12R9},{cmd_SUB_R12R10},{cmd_SUB_R12R11},{cmd_SUB_R12R12},{cmd_SUB_R12R13},{cmd_SUB_R12R14},{cmd_SUB_R12R15},},
+{ {cmd_SUB_R13RAX},{cmd_SUB_R13RCX},{cmd_SUB_R13RDX},{cmd_SUB_R13RBX},{cmd_SUB_R13RSP},{cmd_SUB_R13RBP},{cmd_SUB_R13RSI},{cmd_SUB_R13RDI},{cmd_SUB_R13R8},{cmd_SUB_R13R9},{cmd_SUB_R13R10},{cmd_SUB_R13R11},{cmd_SUB_R13R12},{cmd_SUB_R13R13},{cmd_SUB_R13R14},{cmd_SUB_R13R15},},
+{ {cmd_SUB_R14RAX},{cmd_SUB_R14RCX},{cmd_SUB_R14RDX},{cmd_SUB_R14RBX},{cmd_SUB_R14RSP},{cmd_SUB_R14RBP},{cmd_SUB_R14RSI},{cmd_SUB_R14RDI},{cmd_SUB_R14R8},{cmd_SUB_R14R9},{cmd_SUB_R14R10},{cmd_SUB_R14R11},{cmd_SUB_R14R12},{cmd_SUB_R14R13},{cmd_SUB_R14R14},{cmd_SUB_R14R15},},
+{ {cmd_SUB_R15RAX},{cmd_SUB_R15RCX},{cmd_SUB_R15RDX},{cmd_SUB_R15RBX},{cmd_SUB_R15RSP},{cmd_SUB_R15RBP},{cmd_SUB_R15RSI},{cmd_SUB_R15RDI},{cmd_SUB_R15R8},{cmd_SUB_R15R9},{cmd_SUB_R15R10},{cmd_SUB_R15R11},{cmd_SUB_R15R12},{cmd_SUB_R15R13},{cmd_SUB_R15R14},{cmd_SUB_R15R15},},
+};
+
+constexpr static unsigned char cmd_ADDTABLE[cmd_REGSNUM][cmd_REGSNUM][3] = {
+{ {cmd_ADD_RAXRAX},{cmd_ADD_RAXRCX},{cmd_ADD_RAXRDX},{cmd_ADD_RAXRBX},{cmd_ADD_RAXRSP},{cmd_ADD_RAXRBP},{cmd_ADD_RAXRSI},{cmd_ADD_RAXRDI},{cmd_ADD_RAXR8},{cmd_ADD_RAXR9},{cmd_ADD_RAXR10},{cmd_ADD_RAXR11},{cmd_ADD_RAXR12},{cmd_ADD_RAXR13},{cmd_ADD_RAXR14},{cmd_ADD_RAXR15},},
+{ {cmd_ADD_RCXRAX},{cmd_ADD_RCXRCX},{cmd_ADD_RCXRDX},{cmd_ADD_RCXRBX},{cmd_ADD_RCXRSP},{cmd_ADD_RCXRBP},{cmd_ADD_RCXRSI},{cmd_ADD_RCXRDI},{cmd_ADD_RCXR8},{cmd_ADD_RCXR9},{cmd_ADD_RCXR10},{cmd_ADD_RCXR11},{cmd_ADD_RCXR12},{cmd_ADD_RCXR13},{cmd_ADD_RCXR14},{cmd_ADD_RCXR15},},
+{ {cmd_ADD_RDXRAX},{cmd_ADD_RDXRCX},{cmd_ADD_RDXRDX},{cmd_ADD_RDXRBX},{cmd_ADD_RDXRSP},{cmd_ADD_RDXRBP},{cmd_ADD_RDXRSI},{cmd_ADD_RDXRDI},{cmd_ADD_RDXR8},{cmd_ADD_RDXR9},{cmd_ADD_RDXR10},{cmd_ADD_RDXR11},{cmd_ADD_RDXR12},{cmd_ADD_RDXR13},{cmd_ADD_RDXR14},{cmd_ADD_RDXR15},},
+{ {cmd_ADD_RBXRAX},{cmd_ADD_RBXRCX},{cmd_ADD_RBXRDX},{cmd_ADD_RBXRBX},{cmd_ADD_RBXRSP},{cmd_ADD_RBXRBP},{cmd_ADD_RBXRSI},{cmd_ADD_RBXRDI},{cmd_ADD_RBXR8},{cmd_ADD_RBXR9},{cmd_ADD_RBXR10},{cmd_ADD_RBXR11},{cmd_ADD_RBXR12},{cmd_ADD_RBXR13},{cmd_ADD_RBXR14},{cmd_ADD_RBXR15},},
+{ {cmd_ADD_RSPRAX},{cmd_ADD_RSPRCX},{cmd_ADD_RSPRDX},{cmd_ADD_RSPRBX},{cmd_ADD_RSPRSP},{cmd_ADD_RSPRBP},{cmd_ADD_RSPRSI},{cmd_ADD_RSPRDI},{cmd_ADD_RSPR8},{cmd_ADD_RSPR9},{cmd_ADD_RSPR10},{cmd_ADD_RSPR11},{cmd_ADD_RSPR12},{cmd_ADD_RSPR13},{cmd_ADD_RSPR14},{cmd_ADD_RSPR15},},
+{ {cmd_ADD_RBPRAX},{cmd_ADD_RBPRCX},{cmd_ADD_RBPRDX},{cmd_ADD_RBPRBX},{cmd_ADD_RBPRSP},{cmd_ADD_RBPRBP},{cmd_ADD_RBPRSI},{cmd_ADD_RBPRDI},{cmd_ADD_RBPR8},{cmd_ADD_RBPR9},{cmd_ADD_RBPR10},{cmd_ADD_RBPR11},{cmd_ADD_RBPR12},{cmd_ADD_RBPR13},{cmd_ADD_RBPR14},{cmd_ADD_RBPR15},},
+{ {cmd_ADD_RSIRAX},{cmd_ADD_RSIRCX},{cmd_ADD_RSIRDX},{cmd_ADD_RSIRBX},{cmd_ADD_RSIRSP},{cmd_ADD_RSIRBP},{cmd_ADD_RSIRSI},{cmd_ADD_RSIRDI},{cmd_ADD_RSIR8},{cmd_ADD_RSIR9},{cmd_ADD_RSIR10},{cmd_ADD_RSIR11},{cmd_ADD_RSIR12},{cmd_ADD_RSIR13},{cmd_ADD_RSIR14},{cmd_ADD_RSIR15},},
+{ {cmd_ADD_RDIRAX},{cmd_ADD_RDIRCX},{cmd_ADD_RDIRDX},{cmd_ADD_RDIRBX},{cmd_ADD_RDIRSP},{cmd_ADD_RDIRBP},{cmd_ADD_RDIRSI},{cmd_ADD_RDIRDI},{cmd_ADD_RDIR8},{cmd_ADD_RDIR9},{cmd_ADD_RDIR10},{cmd_ADD_RDIR11},{cmd_ADD_RDIR12},{cmd_ADD_RDIR13},{cmd_ADD_RDIR14},{cmd_ADD_RDIR15},},
+{ {cmd_ADD_R8RAX},{cmd_ADD_R8RCX},{cmd_ADD_R8RDX},{cmd_ADD_R8RBX},{cmd_ADD_R8RSP},{cmd_ADD_R8RBP},{cmd_ADD_R8RSI},{cmd_ADD_R8RDI},{cmd_ADD_R8R8},{cmd_ADD_R8R9},{cmd_ADD_R8R10},{cmd_ADD_R8R11},{cmd_ADD_R8R12},{cmd_ADD_R8R13},{cmd_ADD_R8R14},{cmd_ADD_R8R15},},
+{ {cmd_ADD_R9RAX},{cmd_ADD_R9RCX},{cmd_ADD_R9RDX},{cmd_ADD_R9RBX},{cmd_ADD_R9RSP},{cmd_ADD_R9RBP},{cmd_ADD_R9RSI},{cmd_ADD_R9RDI},{cmd_ADD_R9R8},{cmd_ADD_R9R9},{cmd_ADD_R9R10},{cmd_ADD_R9R11},{cmd_ADD_R9R12},{cmd_ADD_R9R13},{cmd_ADD_R9R14},{cmd_ADD_R9R15},},
+{ {cmd_ADD_R10RAX},{cmd_ADD_R10RCX},{cmd_ADD_R10RDX},{cmd_ADD_R10RBX},{cmd_ADD_R10RSP},{cmd_ADD_R10RBP},{cmd_ADD_R10RSI},{cmd_ADD_R10RDI},{cmd_ADD_R10R8},{cmd_ADD_R10R9},{cmd_ADD_R10R10},{cmd_ADD_R10R11},{cmd_ADD_R10R12},{cmd_ADD_R10R13},{cmd_ADD_R10R14},{cmd_ADD_R10R15},},
+{ {cmd_ADD_R11RAX},{cmd_ADD_R11RCX},{cmd_ADD_R11RDX},{cmd_ADD_R11RBX},{cmd_ADD_R11RSP},{cmd_ADD_R11RBP},{cmd_ADD_R11RSI},{cmd_ADD_R11RDI},{cmd_ADD_R11R8},{cmd_ADD_R11R9},{cmd_ADD_R11R10},{cmd_ADD_R11R11},{cmd_ADD_R11R12},{cmd_ADD_R11R13},{cmd_ADD_R11R14},{cmd_ADD_R11R15},},
+{ {cmd_ADD_R12RAX},{cmd_ADD_R12RCX},{cmd_ADD_R12RDX},{cmd_ADD_R12RBX},{cmd_ADD_R12RSP},{cmd_ADD_R12RBP},{cmd_ADD_R12RSI},{cmd_ADD_R12RDI},{cmd_ADD_R12R8},{cmd_ADD_R12R9},{cmd_ADD_R12R10},{cmd_ADD_R12R11},{cmd_ADD_R12R12},{cmd_ADD_R12R13},{cmd_ADD_R12R14},{cmd_ADD_R12R15},},
+{ {cmd_ADD_R13RAX},{cmd_ADD_R13RCX},{cmd_ADD_R13RDX},{cmd_ADD_R13RBX},{cmd_ADD_R13RSP},{cmd_ADD_R13RBP},{cmd_ADD_R13RSI},{cmd_ADD_R13RDI},{cmd_ADD_R13R8},{cmd_ADD_R13R9},{cmd_ADD_R13R10},{cmd_ADD_R13R11},{cmd_ADD_R13R12},{cmd_ADD_R13R13},{cmd_ADD_R13R14},{cmd_ADD_R13R15},},
+{ {cmd_ADD_R14RAX},{cmd_ADD_R14RCX},{cmd_ADD_R14RDX},{cmd_ADD_R14RBX},{cmd_ADD_R14RSP},{cmd_ADD_R14RBP},{cmd_ADD_R14RSI},{cmd_ADD_R14RDI},{cmd_ADD_R14R8},{cmd_ADD_R14R9},{cmd_ADD_R14R10},{cmd_ADD_R14R11},{cmd_ADD_R14R12},{cmd_ADD_R14R13},{cmd_ADD_R14R14},{cmd_ADD_R14R15},},
+{ {cmd_ADD_R15RAX},{cmd_ADD_R15RCX},{cmd_ADD_R15RDX},{cmd_ADD_R15RBX},{cmd_ADD_R15RSP},{cmd_ADD_R15RBP},{cmd_ADD_R15RSI},{cmd_ADD_R15RDI},{cmd_ADD_R15R8},{cmd_ADD_R15R9},{cmd_ADD_R15R10},{cmd_ADD_R15R11},{cmd_ADD_R15R12},{cmd_ADD_R15R13},{cmd_ADD_R15R14},{cmd_ADD_R15R15},},
+};
+
+constexpr static unsigned char cmd_XORTABLE[cmd_REGSNUM][cmd_REGSNUM][3] = {
+{ {cmd_XOR_RAXRAX},{cmd_XOR_RAXRCX},{cmd_XOR_RAXRDX},{cmd_XOR_RAXRBX},{cmd_XOR_RAXRSP},{cmd_XOR_RAXRBP},{cmd_XOR_RAXRSI},{cmd_XOR_RAXRDI},{cmd_XOR_RAXR8},{cmd_XOR_RAXR9},{cmd_XOR_RAXR10},{cmd_XOR_RAXR11},{cmd_XOR_RAXR12},{cmd_XOR_RAXR13},{cmd_XOR_RAXR14},{cmd_XOR_RAXR15},},
+{ {cmd_XOR_RCXRAX},{cmd_XOR_RCXRCX},{cmd_XOR_RCXRDX},{cmd_XOR_RCXRBX},{cmd_XOR_RCXRSP},{cmd_XOR_RCXRBP},{cmd_XOR_RCXRSI},{cmd_XOR_RCXRDI},{cmd_XOR_RCXR8},{cmd_XOR_RCXR9},{cmd_XOR_RCXR10},{cmd_XOR_RCXR11},{cmd_XOR_RCXR12},{cmd_XOR_RCXR13},{cmd_XOR_RCXR14},{cmd_XOR_RCXR15},},
+{ {cmd_XOR_RDXRAX},{cmd_XOR_RDXRCX},{cmd_XOR_RDXRDX},{cmd_XOR_RDXRBX},{cmd_XOR_RDXRSP},{cmd_XOR_RDXRBP},{cmd_XOR_RDXRSI},{cmd_XOR_RDXRDI},{cmd_XOR_RDXR8},{cmd_XOR_RDXR9},{cmd_XOR_RDXR10},{cmd_XOR_RDXR11},{cmd_XOR_RDXR12},{cmd_XOR_RDXR13},{cmd_XOR_RDXR14},{cmd_XOR_RDXR15},},
+{ {cmd_XOR_RBXRAX},{cmd_XOR_RBXRCX},{cmd_XOR_RBXRDX},{cmd_XOR_RBXRBX},{cmd_XOR_RBXRSP},{cmd_XOR_RBXRBP},{cmd_XOR_RBXRSI},{cmd_XOR_RBXRDI},{cmd_XOR_RBXR8},{cmd_XOR_RBXR9},{cmd_XOR_RBXR10},{cmd_XOR_RBXR11},{cmd_XOR_RBXR12},{cmd_XOR_RBXR13},{cmd_XOR_RBXR14},{cmd_XOR_RBXR15},},
+{ {cmd_XOR_RSPRAX},{cmd_XOR_RSPRCX},{cmd_XOR_RSPRDX},{cmd_XOR_RSPRBX},{cmd_XOR_RSPRSP},{cmd_XOR_RSPRBP},{cmd_XOR_RSPRSI},{cmd_XOR_RSPRDI},{cmd_XOR_RSPR8},{cmd_XOR_RSPR9},{cmd_XOR_RSPR10},{cmd_XOR_RSPR11},{cmd_XOR_RSPR12},{cmd_XOR_RSPR13},{cmd_XOR_RSPR14},{cmd_XOR_RSPR15},},
+{ {cmd_XOR_RBPRAX},{cmd_XOR_RBPRCX},{cmd_XOR_RBPRDX},{cmd_XOR_RBPRBX},{cmd_XOR_RBPRSP},{cmd_XOR_RBPRBP},{cmd_XOR_RBPRSI},{cmd_XOR_RBPRDI},{cmd_XOR_RBPR8},{cmd_XOR_RBPR9},{cmd_XOR_RBPR10},{cmd_XOR_RBPR11},{cmd_XOR_RBPR12},{cmd_XOR_RBPR13},{cmd_XOR_RBPR14},{cmd_XOR_RBPR15},},
+{ {cmd_XOR_RSIRAX},{cmd_XOR_RSIRCX},{cmd_XOR_RSIRDX},{cmd_XOR_RSIRBX},{cmd_XOR_RSIRSP},{cmd_XOR_RSIRBP},{cmd_XOR_RSIRSI},{cmd_XOR_RSIRDI},{cmd_XOR_RSIR8},{cmd_XOR_RSIR9},{cmd_XOR_RSIR10},{cmd_XOR_RSIR11},{cmd_XOR_RSIR12},{cmd_XOR_RSIR13},{cmd_XOR_RSIR14},{cmd_XOR_RSIR15},},
+{ {cmd_XOR_RDIRAX},{cmd_XOR_RDIRCX},{cmd_XOR_RDIRDX},{cmd_XOR_RDIRBX},{cmd_XOR_RDIRSP},{cmd_XOR_RDIRBP},{cmd_XOR_RDIRSI},{cmd_XOR_RDIRDI},{cmd_XOR_RDIR8},{cmd_XOR_RDIR9},{cmd_XOR_RDIR10},{cmd_XOR_RDIR11},{cmd_XOR_RDIR12},{cmd_XOR_RDIR13},{cmd_XOR_RDIR14},{cmd_XOR_RDIR15},},
+{ {cmd_XOR_R8RAX},{cmd_XOR_R8RCX},{cmd_XOR_R8RDX},{cmd_XOR_R8RBX},{cmd_XOR_R8RSP},{cmd_XOR_R8RBP},{cmd_XOR_R8RSI},{cmd_XOR_R8RDI},{cmd_XOR_R8R8},{cmd_XOR_R8R9},{cmd_XOR_R8R10},{cmd_XOR_R8R11},{cmd_XOR_R8R12},{cmd_XOR_R8R13},{cmd_XOR_R8R14},{cmd_XOR_R8R15},},
+{ {cmd_XOR_R9RAX},{cmd_XOR_R9RCX},{cmd_XOR_R9RDX},{cmd_XOR_R9RBX},{cmd_XOR_R9RSP},{cmd_XOR_R9RBP},{cmd_XOR_R9RSI},{cmd_XOR_R9RDI},{cmd_XOR_R9R8},{cmd_XOR_R9R9},{cmd_XOR_R9R10},{cmd_XOR_R9R11},{cmd_XOR_R9R12},{cmd_XOR_R9R13},{cmd_XOR_R9R14},{cmd_XOR_R9R15},},
+{ {cmd_XOR_R10RAX},{cmd_XOR_R10RCX},{cmd_XOR_R10RDX},{cmd_XOR_R10RBX},{cmd_XOR_R10RSP},{cmd_XOR_R10RBP},{cmd_XOR_R10RSI},{cmd_XOR_R10RDI},{cmd_XOR_R10R8},{cmd_XOR_R10R9},{cmd_XOR_R10R10},{cmd_XOR_R10R11},{cmd_XOR_R10R12},{cmd_XOR_R10R13},{cmd_XOR_R10R14},{cmd_XOR_R10R15},},
+{ {cmd_XOR_R11RAX},{cmd_XOR_R11RCX},{cmd_XOR_R11RDX},{cmd_XOR_R11RBX},{cmd_XOR_R11RSP},{cmd_XOR_R11RBP},{cmd_XOR_R11RSI},{cmd_XOR_R11RDI},{cmd_XOR_R11R8},{cmd_XOR_R11R9},{cmd_XOR_R11R10},{cmd_XOR_R11R11},{cmd_XOR_R11R12},{cmd_XOR_R11R13},{cmd_XOR_R11R14},{cmd_XOR_R11R15},},
+{ {cmd_XOR_R12RAX},{cmd_XOR_R12RCX},{cmd_XOR_R12RDX},{cmd_XOR_R12RBX},{cmd_XOR_R12RSP},{cmd_XOR_R12RBP},{cmd_XOR_R12RSI},{cmd_XOR_R12RDI},{cmd_XOR_R12R8},{cmd_XOR_R12R9},{cmd_XOR_R12R10},{cmd_XOR_R12R11},{cmd_XOR_R12R12},{cmd_XOR_R12R13},{cmd_XOR_R12R14},{cmd_XOR_R12R15},},
+{ {cmd_XOR_R13RAX},{cmd_XOR_R13RCX},{cmd_XOR_R13RDX},{cmd_XOR_R13RBX},{cmd_XOR_R13RSP},{cmd_XOR_R13RBP},{cmd_XOR_R13RSI},{cmd_XOR_R13RDI},{cmd_XOR_R13R8},{cmd_XOR_R13R9},{cmd_XOR_R13R10},{cmd_XOR_R13R11},{cmd_XOR_R13R12},{cmd_XOR_R13R13},{cmd_XOR_R13R14},{cmd_XOR_R13R15},},
+{ {cmd_XOR_R14RAX},{cmd_XOR_R14RCX},{cmd_XOR_R14RDX},{cmd_XOR_R14RBX},{cmd_XOR_R14RSP},{cmd_XOR_R14RBP},{cmd_XOR_R14RSI},{cmd_XOR_R14RDI},{cmd_XOR_R14R8},{cmd_XOR_R14R9},{cmd_XOR_R14R10},{cmd_XOR_R14R11},{cmd_XOR_R14R12},{cmd_XOR_R14R13},{cmd_XOR_R14R14},{cmd_XOR_R14R15},},
+{ {cmd_XOR_R15RAX},{cmd_XOR_R15RCX},{cmd_XOR_R15RDX},{cmd_XOR_R15RBX},{cmd_XOR_R15RSP},{cmd_XOR_R15RBP},{cmd_XOR_R15RSI},{cmd_XOR_R15RDI},{cmd_XOR_R15R8},{cmd_XOR_R15R9},{cmd_XOR_R15R10},{cmd_XOR_R15R11},{cmd_XOR_R15R12},{cmd_XOR_R15R13},{cmd_XOR_R15R14},{cmd_XOR_R15R15},},
+};
+
+constexpr static unsigned char cmd_TESTTABLE[cmd_REGSNUM][cmd_REGSNUM][3] = {
+{ {cmd_TEST_RAXRAX},{cmd_TEST_RAXRCX},{cmd_TEST_RAXRDX},{cmd_TEST_RAXRBX},{cmd_TEST_RAXRSP},{cmd_TEST_RAXRBP},{cmd_TEST_RAXRSI},{cmd_TEST_RAXRDI},{cmd_TEST_RAXR8},{cmd_TEST_RAXR9},{cmd_TEST_RAXR10},{cmd_TEST_RAXR11},{cmd_TEST_RAXR12},{cmd_TEST_RAXR13},{cmd_TEST_RAXR14},{cmd_TEST_RAXR15},},
+{ {cmd_TEST_RCXRAX},{cmd_TEST_RCXRCX},{cmd_TEST_RCXRDX},{cmd_TEST_RCXRBX},{cmd_TEST_RCXRSP},{cmd_TEST_RCXRBP},{cmd_TEST_RCXRSI},{cmd_TEST_RCXRDI},{cmd_TEST_RCXR8},{cmd_TEST_RCXR9},{cmd_TEST_RCXR10},{cmd_TEST_RCXR11},{cmd_TEST_RCXR12},{cmd_TEST_RCXR13},{cmd_TEST_RCXR14},{cmd_TEST_RCXR15},},
+{ {cmd_TEST_RDXRAX},{cmd_TEST_RDXRCX},{cmd_TEST_RDXRDX},{cmd_TEST_RDXRBX},{cmd_TEST_RDXRSP},{cmd_TEST_RDXRBP},{cmd_TEST_RDXRSI},{cmd_TEST_RDXRDI},{cmd_TEST_RDXR8},{cmd_TEST_RDXR9},{cmd_TEST_RDXR10},{cmd_TEST_RDXR11},{cmd_TEST_RDXR12},{cmd_TEST_RDXR13},{cmd_TEST_RDXR14},{cmd_TEST_RDXR15},},
+{ {cmd_TEST_RBXRAX},{cmd_TEST_RBXRCX},{cmd_TEST_RBXRDX},{cmd_TEST_RBXRBX},{cmd_TEST_RBXRSP},{cmd_TEST_RBXRBP},{cmd_TEST_RBXRSI},{cmd_TEST_RBXRDI},{cmd_TEST_RBXR8},{cmd_TEST_RBXR9},{cmd_TEST_RBXR10},{cmd_TEST_RBXR11},{cmd_TEST_RBXR12},{cmd_TEST_RBXR13},{cmd_TEST_RBXR14},{cmd_TEST_RBXR15},},
+{ {cmd_TEST_RSPRAX},{cmd_TEST_RSPRCX},{cmd_TEST_RSPRDX},{cmd_TEST_RSPRBX},{cmd_TEST_RSPRSP},{cmd_TEST_RSPRBP},{cmd_TEST_RSPRSI},{cmd_TEST_RSPRDI},{cmd_TEST_RSPR8},{cmd_TEST_RSPR9},{cmd_TEST_RSPR10},{cmd_TEST_RSPR11},{cmd_TEST_RSPR12},{cmd_TEST_RSPR13},{cmd_TEST_RSPR14},{cmd_TEST_RSPR15},},
+{ {cmd_TEST_RBPRAX},{cmd_TEST_RBPRCX},{cmd_TEST_RBPRDX},{cmd_TEST_RBPRBX},{cmd_TEST_RBPRSP},{cmd_TEST_RBPRBP},{cmd_TEST_RBPRSI},{cmd_TEST_RBPRDI},{cmd_TEST_RBPR8},{cmd_TEST_RBPR9},{cmd_TEST_RBPR10},{cmd_TEST_RBPR11},{cmd_TEST_RBPR12},{cmd_TEST_RBPR13},{cmd_TEST_RBPR14},{cmd_TEST_RBPR15},},
+{ {cmd_TEST_RSIRAX},{cmd_TEST_RSIRCX},{cmd_TEST_RSIRDX},{cmd_TEST_RSIRBX},{cmd_TEST_RSIRSP},{cmd_TEST_RSIRBP},{cmd_TEST_RSIRSI},{cmd_TEST_RSIRDI},{cmd_TEST_RSIR8},{cmd_TEST_RSIR9},{cmd_TEST_RSIR10},{cmd_TEST_RSIR11},{cmd_TEST_RSIR12},{cmd_TEST_RSIR13},{cmd_TEST_RSIR14},{cmd_TEST_RSIR15},},
+{ {cmd_TEST_RDIRAX},{cmd_TEST_RDIRCX},{cmd_TEST_RDIRDX},{cmd_TEST_RDIRBX},{cmd_TEST_RDIRSP},{cmd_TEST_RDIRBP},{cmd_TEST_RDIRSI},{cmd_TEST_RDIRDI},{cmd_TEST_RDIR8},{cmd_TEST_RDIR9},{cmd_TEST_RDIR10},{cmd_TEST_RDIR11},{cmd_TEST_RDIR12},{cmd_TEST_RDIR13},{cmd_TEST_RDIR14},{cmd_TEST_RDIR15},},
+{ {cmd_TEST_R8RAX},{cmd_TEST_R8RCX},{cmd_TEST_R8RDX},{cmd_TEST_R8RBX},{cmd_TEST_R8RSP},{cmd_TEST_R8RBP},{cmd_TEST_R8RSI},{cmd_TEST_R8RDI},{cmd_TEST_R8R8},{cmd_TEST_R8R9},{cmd_TEST_R8R10},{cmd_TEST_R8R11},{cmd_TEST_R8R12},{cmd_TEST_R8R13},{cmd_TEST_R8R14},{cmd_TEST_R8R15},},
+{ {cmd_TEST_R9RAX},{cmd_TEST_R9RCX},{cmd_TEST_R9RDX},{cmd_TEST_R9RBX},{cmd_TEST_R9RSP},{cmd_TEST_R9RBP},{cmd_TEST_R9RSI},{cmd_TEST_R9RDI},{cmd_TEST_R9R8},{cmd_TEST_R9R9},{cmd_TEST_R9R10},{cmd_TEST_R9R11},{cmd_TEST_R9R12},{cmd_TEST_R9R13},{cmd_TEST_R9R14},{cmd_TEST_R9R15},},
+{ {cmd_TEST_R10RAX},{cmd_TEST_R10RCX},{cmd_TEST_R10RDX},{cmd_TEST_R10RBX},{cmd_TEST_R10RSP},{cmd_TEST_R10RBP},{cmd_TEST_R10RSI},{cmd_TEST_R10RDI},{cmd_TEST_R10R8},{cmd_TEST_R10R9},{cmd_TEST_R10R10},{cmd_TEST_R10R11},{cmd_TEST_R10R12},{cmd_TEST_R10R13},{cmd_TEST_R10R14},{cmd_TEST_R10R15},},
+{ {cmd_TEST_R11RAX},{cmd_TEST_R11RCX},{cmd_TEST_R11RDX},{cmd_TEST_R11RBX},{cmd_TEST_R11RSP},{cmd_TEST_R11RBP},{cmd_TEST_R11RSI},{cmd_TEST_R11RDI},{cmd_TEST_R11R8},{cmd_TEST_R11R9},{cmd_TEST_R11R10},{cmd_TEST_R11R11},{cmd_TEST_R11R12},{cmd_TEST_R11R13},{cmd_TEST_R11R14},{cmd_TEST_R11R15},},
+{ {cmd_TEST_R12RAX},{cmd_TEST_R12RCX},{cmd_TEST_R12RDX},{cmd_TEST_R12RBX},{cmd_TEST_R12RSP},{cmd_TEST_R12RBP},{cmd_TEST_R12RSI},{cmd_TEST_R12RDI},{cmd_TEST_R12R8},{cmd_TEST_R12R9},{cmd_TEST_R12R10},{cmd_TEST_R12R11},{cmd_TEST_R12R12},{cmd_TEST_R12R13},{cmd_TEST_R12R14},{cmd_TEST_R12R15},},
+{ {cmd_TEST_R13RAX},{cmd_TEST_R13RCX},{cmd_TEST_R13RDX},{cmd_TEST_R13RBX},{cmd_TEST_R13RSP},{cmd_TEST_R13RBP},{cmd_TEST_R13RSI},{cmd_TEST_R13RDI},{cmd_TEST_R13R8},{cmd_TEST_R13R9},{cmd_TEST_R13R10},{cmd_TEST_R13R11},{cmd_TEST_R13R12},{cmd_TEST_R13R13},{cmd_TEST_R13R14},{cmd_TEST_R13R15},},
+{ {cmd_TEST_R14RAX},{cmd_TEST_R14RCX},{cmd_TEST_R14RDX},{cmd_TEST_R14RBX},{cmd_TEST_R14RSP},{cmd_TEST_R14RBP},{cmd_TEST_R14RSI},{cmd_TEST_R14RDI},{cmd_TEST_R14R8},{cmd_TEST_R14R9},{cmd_TEST_R14R10},{cmd_TEST_R14R11},{cmd_TEST_R14R12},{cmd_TEST_R14R13},{cmd_TEST_R14R14},{cmd_TEST_R14R15},},
+{ {cmd_TEST_R15RAX},{cmd_TEST_R15RCX},{cmd_TEST_R15RDX},{cmd_TEST_R15RBX},{cmd_TEST_R15RSP},{cmd_TEST_R15RBP},{cmd_TEST_R15RSI},{cmd_TEST_R15RDI},{cmd_TEST_R15R8},{cmd_TEST_R15R9},{cmd_TEST_R15R10},{cmd_TEST_R15R11},{cmd_TEST_R15R12},{cmd_TEST_R15R13},{cmd_TEST_R15R14},{cmd_TEST_R15R15},},
+};
+
+constexpr static unsigned char cmd_CMPTABLE[cmd_REGSNUM][cmd_REGSNUM][3] = {
+{ {cmd_CMP_RAXRAX},{cmd_CMP_RAXRCX},{cmd_CMP_RAXRDX},{cmd_CMP_RAXRBX},{cmd_CMP_RAXRSP},{cmd_CMP_RAXRBP},{cmd_CMP_RAXRSI},{cmd_CMP_RAXRDI},{cmd_CMP_RAXR8},{cmd_CMP_RAXR9},{cmd_CMP_RAXR10},{cmd_CMP_RAXR11},{cmd_CMP_RAXR12},{cmd_CMP_RAXR13},{cmd_CMP_RAXR14},{cmd_CMP_RAXR15},},
+{ {cmd_CMP_RCXRAX},{cmd_CMP_RCXRCX},{cmd_CMP_RCXRDX},{cmd_CMP_RCXRBX},{cmd_CMP_RCXRSP},{cmd_CMP_RCXRBP},{cmd_CMP_RCXRSI},{cmd_CMP_RCXRDI},{cmd_CMP_RCXR8},{cmd_CMP_RCXR9},{cmd_CMP_RCXR10},{cmd_CMP_RCXR11},{cmd_CMP_RCXR12},{cmd_CMP_RCXR13},{cmd_CMP_RCXR14},{cmd_CMP_RCXR15},},
+{ {cmd_CMP_RDXRAX},{cmd_CMP_RDXRCX},{cmd_CMP_RDXRDX},{cmd_CMP_RDXRBX},{cmd_CMP_RDXRSP},{cmd_CMP_RDXRBP},{cmd_CMP_RDXRSI},{cmd_CMP_RDXRDI},{cmd_CMP_RDXR8},{cmd_CMP_RDXR9},{cmd_CMP_RDXR10},{cmd_CMP_RDXR11},{cmd_CMP_RDXR12},{cmd_CMP_RDXR13},{cmd_CMP_RDXR14},{cmd_CMP_RDXR15},},
+{ {cmd_CMP_RBXRAX},{cmd_CMP_RBXRCX},{cmd_CMP_RBXRDX},{cmd_CMP_RBXRBX},{cmd_CMP_RBXRSP},{cmd_CMP_RBXRBP},{cmd_CMP_RBXRSI},{cmd_CMP_RBXRDI},{cmd_CMP_RBXR8},{cmd_CMP_RBXR9},{cmd_CMP_RBXR10},{cmd_CMP_RBXR11},{cmd_CMP_RBXR12},{cmd_CMP_RBXR13},{cmd_CMP_RBXR14},{cmd_CMP_RBXR15},},
+{ {cmd_CMP_RSPRAX},{cmd_CMP_RSPRCX},{cmd_CMP_RSPRDX},{cmd_CMP_RSPRBX},{cmd_CMP_RSPRSP},{cmd_CMP_RSPRBP},{cmd_CMP_RSPRSI},{cmd_CMP_RSPRDI},{cmd_CMP_RSPR8},{cmd_CMP_RSPR9},{cmd_CMP_RSPR10},{cmd_CMP_RSPR11},{cmd_CMP_RSPR12},{cmd_CMP_RSPR13},{cmd_CMP_RSPR14},{cmd_CMP_RSPR15},},
+{ {cmd_CMP_RBPRAX},{cmd_CMP_RBPRCX},{cmd_CMP_RBPRDX},{cmd_CMP_RBPRBX},{cmd_CMP_RBPRSP},{cmd_CMP_RBPRBP},{cmd_CMP_RBPRSI},{cmd_CMP_RBPRDI},{cmd_CMP_RBPR8},{cmd_CMP_RBPR9},{cmd_CMP_RBPR10},{cmd_CMP_RBPR11},{cmd_CMP_RBPR12},{cmd_CMP_RBPR13},{cmd_CMP_RBPR14},{cmd_CMP_RBPR15},},
+{ {cmd_CMP_RSIRAX},{cmd_CMP_RSIRCX},{cmd_CMP_RSIRDX},{cmd_CMP_RSIRBX},{cmd_CMP_RSIRSP},{cmd_CMP_RSIRBP},{cmd_CMP_RSIRSI},{cmd_CMP_RSIRDI},{cmd_CMP_RSIR8},{cmd_CMP_RSIR9},{cmd_CMP_RSIR10},{cmd_CMP_RSIR11},{cmd_CMP_RSIR12},{cmd_CMP_RSIR13},{cmd_CMP_RSIR14},{cmd_CMP_RSIR15},},
+{ {cmd_CMP_RDIRAX},{cmd_CMP_RDIRCX},{cmd_CMP_RDIRDX},{cmd_CMP_RDIRBX},{cmd_CMP_RDIRSP},{cmd_CMP_RDIRBP},{cmd_CMP_RDIRSI},{cmd_CMP_RDIRDI},{cmd_CMP_RDIR8},{cmd_CMP_RDIR9},{cmd_CMP_RDIR10},{cmd_CMP_RDIR11},{cmd_CMP_RDIR12},{cmd_CMP_RDIR13},{cmd_CMP_RDIR14},{cmd_CMP_RDIR15},},
+{ {cmd_CMP_R8RAX},{cmd_CMP_R8RCX},{cmd_CMP_R8RDX},{cmd_CMP_R8RBX},{cmd_CMP_R8RSP},{cmd_CMP_R8RBP},{cmd_CMP_R8RSI},{cmd_CMP_R8RDI},{cmd_CMP_R8R8},{cmd_CMP_R8R9},{cmd_CMP_R8R10},{cmd_CMP_R8R11},{cmd_CMP_R8R12},{cmd_CMP_R8R13},{cmd_CMP_R8R14},{cmd_CMP_R8R15},},
+{ {cmd_CMP_R9RAX},{cmd_CMP_R9RCX},{cmd_CMP_R9RDX},{cmd_CMP_R9RBX},{cmd_CMP_R9RSP},{cmd_CMP_R9RBP},{cmd_CMP_R9RSI},{cmd_CMP_R9RDI},{cmd_CMP_R9R8},{cmd_CMP_R9R9},{cmd_CMP_R9R10},{cmd_CMP_R9R11},{cmd_CMP_R9R12},{cmd_CMP_R9R13},{cmd_CMP_R9R14},{cmd_CMP_R9R15},},
+{ {cmd_CMP_R10RAX},{cmd_CMP_R10RCX},{cmd_CMP_R10RDX},{cmd_CMP_R10RBX},{cmd_CMP_R10RSP},{cmd_CMP_R10RBP},{cmd_CMP_R10RSI},{cmd_CMP_R10RDI},{cmd_CMP_R10R8},{cmd_CMP_R10R9},{cmd_CMP_R10R10},{cmd_CMP_R10R11},{cmd_CMP_R10R12},{cmd_CMP_R10R13},{cmd_CMP_R10R14},{cmd_CMP_R10R15},},
+{ {cmd_CMP_R11RAX},{cmd_CMP_R11RCX},{cmd_CMP_R11RDX},{cmd_CMP_R11RBX},{cmd_CMP_R11RSP},{cmd_CMP_R11RBP},{cmd_CMP_R11RSI},{cmd_CMP_R11RDI},{cmd_CMP_R11R8},{cmd_CMP_R11R9},{cmd_CMP_R11R10},{cmd_CMP_R11R11},{cmd_CMP_R11R12},{cmd_CMP_R11R13},{cmd_CMP_R11R14},{cmd_CMP_R11R15},},
+{ {cmd_CMP_R12RAX},{cmd_CMP_R12RCX},{cmd_CMP_R12RDX},{cmd_CMP_R12RBX},{cmd_CMP_R12RSP},{cmd_CMP_R12RBP},{cmd_CMP_R12RSI},{cmd_CMP_R12RDI},{cmd_CMP_R12R8},{cmd_CMP_R12R9},{cmd_CMP_R12R10},{cmd_CMP_R12R11},{cmd_CMP_R12R12},{cmd_CMP_R12R13},{cmd_CMP_R12R14},{cmd_CMP_R12R15},},
+{ {cmd_CMP_R13RAX},{cmd_CMP_R13RCX},{cmd_CMP_R13RDX},{cmd_CMP_R13RBX},{cmd_CMP_R13RSP},{cmd_CMP_R13RBP},{cmd_CMP_R13RSI},{cmd_CMP_R13RDI},{cmd_CMP_R13R8},{cmd_CMP_R13R9},{cmd_CMP_R13R10},{cmd_CMP_R13R11},{cmd_CMP_R13R12},{cmd_CMP_R13R13},{cmd_CMP_R13R14},{cmd_CMP_R13R15},},
+{ {cmd_CMP_R14RAX},{cmd_CMP_R14RCX},{cmd_CMP_R14RDX},{cmd_CMP_R14RBX},{cmd_CMP_R14RSP},{cmd_CMP_R14RBP},{cmd_CMP_R14RSI},{cmd_CMP_R14RDI},{cmd_CMP_R14R8},{cmd_CMP_R14R9},{cmd_CMP_R14R10},{cmd_CMP_R14R11},{cmd_CMP_R14R12},{cmd_CMP_R14R13},{cmd_CMP_R14R14},{cmd_CMP_R14R15},},
+{ {cmd_CMP_R15RAX},{cmd_CMP_R15RCX},{cmd_CMP_R15RDX},{cmd_CMP_R15RBX},{cmd_CMP_R15RSP},{cmd_CMP_R15RBP},{cmd_CMP_R15RSI},{cmd_CMP_R15RDI},{cmd_CMP_R15R8},{cmd_CMP_R15R9},{cmd_CMP_R15R10},{cmd_CMP_R15R11},{cmd_CMP_R15R12},{cmd_CMP_R15R13},{cmd_CMP_R15R14},{cmd_CMP_R15R15},},
+};
+
+constexpr static unsigned char cmd_IMULTABLE[cmd_REGSNUM][cmd_REGSNUM][4] = {
+{ {cmd_IMUL_RAXRAX},{cmd_IMUL_RAXRCX},{cmd_IMUL_RAXRDX},{cmd_IMUL_RAXRBX},{cmd_IMUL_RAXRSP},{cmd_IMUL_RAXRBP},{cmd_IMUL_RAXRSI},{cmd_IMUL_RAXRDI},{cmd_IMUL_RAXR8},{cmd_IMUL_RAXR9},{cmd_IMUL_RAXR10},{cmd_IMUL_RAXR11},{cmd_IMUL_RAXR12},{cmd_IMUL_RAXR13},{cmd_IMUL_RAXR14},{cmd_IMUL_RAXR15},},
+{ {cmd_IMUL_RCXRAX},{cmd_IMUL_RCXRCX},{cmd_IMUL_RCXRDX},{cmd_IMUL_RCXRBX},{cmd_IMUL_RCXRSP},{cmd_IMUL_RCXRBP},{cmd_IMUL_RCXRSI},{cmd_IMUL_RCXRDI},{cmd_IMUL_RCXR8},{cmd_IMUL_RCXR9},{cmd_IMUL_RCXR10},{cmd_IMUL_RCXR11},{cmd_IMUL_RCXR12},{cmd_IMUL_RCXR13},{cmd_IMUL_RCXR14},{cmd_IMUL_RCXR15},},
+{ {cmd_IMUL_RDXRAX},{cmd_IMUL_RDXRCX},{cmd_IMUL_RDXRDX},{cmd_IMUL_RDXRBX},{cmd_IMUL_RDXRSP},{cmd_IMUL_RDXRBP},{cmd_IMUL_RDXRSI},{cmd_IMUL_RDXRDI},{cmd_IMUL_RDXR8},{cmd_IMUL_RDXR9},{cmd_IMUL_RDXR10},{cmd_IMUL_RDXR11},{cmd_IMUL_RDXR12},{cmd_IMUL_RDXR13},{cmd_IMUL_RDXR14},{cmd_IMUL_RDXR15},},
+{ {cmd_IMUL_RBXRAX},{cmd_IMUL_RBXRCX},{cmd_IMUL_RBXRDX},{cmd_IMUL_RBXRBX},{cmd_IMUL_RBXRSP},{cmd_IMUL_RBXRBP},{cmd_IMUL_RBXRSI},{cmd_IMUL_RBXRDI},{cmd_IMUL_RBXR8},{cmd_IMUL_RBXR9},{cmd_IMUL_RBXR10},{cmd_IMUL_RBXR11},{cmd_IMUL_RBXR12},{cmd_IMUL_RBXR13},{cmd_IMUL_RBXR14},{cmd_IMUL_RBXR15},},
+{ {cmd_IMUL_RSPRAX},{cmd_IMUL_RSPRCX},{cmd_IMUL_RSPRDX},{cmd_IMUL_RSPRBX},{cmd_IMUL_RSPRSP},{cmd_IMUL_RSPRBP},{cmd_IMUL_RSPRSI},{cmd_IMUL_RSPRDI},{cmd_IMUL_RSPR8},{cmd_IMUL_RSPR9},{cmd_IMUL_RSPR10},{cmd_IMUL_RSPR11},{cmd_IMUL_RSPR12},{cmd_IMUL_RSPR13},{cmd_IMUL_RSPR14},{cmd_IMUL_RSPR15},},
+{ {cmd_IMUL_RBPRAX},{cmd_IMUL_RBPRCX},{cmd_IMUL_RBPRDX},{cmd_IMUL_RBPRBX},{cmd_IMUL_RBPRSP},{cmd_IMUL_RBPRBP},{cmd_IMUL_RBPRSI},{cmd_IMUL_RBPRDI},{cmd_IMUL_RBPR8},{cmd_IMUL_RBPR9},{cmd_IMUL_RBPR10},{cmd_IMUL_RBPR11},{cmd_IMUL_RBPR12},{cmd_IMUL_RBPR13},{cmd_IMUL_RBPR14},{cmd_IMUL_RBPR15},},
+{ {cmd_IMUL_RSIRAX},{cmd_IMUL_RSIRCX},{cmd_IMUL_RSIRDX},{cmd_IMUL_RSIRBX},{cmd_IMUL_RSIRSP},{cmd_IMUL_RSIRBP},{cmd_IMUL_RSIRSI},{cmd_IMUL_RSIRDI},{cmd_IMUL_RSIR8},{cmd_IMUL_RSIR9},{cmd_IMUL_RSIR10},{cmd_IMUL_RSIR11},{cmd_IMUL_RSIR12},{cmd_IMUL_RSIR13},{cmd_IMUL_RSIR14},{cmd_IMUL_RSIR15},},
+{ {cmd_IMUL_RDIRAX},{cmd_IMUL_RDIRCX},{cmd_IMUL_RDIRDX},{cmd_IMUL_RDIRBX},{cmd_IMUL_RDIRSP},{cmd_IMUL_RDIRBP},{cmd_IMUL_RDIRSI},{cmd_IMUL_RDIRDI},{cmd_IMUL_RDIR8},{cmd_IMUL_RDIR9},{cmd_IMUL_RDIR10},{cmd_IMUL_RDIR11},{cmd_IMUL_RDIR12},{cmd_IMUL_RDIR13},{cmd_IMUL_RDIR14},{cmd_IMUL_RDIR15},},
+{ {cmd_IMUL_R8RAX},{cmd_IMUL_R8RCX},{cmd_IMUL_R8RDX},{cmd_IMUL_R8RBX},{cmd_IMUL_R8RSP},{cmd_IMUL_R8RBP},{cmd_IMUL_R8RSI},{cmd_IMUL_R8RDI},{cmd_IMUL_R8R8},{cmd_IMUL_R8R9},{cmd_IMUL_R8R10},{cmd_IMUL_R8R11},{cmd_IMUL_R8R12},{cmd_IMUL_R8R13},{cmd_IMUL_R8R14},{cmd_IMUL_R8R15},},
+{ {cmd_IMUL_R9RAX},{cmd_IMUL_R9RCX},{cmd_IMUL_R9RDX},{cmd_IMUL_R9RBX},{cmd_IMUL_R9RSP},{cmd_IMUL_R9RBP},{cmd_IMUL_R9RSI},{cmd_IMUL_R9RDI},{cmd_IMUL_R9R8},{cmd_IMUL_R9R9},{cmd_IMUL_R9R10},{cmd_IMUL_R9R11},{cmd_IMUL_R9R12},{cmd_IMUL_R9R13},{cmd_IMUL_R9R14},{cmd_IMUL_R9R15},},
+{ {cmd_IMUL_R10RAX},{cmd_IMUL_R10RCX},{cmd_IMUL_R10RDX},{cmd_IMUL_R10RBX},{cmd_IMUL_R10RSP},{cmd_IMUL_R10RBP},{cmd_IMUL_R10RSI},{cmd_IMUL_R10RDI},{cmd_IMUL_R10R8},{cmd_IMUL_R10R9},{cmd_IMUL_R10R10},{cmd_IMUL_R10R11},{cmd_IMUL_R10R12},{cmd_IMUL_R10R13},{cmd_IMUL_R10R14},{cmd_IMUL_R10R15},},
+{ {cmd_IMUL_R11RAX},{cmd_IMUL_R11RCX},{cmd_IMUL_R11RDX},{cmd_IMUL_R11RBX},{cmd_IMUL_R11RSP},{cmd_IMUL_R11RBP},{cmd_IMUL_R11RSI},{cmd_IMUL_R11RDI},{cmd_IMUL_R11R8},{cmd_IMUL_R11R9},{cmd_IMUL_R11R10},{cmd_IMUL_R11R11},{cmd_IMUL_R11R12},{cmd_IMUL_R11R13},{cmd_IMUL_R11R14},{cmd_IMUL_R11R15},},
+{ {cmd_IMUL_R12RAX},{cmd_IMUL_R12RCX},{cmd_IMUL_R12RDX},{cmd_IMUL_R12RBX},{cmd_IMUL_R12RSP},{cmd_IMUL_R12RBP},{cmd_IMUL_R12RSI},{cmd_IMUL_R12RDI},{cmd_IMUL_R12R8},{cmd_IMUL_R12R9},{cmd_IMUL_R12R10},{cmd_IMUL_R12R11},{cmd_IMUL_R12R12},{cmd_IMUL_R12R13},{cmd_IMUL_R12R14},{cmd_IMUL_R12R15},},
+{ {cmd_IMUL_R13RAX},{cmd_IMUL_R13RCX},{cmd_IMUL_R13RDX},{cmd_IMUL_R13RBX},{cmd_IMUL_R13RSP},{cmd_IMUL_R13RBP},{cmd_IMUL_R13RSI},{cmd_IMUL_R13RDI},{cmd_IMUL_R13R8},{cmd_IMUL_R13R9},{cmd_IMUL_R13R10},{cmd_IMUL_R13R11},{cmd_IMUL_R13R12},{cmd_IMUL_R13R13},{cmd_IMUL_R13R14},{cmd_IMUL_R13R15},},
+{ {cmd_IMUL_R14RAX},{cmd_IMUL_R14RCX},{cmd_IMUL_R14RDX},{cmd_IMUL_R14RBX},{cmd_IMUL_R14RSP},{cmd_IMUL_R14RBP},{cmd_IMUL_R14RSI},{cmd_IMUL_R14RDI},{cmd_IMUL_R14R8},{cmd_IMUL_R14R9},{cmd_IMUL_R14R10},{cmd_IMUL_R14R11},{cmd_IMUL_R14R12},{cmd_IMUL_R14R13},{cmd_IMUL_R14R14},{cmd_IMUL_R14R15},},
+{ {cmd_IMUL_R15RAX},{cmd_IMUL_R15RCX},{cmd_IMUL_R15RDX},{cmd_IMUL_R15RBX},{cmd_IMUL_R15RSP},{cmd_IMUL_R15RBP},{cmd_IMUL_R15RSI},{cmd_IMUL_R15RDI},{cmd_IMUL_R15R8},{cmd_IMUL_R15R9},{cmd_IMUL_R15R10},{cmd_IMUL_R15R11},{cmd_IMUL_R15R12},{cmd_IMUL_R15R13},{cmd_IMUL_R15R14},{cmd_IMUL_R15R15},},
+};
+
+constexpr static unsigned char cmd_XCHG_RAXTABLE[cmd_REGSNUM][2] = {
+{cmd_XCHG_RAXRAX},
+{cmd_XCHG_RAXRCX},
+{cmd_XCHG_RAXRDX},
+{cmd_XCHG_RAXRBX},
+{cmd_XCHG_RAXRSP},
+{cmd_XCHG_RAXRBP},
+{cmd_XCHG_RAXRSI},
+{cmd_XCHG_RAXRDI},
+{cmd_XCHG_RAXR8},
+{cmd_XCHG_RAXR9},
+{cmd_XCHG_RAXR10},
+{cmd_XCHG_RAXR11},
+{cmd_XCHG_RAXR12},
+{cmd_XCHG_RAXR13},
+{cmd_XCHG_RAXR14},
+{cmd_XCHG_RAXR15},
+};
+
+constexpr static unsigned char cmd_IDIVTABLE[cmd_REGSNUM][3] = {
+{cmd_IDIV_RAX},
+{cmd_IDIV_RCX},
+{cmd_IDIV_RDX},
+{cmd_IDIV_RBX},
+{cmd_IDIV_RSP},
+{cmd_IDIV_RBP},
+{cmd_IDIV_RSI},
+{cmd_IDIV_RDI},
+{cmd_IDIV_R8},
+{cmd_IDIV_R9},
+{cmd_IDIV_R10},
+{cmd_IDIV_R11},
+{cmd_IDIV_R12},
+{cmd_IDIV_R13},
+{cmd_IDIV_R14},
+{cmd_IDIV_R15},
+};
+
+constexpr static unsigned char cmd_MOVIMM32TABLE[cmd_REGSNUM][3] = {
+{cmd_MOV_RAXIMM32},
+{cmd_MOV_RCXIMM32},
+{cmd_MOV_RDXIMM32},
+{cmd_MOV_RBXIMM32},
+{cmd_MOV_RSPIMM32},
+{cmd_MOV_RBPIMM32},
+{cmd_MOV_RSIIMM32},
+{cmd_MOV_RDIIMM32},
+{cmd_MOV_R8IMM32},
+{cmd_MOV_R9IMM32},
+{cmd_MOV_R10IMM32},
+{cmd_MOV_R11IMM32},
+{cmd_MOV_R12IMM32},
+{cmd_MOV_R13IMM32},
+{cmd_MOV_R14IMM32},
+{cmd_MOV_R15IMM32},
+};
+
+constexpr static unsigned char cmd_MOVIMM64TABLE[cmd_REGSNUM][3] = {
+{cmd_MOV_RAXIMM64},
+{cmd_MOV_RCXIMM64},
+{cmd_MOV_RDXIMM64},
+{cmd_MOV_RBXIMM64},
+{cmd_MOV_RSPIMM64},
+{cmd_MOV_RBPIMM64},
+{cmd_MOV_RSIIMM64},
+{cmd_MOV_RDIIMM64},
+{cmd_MOV_R8IMM64},
+{cmd_MOV_R9IMM64},
+{cmd_MOV_R10IMM64},
+{cmd_MOV_R11IMM64},
+{cmd_MOV_R12IMM64},
+{cmd_MOV_R13IMM64},
+{cmd_MOV_R14IMM64},
+{cmd_MOV_R15IMM64},
 };
 
 

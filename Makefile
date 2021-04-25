@@ -20,8 +20,8 @@ all: kncc
 update: all
 	mv $(CUR_PROG) bin
 
-kncc: main.cpp compiler.o id_table_scope.o id_table.o compiler_options.o recursive_parser.o lexical_parser.o lex_token.o announcement.o code_node.o opcodes.h byte_buffer.o reg_stack.o
-	$(CPP) $(CFLAGS) main.cpp compiler.o recursive_parser.o code_node.o compiler_options.o lex_token.o lexical_parser.o id_table.o id_table_scope.o byte_buffer.o reg_stack.o $(G)/announcement.o -o kncc
+kncc: main.cpp compiler.o id_table_scope.o id_table.o compiler_options.o recursive_parser.o lexical_parser.o lex_token.o announcement.o code_node.o opcodes.h byte_buffer.o machine_codes/defines.h
+	$(CPP) $(CFLAGS) main.cpp compiler.o recursive_parser.o code_node.o compiler_options.o lex_token.o lexical_parser.o id_table.o id_table_scope.o byte_buffer.o $(G)/announcement.o -o kncc
 
 %.o : %.cpp
 	$(CPP) $(C_FLAGS) -c $< -o $@
