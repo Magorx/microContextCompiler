@@ -22,7 +22,7 @@ void Compiler::fprintf_asgn_additional_operation(FILE *file, const int op) {
 	}
 }
 
-void Compiler::C_math_op(const int reg_dst, const int reg_src, const char op) {
+void Compiler::cpl_math_op(const int reg_dst, const int reg_src, const char op) {
 	switch(op) {
 		case '+' : {
 			cmd.put(cmd_ADDTABLE[reg_dst][reg_src], 3);
@@ -52,7 +52,7 @@ void Compiler::C_math_op(const int reg_dst, const int reg_src, const char op) {
 	}
 }
 
-void Compiler::C_mov_reg_imm32(const int reg_dst, const double val) {
+void Compiler::cpl_mov_reg_imm32(const int reg_dst, const double val) {
 	if (reg_dst < REG_R8) {
 		cmd.put(cmd_MOVIMM32TABLE[reg_dst], 1);
 	} else {
@@ -63,17 +63,17 @@ void Compiler::C_mov_reg_imm32(const int reg_dst, const double val) {
 	cmd.put((byte*) &int_val, 4);
 }
 
-void Compiler::C_mov_reg_imm64(const int reg_dst, const double val) {
+void Compiler::cpl_mov_reg_imm64(const int reg_dst, const double val) {
 	cmd.put(cmd_MOVIMM64TABLE[reg_dst], 3);
 	int int_val = val;
 	cmd.put((byte*) &int_val, 4);
 }
 
-void Compiler::C_mov_reg_reg(const int reg_dst, const int reg_src) {
+void Compiler::cpl_mov_reg_reg(const int reg_dst, const int reg_src) {
 	cmd.put(cmd_MOV_TABLE[reg_dst][reg_src], 3);
 }
 
-void Compiler::C_mov_mem_reg(const int reg_dst, const int offset, const int reg_src) {
+void Compiler::cpl_mov_mem_reg(const int reg_dst, const int offset, const int reg_src) {
 	if (reg_dst == REG_RSP) {
 		cmd.put(cmd_MOV_RSPMEM_REG_DISPL32[reg_src], 4);
 		cmd.put((byte*) &offset, 4);
@@ -85,7 +85,7 @@ void Compiler::C_mov_mem_reg(const int reg_dst, const int offset, const int reg_
 	}
 }
 
-void Compiler::C_mov_reg_mem(const int reg_dst, const int reg_src, const int offset) {
+void Compiler::cpl_mov_reg_mem(const int reg_dst, const int reg_src, const int offset) {
 	if (reg_src == REG_RSP) {
 		cmd.put(cmd_MOV_REG_RSPMEM_DISPL32[reg_dst], 4);
 		cmd.put((byte*) &offset, 4);
@@ -97,23 +97,23 @@ void Compiler::C_mov_reg_mem(const int reg_dst, const int reg_src, const int off
 	}
 }
 
-void Compiler::C_cmp_reg_reg(const int reg_src, const int reg_dst) {
+void Compiler::cpl_cmp_reg_reg(const int reg_src, const int reg_dst) {
 	cmd.put(cmd_CMPTABLE[reg_src][reg_dst], 3);
 }
 
-void Compiler::C_test_reg_reg(const int reg_src, const int reg_dst) {
+void Compiler::cpl_test_reg_reg(const int reg_src, const int reg_dst) {
 	cmd.put(cmd_TESTTABLE[reg_src][reg_dst], 3);
 }
 
-void Compiler::C_xchg_rax_reg(const int reg_dst) {
+void Compiler::cpl_xchg_rax_reg(const int reg_dst) {
 	cmd.put(cmd_XCHG_RAXTABLE[reg_dst], 2);
 }
 
-void Compiler::C_push_reg(const int reg_src) {
+void Compiler::cpl_push_reg(const int reg_src) {
 	cmd.put(cmd_PUSH_TABLE[reg_src], 2);
 }
 
-void Compiler::C_pop_reg(const int reg_dst) {
+void Compiler::cpl_pop_reg(const int reg_dst) {
 	cmd.put(cmd_POP_TABLE[reg_dst], 2);
 }
 
@@ -121,60 +121,60 @@ void Compiler::hexdump_cmd() const {
 	cmd.hexdump();
 }
 
-void Compiler::C_je_rel32  (const int offset) {
+void Compiler::cpl_je_rel32  (const int offset) {
 	cmd.put(cmd_JE_REL32);
 	cmd.put((byte*) &offset, 4);
 }
 
-void Compiler::C_jne_rel32 (const int offset) {
+void Compiler::cpl_jne_rel32 (const int offset) {
 	cmd.put(cmd_JNE_REL32);
 	cmd.put((byte*) &offset, 4);
 }
 
-void Compiler::C_jl_rel32  (const int offset) {
+void Compiler::cpl_jl_rel32  (const int offset) {
 	cmd.put(cmd_JL_REL32);
 	cmd.put((byte*) &offset, 4);
 }
 
-void Compiler::C_jle_rel32 (const int offset) {
+void Compiler::cpl_jle_rel32 (const int offset) {
 	cmd.put(cmd_JLE_REL32);
 	cmd.put((byte*) &offset, 4);
 }
 
-void Compiler::C_jg_rel32  (const int offset) {
+void Compiler::cpl_jg_rel32  (const int offset) {
 	cmd.put(cmd_JG_REL32);
 	cmd.put((byte*) &offset, 4);
 }
 
-void Compiler::C_jge_rel32 (const int offset) {
+void Compiler::cpl_jge_rel32 (const int offset) {
 	cmd.put(cmd_JGE_REL32);
 	cmd.put((byte*) &offset, 4);
 }
 
-void Compiler::C_jmp_rel32 (const int offset) {
+void Compiler::cpl_jmp_rel32 (const int offset) {
 	cmd.put(cmd_JMP_REL32);
 	cmd.put((byte*) &offset, 4);
 }
 
 
-void Compiler::C_call_rel32(const int offset) {
+void Compiler::cpl_call_rel32(const int offset) {
 	cmd.put(cmd_CALL_REL32);
 	cmd.put((byte*) &offset, 4);
 }
 
-void Compiler::C_ret() {
+void Compiler::cpl_ret() {
 	cmd.put(cmd_RET);
 }
 
-void Compiler::C_breakpoint() {
+void Compiler::cpl_breakpoint() {
 	cmd.put(cmd_BREAKPOINT);
 }
 
-void Compiler::C_syscall() {
+void Compiler::cpl_syscall() {
 	cmd.put(cmd_SYSCALL);
 }
 
-void Compiler::C_operation(const CodeNode *node, FILE *file) {
+void Compiler::cpl_operation(const CodeNode *node, FILE *file) {
 	assert(node);
 	assert(file);
 
@@ -233,11 +233,11 @@ void Compiler::C_operation(const CodeNode *node, FILE *file) {
 		case '=' : {
 			COMPILE_R();
 			fprintf(file, "pop ");
-			C_lvalue(node->L, file);
+		    cpl_lvalue(node->L, file);
 			fprintf(file, "\n");
 
 			fprintf(file, "push ");
-			C_lvalue(node->L, file, true);
+		    cpl_lvalue(node->L, file, true);
 			fprintf(file, "\n");
 
 			break;
@@ -248,18 +248,18 @@ void Compiler::C_operation(const CodeNode *node, FILE *file) {
 		case OPCODE_ASGN_DIV :
 		case OPCODE_ASGN_POW : {
 			fprintf(file, "push ");
-			C_lvalue(node->L, file, false, true);
+		    cpl_lvalue(node->L, file, false, true);
 			fprintf(file, "\n");
 
 			COMPILE_R();
 			fprintf_asgn_additional_operation(file, node->get_op());
 
 			fprintf(file, "pop ");
-			C_lvalue(node->L, file);
+		    cpl_lvalue(node->L, file);
 			fprintf(file, "\n");
 
 			fprintf(file, "push ");
-			C_lvalue(node->L, file, true);
+		    cpl_lvalue(node->L, file, true);
 			fprintf(file, "\n");
 
 			break;
@@ -313,7 +313,7 @@ void Compiler::C_operation(const CodeNode *node, FILE *file) {
 		}
 
 		case OPCODE_EXPR : {
-			C_expr(node, file, true);
+		    cpl_expr(node, file, true);
 			break;
 		}
 
@@ -341,7 +341,7 @@ void Compiler::C_operation(const CodeNode *node, FILE *file) {
 
 			if (node->R) {
 				fprintf(file, "pop ");
-				C_lvalue(node->L, file, false, false, true);
+			    cpl_lvalue(node->L, file, false, false, true);
 				fprintf(file, "\n");
 			}
 
@@ -473,7 +473,7 @@ void Compiler::C_operation(const CodeNode *node, FILE *file) {
 			compile(node->R, file);
 
 			fprintf(file, "for_%d_action:\n", cur_for_cnt);
-			C_expr(node->L->R, file, true);
+		    cpl_expr(node->L->R, file, true);
 			fprintf(file, "jmp for_%d_cond\n", cur_for_cnt);
 			
 			fprintf(file, "\nfor_%d_end:\n", cur_for_cnt);
@@ -703,9 +703,9 @@ void Compiler::C_operation(const CodeNode *node, FILE *file) {
 
 		case OPCODE_FUNC_CALL : {
 			if (id_table.find_func(node->R->get_id()) == NOT_FOUND) {
-				C_arr_call(node, file);
+			    cpl_arr_call(node, file);
 			} else {
-				C_func_call(node, file);
+			    cpl_func_call(node, file);
 			}
 			break;
 		}
@@ -736,7 +736,7 @@ void Compiler::C_operation(const CodeNode *node, FILE *file) {
 	}
 }
 
-void Compiler::C_expr(const CodeNode *node, FILE *file, const bool to_pop) {
+void Compiler::cpl_expr(const CodeNode *node, FILE *file, const bool to_pop) {
 	if (node->is_op(OPCODE_EXPR)) {
 		COMPILE_L();
 	} else {
@@ -748,7 +748,7 @@ void Compiler::C_expr(const CodeNode *node, FILE *file, const bool to_pop) {
 	}
 }
 
-void Compiler::C_func_call(const CodeNode *node, FILE *file) {
+void Compiler::cpl_func_call(const CodeNode *node, FILE *file) {
 	assert(node);
 	assert(file);
 
@@ -804,11 +804,11 @@ void Compiler::C_func_call(const CodeNode *node, FILE *file) {
 		const CodeNode *prot = func_arglist->L;
 
 		if (arg->is_op(OPCODE_DEFAULT_ARG)) {
-			C_default_arg(arg, prot, file);
+		    cpl_default_arg(arg, prot, file);
 		} else if (arg->is_op(OPCODE_CONTEXT_ARG)) {
-			C_context_arg(arg, prot, file);
+		    cpl_context_arg(arg, prot, file);
 		} else if (arg->is_op(OPCODE_EXPR)) {
-			C_expr_arg(arg, prot, file);
+		    cpl_expr_arg(arg, prot, file);
 		}
 
 		arglist = arglist->R;
@@ -817,7 +817,7 @@ void Compiler::C_func_call(const CodeNode *node, FILE *file) {
 	}
 
 	while (func_arglist && func_arglist->L) {
-		C_default_arg(node, func_arglist->L, file);
+	    cpl_default_arg(node, func_arglist->L, file);
 		func_arglist = func_arglist->R;
 		CHECK_ERROR();
 	}
@@ -839,10 +839,10 @@ void Compiler::C_func_call(const CodeNode *node, FILE *file) {
 	fprintf(file, "pop rvx\n");
 }
 
-void Compiler::C_default_arg(const CodeNode *arg, const CodeNode *prot, FILE *file) {
+void Compiler::cpl_default_arg(const CodeNode *arg, const CodeNode *prot, FILE *file) {
 	if (prot->is_id()) {
 		id_table.shift_backward();
-		bool ret = C_push(prot, file);
+		bool ret = cpl_push(prot, file);
 		id_table.shift_forward();
 
 		if (!ret) {
@@ -853,7 +853,7 @@ void Compiler::C_default_arg(const CodeNode *arg, const CodeNode *prot, FILE *fi
 
 		id_table.declare_var(prot->get_id(), 1);
 		fprintf(file, "pop ");
-		C_lvalue(prot, file, false, false, true);
+	    cpl_lvalue(prot, file, false, false, true);
 		fprintf(file, "\n");
 	} else if (prot->is_op(OPCODE_VAR_DEF)) {
 		if (!prot->R) {
@@ -870,7 +870,7 @@ void Compiler::C_default_arg(const CodeNode *arg, const CodeNode *prot, FILE *fi
 
 		id_table.declare_var(prot->L->get_id(), 1);
 		fprintf(file, "pop ");
-		C_lvalue(prot->L, file, false, false, true);
+	    cpl_lvalue(prot->L, file, false, false, true);
 		fprintf(file, "\n");
 	} else {
 		RAISE_ERROR("bad func call, unexpected PROT type [");
@@ -880,10 +880,10 @@ void Compiler::C_default_arg(const CodeNode *arg, const CodeNode *prot, FILE *fi
 	}
 }
 
-void Compiler::C_context_arg(const CodeNode *arg, const CodeNode *prot, FILE *file) {
+void Compiler::cpl_context_arg(const CodeNode *arg, const CodeNode *prot, FILE *file) {
 	if (prot->is_id()) {
 		id_table.shift_backward();
-		bool ret = C_push(prot, file);
+		bool ret = cpl_push(prot, file);
 		id_table.shift_forward();
 
 		if (!ret) {
@@ -894,11 +894,11 @@ void Compiler::C_context_arg(const CodeNode *arg, const CodeNode *prot, FILE *fi
 
 		id_table.declare_var(prot->get_id(), 1);
 		fprintf(file, "pop ");
-		C_lvalue(prot, file, false, false, true);
+	    cpl_lvalue(prot, file, false, false, true);
 		fprintf(file, "\n");
 	} else if (prot->is_op(OPCODE_VAR_DEF)) {
 		id_table.shift_backward();
-		bool ret = C_push(prot->L, file);
+		bool ret = cpl_push(prot->L, file);
 		id_table.shift_forward();
 
 		if (!ret) {
@@ -909,7 +909,7 @@ void Compiler::C_context_arg(const CodeNode *arg, const CodeNode *prot, FILE *fi
 
 		id_table.declare_var(prot->L->get_id(), 1);
 		fprintf(file, "pop ");
-		C_lvalue(prot->L, file, false, false, true);
+	    cpl_lvalue(prot->L, file, false, false, true);
 		fprintf(file, "\n");
 	} else {
 		RAISE_ERROR("bad func call, unexpected PROT type [");
@@ -919,7 +919,7 @@ void Compiler::C_context_arg(const CodeNode *arg, const CodeNode *prot, FILE *fi
 	}
 }
 
-void Compiler::C_expr_arg(const CodeNode *arg, const CodeNode *prot, FILE *file) {
+void Compiler::cpl_expr_arg(const CodeNode *arg, const CodeNode *prot, FILE *file) {
 	if (!arg->L) {
 		RAISE_ERROR("bad func call, expr node has no expression inside\n");
 		LOG_ERROR_LINE_POS(arg);
@@ -933,12 +933,12 @@ void Compiler::C_expr_arg(const CodeNode *arg, const CodeNode *prot, FILE *file)
 	if (prot->is_id()) {
 		id_table.declare_var(prot->get_id(), 1);
 		fprintf(file, "pop ");
-		C_lvalue(prot, file, false, false, true);
+	    cpl_lvalue(prot, file, false, false, true);
 		fprintf(file, "\n");
 	} else if (prot->is_op(OPCODE_VAR_DEF)) {
 		id_table.declare_var(prot->L->get_id(), 1);
 		fprintf(file, "pop ");
-		C_lvalue(prot->L, file, false, false, true);
+	    cpl_lvalue(prot->L, file, false, false, true);
 		fprintf(file, "\n");
 	} else {
 		RAISE_ERROR("bad func call, unexpected PROT type [");
@@ -948,7 +948,7 @@ void Compiler::C_expr_arg(const CodeNode *arg, const CodeNode *prot, FILE *file)
 	}
 }
 
-void Compiler::C_arr_call(const CodeNode *node, FILE *file) {
+void Compiler::cpl_arr_call(const CodeNode *node, FILE *file) {
 	if (!node->R) {
 		RAISE_ERROR("bad arr call, where is name, you are worthless [");
 		printf("%d]\n", node->get_op());
@@ -979,7 +979,7 @@ void Compiler::C_arr_call(const CodeNode *node, FILE *file) {
 
 	while (args && args->L) {
 		CodeNode *arg = args->L;
-		C_expr(arg, file);
+	    cpl_expr(arg, file);
 		fprintf(file, "add\n");
 		fprintf(file, "pop rax\n");
 		fprintf(file, "push [rax + 1]\n");
@@ -987,7 +987,7 @@ void Compiler::C_arr_call(const CodeNode *node, FILE *file) {
 	}
 }
 
-bool Compiler::C_push(const CodeNode *node, FILE *file) {
+bool Compiler::cpl_push(const CodeNode *node, FILE *file) {
 	assert(node);
 	assert(file);
 
@@ -999,21 +999,21 @@ bool Compiler::C_push(const CodeNode *node, FILE *file) {
 			
 			CodeNode tmp = {};
 			tmp.ctor(VALUE, fabs(node->get_val()), nullptr, nullptr, node->line, node->pos);
-			C_value(&tmp, file);
+		    cpl_value(&tmp, file);
 			tmp.dtor();
 
 			fprintf(file, "\nsub\n");
 		} else {
-			result = C_value(node, file);
+			result = cpl_value(node, file);
 		}
 	} else if (node->type == ID) {
-		result = C_lvalue(node, file, false, false, true);
+		result = cpl_lvalue(node, file, false, false, true);
 	}
 	fprintf(file, "\n");
 	return result;
 }
 
-bool Compiler::C_value(const CodeNode *node, FILE *file) {
+bool Compiler::cpl_value(const CodeNode *node, FILE *file) {
 	assert(node);
 	assert(file);
 
@@ -1021,7 +1021,7 @@ bool Compiler::C_value(const CodeNode *node, FILE *file) {
 	return true;
 }
 
-bool Compiler::C_lvalue(const CodeNode *node, FILE *file, 
+bool Compiler::cpl_lvalue(const CodeNode *node, FILE *file, 
 					const bool for_asgn_dup, 
 					const bool to_push, 
 					const bool initialization) {
@@ -1107,7 +1107,7 @@ bool Compiler::C_lvalue(const CodeNode *node, FILE *file,
 		while (args && args->L) {
 			fprintf(file, "push [rax]\n");
 			CodeNode *arg = args->L;
-			C_expr(arg, file);
+		    cpl_expr(arg, file);
 			// TODO wtf is this... it works... so let it be... for 2d arrs... but not anyhow more...
 			//if (args->R->L) {
 				fprintf(file, "push 1\n");
@@ -1135,7 +1135,7 @@ bool Compiler::C_lvalue(const CodeNode *node, FILE *file,
 	}
 }
 
-void Compiler::C_id(const CodeNode *node, FILE *file) {
+void Compiler::cpl_id(const CodeNode *node, FILE *file) {
 	assert(node);
 	assert(file);
 
@@ -1151,27 +1151,27 @@ void Compiler::compile(const CodeNode *node, FILE *file) {
 
 	switch (node->type) {
 		case VALUE : {
-			C_push(node, file);
+		    cpl_push(node, file);
 			break;
 		}
 
 		case OPERATION : {
-			C_operation(node, file);
+		    cpl_operation(node, file);
 			break;
 		}
 
 		case VARIABLE : {
-			C_lvalue(node, file);
+		    cpl_lvalue(node, file);
 			break;
 		}
 
 		case ID : {
 			if (id_table.find_func(node->get_id()) != NOT_FOUND) {
-				C_func_call(node, file);
+			    cpl_func_call(node, file);
 			} else if (node->R) {
-				C_arr_call(node, file);
+			    cpl_arr_call(node, file);
 			} else {
-				C_push(node, file);
+			    cpl_push(node, file);
 			}
 			break;
 		}

@@ -35,37 +35,37 @@ int main(const int argc, const char **argv) {
 	Compiler comp = {};
 	comp.ctor();
 
-	comp.C_mov_reg_imm64(REG_RAX, 15);
-	comp.C_math_op(REG_RBX, REG_RBX, '^');
-	comp.C_mov_reg_imm32(REG_RBX, 1);
-	comp.C_math_op(REG_RAX, REG_RBX, '+');
+	comp.cpl_mov_reg_imm64(REG_RAX, 15);
+	comp.cpl_math_op(REG_RBX, REG_RBX, '^');
+	comp.cpl_mov_reg_imm32(REG_RBX, 1);
+	comp.cpl_math_op(REG_RAX, REG_RBX, '+');
 
-	comp.C_mov_mem_reg(REG_RSP_DISPL(9), REG_RAX);
-	comp.C_mov_reg_mem(REG_RAX, REG_RBP_DISPL(15));
+	comp.cpl_mov_mem_reg(REG_RSP_DISPL(9), REG_RAX);
+	comp.cpl_mov_reg_mem(REG_RAX, REG_RBP_DISPL(15));
 
-	comp.C_push_reg(REG_RAX);
-	comp.C_push_reg(REG_R8);
+	comp.cpl_push_reg(REG_RAX);
+	comp.cpl_push_reg(REG_R8);
 
-	comp.C_pop_reg(REG_RSP);
-	comp.C_pop_reg(REG_R15);
+	comp.cpl_pop_reg(REG_RSP);
+	comp.cpl_pop_reg(REG_R15);
 
-	comp.C_test_reg_reg(REG_RAX, REG_R9);
-	comp.C_cmp_reg_reg(REG_R14, REG_RBP);
+	comp.cpl_test_reg_reg(REG_RAX, REG_R9);
+	comp.cpl_cmp_reg_reg(REG_R14, REG_RBP);
 
-	comp.C_xchg_rax_reg(REG_RBX);
+	comp.cpl_xchg_rax_reg(REG_RBX);
 
-	comp.C_je_rel32(0);
-	comp.C_jne_rel32(0);
-	comp.C_jl_rel32(0);
-	comp.C_jle_rel32(0);
-	comp.C_jg_rel32(0);
-	comp.C_jge_rel32(0);
-	comp.C_jmp_rel32(0);
-	comp.C_call_rel32(0);
+	comp.cpl_je_rel32(0);
+	comp.cpl_jne_rel32(0);
+	comp.cpl_jl_rel32(0);
+	comp.cpl_jle_rel32(0);
+	comp.cpl_jg_rel32(0);
+	comp.cpl_jge_rel32(0);
+	comp.cpl_jmp_rel32(0);
+	comp.cpl_call_rel32(0);
 
-	comp.C_ret();
-	comp.C_breakpoint();
-	comp.C_syscall();
+	comp.cpl_ret();
+	comp.cpl_breakpoint();
+	comp.cpl_syscall();
 
 	comp.hexdump_cmd();
 

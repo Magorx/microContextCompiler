@@ -13,7 +13,9 @@
 #include "recursive_parser.h"
 #include "id_table.h"
 #include "byte_buffer.h"
-#include "reg_stack.h"
+
+#include "machine_codes/defines.h"
+// #include "reg_manager.h"
 
 //=============================================================================
 // Compiler ===================================================================
@@ -32,59 +34,59 @@ private:
 	int while_cnt;
 	int for_cnt;
 //=============================================================================
-	// RegStack regstack;
+	// RegManager regman;
 	ByteBuffer cmd;
 //=============================================================================
 	void fprintf_asgn_additional_operation(FILE *file, const int op);
-	void C_operation(const CodeNode *node, FILE *file);
+	void cpl_operation(const CodeNode *node, FILE *file);
 
-	void C_expr 		(const CodeNode *node, FILE *file, const bool to_pop = false);
-	void C_func_call	(const CodeNode *node, FILE *file);
-	void C_default_arg	(const CodeNode *arg, const CodeNode *prot, FILE *file);
-	void C_context_arg	(const CodeNode *arg, const CodeNode *prot, FILE *file);
-	void C_expr_arg		(const CodeNode *arg, const CodeNode *prot, FILE *file);
-	void C_arr_call		(const CodeNode *node, FILE *file);
-	bool C_push			(const CodeNode *node, FILE *file);
-	bool C_value 		(const CodeNode *node, FILE *file);
-	void C_id			(const CodeNode *node, FILE *file);
+	void cpl_expr 		(const CodeNode *node, FILE *file, const bool to_pop = false);
+	void cpl_func_call	(const CodeNode *node, FILE *file);
+	void cpl_default_arg	(const CodeNode *arg, const CodeNode *prot, FILE *file);
+	void cpl_context_arg	(const CodeNode *arg, const CodeNode *prot, FILE *file);
+	void cpl_expr_arg		(const CodeNode *arg, const CodeNode *prot, FILE *file);
+	void cpl_arr_call		(const CodeNode *node, FILE *file);
+	bool cpl_push			(const CodeNode *node, FILE *file);
+	bool cpl_value 		(const CodeNode *node, FILE *file);
+	void cpl_id			(const CodeNode *node, FILE *file);
 	void compile 		(const CodeNode *node, FILE *file);
-	bool C_lvalue		(const CodeNode *node, FILE *file, 
+	bool cpl_lvalue		(const CodeNode *node, FILE *file, 
 						 const bool for_asgn_dup = false, 
 						 const bool to_push = false, 
 						 const bool initialization = false);
 
 
 public:
-	void C_math_op       (const int reg_dst, const int reg_src, const char op);
+	void cpl_math_op       (const int reg_dst, const int reg_src, const char op);
 
-	void C_cmp_reg_reg	 (const int reg_src, const int reg_dst);
-	void C_test_reg_reg	 (const int reg_src, const int reg_dst);
+	void cpl_cmp_reg_reg	 (const int reg_src, const int reg_dst);
+	void cpl_test_reg_reg	 (const int reg_src, const int reg_dst);
 
-	void C_mov_reg_imm32 (const int reg_dst, const double val);
-	void C_mov_reg_imm64 (const int reg_dst, const double val);
-	void C_mov_reg_reg   (const int reg_dst, const int reg_src);
+	void cpl_mov_reg_imm32 (const int reg_dst, const double val);
+	void cpl_mov_reg_imm64 (const int reg_dst, const double val);
+	void cpl_mov_reg_reg   (const int reg_dst, const int reg_src);
 
-	void C_mov_mem_reg	 (					 const int reg_dst, const int offset, const int reg_src);
-	void C_mov_reg_mem	 (const int reg_dst, const int reg_src, const int offset);
+	void cpl_mov_mem_reg	 (					 const int reg_dst, const int offset, const int reg_src);
+	void cpl_mov_reg_mem	 (const int reg_dst, const int reg_src, const int offset);
 
-	void C_xchg_rax_reg	 (const int reg_dst);
+	void cpl_xchg_rax_reg	 (const int reg_dst);
 
-	void C_push_reg		 (const int reg_src);
-	void C_pop_reg  	 (const int reg_dst);
+	void cpl_push_reg		 (const int reg_src);
+	void cpl_pop_reg  	 (const int reg_dst);
 
-	void C_je_rel32  (const int offset);
-	void C_jne_rel32 (const int offset);
-	void C_jl_rel32  (const int offset);
-	void C_jle_rel32 (const int offset);
-	void C_jg_rel32  (const int offset);
-	void C_jge_rel32 (const int offset);
-	void C_jmp_rel32 (const int offset);
+	void cpl_je_rel32  (const int offset);
+	void cpl_jne_rel32 (const int offset);
+	void cpl_jl_rel32  (const int offset);
+	void cpl_jle_rel32 (const int offset);
+	void cpl_jg_rel32  (const int offset);
+	void cpl_jge_rel32 (const int offset);
+	void cpl_jmp_rel32 (const int offset);
 
-	void C_call_rel32(const int offset);
-	void C_ret();
+	void cpl_call_rel32(const int offset);
+	void cpl_ret();
 
-	void C_breakpoint();
-	void C_syscall();
+	void cpl_breakpoint();
+	void cpl_syscall();
 
 	void hexdump_cmd() const;
 
