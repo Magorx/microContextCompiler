@@ -1,39 +1,32 @@
 #include "reg_manager.h"
 
-const int REGMAN_STACK_REGS_CNT = 10;
-const int REGMAN_REGS[REGMAN_REGS_CNT] = {
-	REG_R8,
-	REG_R9,
-	REG_R10,
-	REG_R11,
-	REG_R12,
-	REG_R13,
-	REG_R14,
-	REG_R15
-};
-
-RegManager::RegManager():
+RegManager::RegManager()
 {}
 
 RegManager::~RegManager()
 {}
 
-void RegManager::ctor() {
-
+void RegManager::ctor(Compiler *compiler_) {
+	compiler = compiler_;
+	for (int i = 0; i < REGMAN_REGS_CNT; ++i) {
+		reg_info[i] = {0, 0};
+	}
+	id_to_reg.ctor();
+	max_id = 0;
 }
 
-RegManager *RegManager::NEW() {
+RegManager *RegManager::NEW(Compiler *compiler_) {
 	RegManager *cake = (RegManager*) calloc(1, sizeof(RegManager));
 	if (!cake) {
 		return nullptr;
 	}
 
-	cake->ctor();
+	cake->ctor(compiler_);
 	return cake;
 }
 
 void RegManager::dtor() {
-
+	id_to_reg.dtor();
 }
 
 void RegManager::DELETE(RegManager *classname) {
