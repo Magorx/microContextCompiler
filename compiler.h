@@ -61,22 +61,22 @@ public:
 	RegManager *regman;
 	ByteBuffer cmd;
 
-	void cpl_math_op       (const int reg_dst, const int reg_src, const char op);
+	void cpl_math_op    	(const int reg_dst, const int reg_src, const char op);
 
-	void cpl_cmp_reg_reg	 (const int reg_src, const int reg_dst);
-	void cpl_test_reg_reg	 (const int reg_src, const int reg_dst);
+	void cpl_cmp_reg_reg	(const int reg_src, const int reg_dst);
+	void cpl_test_reg_reg	(const int reg_src, const int reg_dst);
 
-	void cpl_mov_reg_imm32 (const int reg_dst, const double val);
-	void cpl_mov_reg_imm64 (const int reg_dst, const double val);
-	void cpl_mov_reg_reg   (const int reg_dst, const int reg_src);
+	void cpl_mov_reg_imm32	(const int reg_dst, const double val);
+	void cpl_mov_reg_imm64	(const int reg_dst, const double val);
+	void cpl_mov_reg_reg	(const int reg_dst, const int reg_src);
 
-	void cpl_mov_mem_reg	 (					 const int reg_dst, const int offset, const int reg_src);
-	void cpl_mov_reg_mem	 (const int reg_dst, const int reg_src, const int offset);
+	void cpl_mov_mem_reg	(					const int reg_dst, const int offset, const int reg_src);
+	void cpl_mov_reg_mem	(const int reg_dst, const int reg_src, const int offset);
 
-	void cpl_xchg_rax_reg	 (const int reg_dst);
+	void cpl_xchg_rax_reg	(const int reg_dst);
 
-	void cpl_push_reg		 (const int reg_src);
-	void cpl_pop_reg  	 (const int reg_dst);
+	void cpl_push_reg		(const int reg_src);
+	void cpl_pop_reg  		(const int reg_dst);
 
 	void cpl_je_rel32  (const int offset);
 	void cpl_jne_rel32 (const int offset);

@@ -62,6 +62,13 @@ void build_elf(const char *prog, const size_t prog_size, FILE *file) {
     fwrite(&elf_h,  sizeof(elf_h),  1,         file);
     fwrite(&prog_h, sizeof(prog_h), 1,         file);
     fwrite(prog,    sizeof(byte),   prog_size, file);
+    
+    // don't forget, your prog has to finish itself with:
+    // 
+    // mov rax, 60 <- exit syscall
+    // mov rdi, 0  <- exit code
+    // syscall
+    //
 }
 
 void build_elf(const char *prog, const size_t prog_size, const char *filename) {
