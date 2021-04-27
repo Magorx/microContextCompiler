@@ -49,7 +49,7 @@ struct ProgHeader {
 
 #pragma pack(pop)
 
-void build_elf(const char *prog, const size_t prog_size, FILE *file) {
+void build_elf(const char *prog, const size_t prog_size, FILE *file, bool to_add_exit_code_zero = true) {
     ELF_Header elf_h ;
     ProgHeader prog_h;
 
@@ -69,13 +69,23 @@ void build_elf(const char *prog, const size_t prog_size, FILE *file) {
     // mov rdi, 0  <- exit code
     // syscall
     //
+
+    if (to_add_exit_code_zero) {
+        unsigned char buffer[] = {
+            0x48, 0xc7, 0xc0, 0x3c, 0x00, 0x00, 0x00, // mov rax, 60
+            0x48, 0xc7, 0xc7, 0x00, 0x00, 0x00, 0x00, // mov rdi, 0
+            0x0f, 0x05                                // syscall
+        };
+        
+        fwrite(buffer, sizeof(char), sizeof(buffer), file);
+    }
 }
 
-void build_elf(const char *prog, const size_t prog_size, const char *filename) {
+void build_elf(const char *prog, const size_t prog_size, const char *filename, bool to_add_exit_code_zero = true) {
     FILE *file = fopen(filename, "wb");
     assert(file);
 
-    build_elf(prog, prog_size, file);
+    build_elf(prog, prog_size, file, to_add_exit_code_zero);
 
     fclose(file);
 }
