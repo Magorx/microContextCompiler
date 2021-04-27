@@ -59,7 +59,7 @@ private:
 
 public:
 	RegManager *regman;
-	ByteBuffer cmd;
+	ByteBuffer  cmd;
 
 	void cpl_math_op    	(const int reg_dst, const int reg_src, const char op);
 

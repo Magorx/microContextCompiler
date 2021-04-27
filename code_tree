@@ -1,63 +1,27 @@
 digraph list {rankdir="UD";
-"node_0x55a72d2fc660" [label="{" shape=invhouse style=filled fillcolor="#FFCCCC" fontsize=16]
-"node_0x55a72d2fc660" -> "node_0x55a72d2fccc0"
-"node_0x55a72d2fccc0" [label=";" shape=invhouse style=filled fillcolor="#FFCCCC" fontsize=16]
-"node_0x55a72d2fccc0" -> "node_0x55a72d2fcc90"
-"node_0x55a72d2fcc90" [label="FUNC_DECL" shape=invhouse style=filled fillcolor="#CCCCFF"]
-"node_0x55a72d2fcc90" -> "node_0x55a72d2fc6f0"
-"node_0x55a72d2fc6f0" [label="FUNC_INFO" shape=invhouse style=filled fillcolor="#CCCCFF"]
-"node_0x55a72d2fc6f0" -> "node_0x55a72d2fc6c0"
-"node_0x55a72d2fc6c0" [label="FUNC_ARG_DECL" shape=invhouse style=filled fillcolor="#CCCCFF"]
-"node_0x55a72d2fc6f0" -> "node_0x55a72d2fc690"
-"node_0x55a72d2fc690" [label="main" shape=circle style=filled fillcolor="#CCFFFF"]
-"node_0x55a72d2fcc90" -> "node_0x55a72d2fc720"
-"node_0x55a72d2fc720" [label="{" shape=invhouse style=filled fillcolor="#FFCCCC" fontsize=16]
-"node_0x55a72d2fc720" -> "node_0x55a72d2fc870"
-"node_0x55a72d2fc870" [label=";" shape=invhouse style=filled fillcolor="#FFCCCC" fontsize=16]
-"node_0x55a72d2fc870" -> "node_0x55a72d2fc810"
-"node_0x55a72d2fc810" [label="VAR_DEF" shape=invhouse style=filled fillcolor="#CCCCFF"]
-"node_0x55a72d2fc810" -> "node_0x55a72d2fc7e0"
-"node_0x55a72d2fc7e0" [label="a" shape=circle style=filled fillcolor="#CCFFFF"]
-"node_0x55a72d2fc810" -> "node_0x55a72d2fc840"
-"node_0x55a72d2fc840" [label="5" shape=circle style=filled fillcolor="#FFFFCC"]
-"node_0x55a72d2fc870" -> "node_0x55a72d2fc9c0"
-"node_0x55a72d2fc9c0" [label=";" shape=invhouse style=filled fillcolor="#FFCCCC" fontsize=16]
-"node_0x55a72d2fc9c0" -> "node_0x55a72d2fc960"
-"node_0x55a72d2fc960" [label="VAR_DEF" shape=invhouse style=filled fillcolor="#CCCCFF"]
-"node_0x55a72d2fc960" -> "node_0x55a72d2fc930"
-"node_0x55a72d2fc930" [label="b" shape=circle style=filled fillcolor="#CCFFFF"]
-"node_0x55a72d2fc960" -> "node_0x55a72d2fc990"
-"node_0x55a72d2fc990" [label="7" shape=circle style=filled fillcolor="#FFFFCC"]
-"node_0x55a72d2fc9c0" -> "node_0x55a72d2fca80"
-"node_0x55a72d2fca80" [label=";" shape=invhouse style=filled fillcolor="#FFCCCC" fontsize=16]
-"node_0x55a72d2fca80" -> "node_0x55a72d2fca20"
-"node_0x55a72d2fca20" [label="VAR_DEF" shape=invhouse style=filled fillcolor="#CCCCFF"]
-"node_0x55a72d2fca20" -> "node_0x55a72d2fca50"
-"node_0x55a72d2fca50" [label="c" shape=circle style=filled fillcolor="#CCFFFF"]
-"node_0x55a72d2fca80" -> "node_0x55a72d2fcbd0"
-"node_0x55a72d2fcbd0" [label=";" shape=invhouse style=filled fillcolor="#FFCCCC" fontsize=16]
-"node_0x55a72d2fcbd0" -> "node_0x55a72d2fcba0"
-"node_0x55a72d2fcba0" [label="EXPR" shape=invhouse style=filled fillcolor="#CCCCFF"]
-"node_0x55a72d2fcba0" -> "node_0x55a72d2fcb70"
-"node_0x55a72d2fcb70" [label="=" shape=invhouse style=filled fillcolor="#FFCCCC" fontsize=16]
-"node_0x55a72d2fcb70" -> "node_0x55a72d2fcab0"
-"node_0x55a72d2fcab0" [label="c" shape=circle style=filled fillcolor="#CCFFFF"]
-"node_0x55a72d2fcb70" -> "node_0x55a72d2fcb40"
-"node_0x55a72d2fcb40" [label="+" shape=invhouse style=filled fillcolor="#FFCCCC" fontsize=16]
-"node_0x55a72d2fcb40" -> "node_0x55a72d2fcae0"
-"node_0x55a72d2fcae0" [label="a" shape=circle style=filled fillcolor="#CCFFFF"]
-"node_0x55a72d2fcb40" -> "node_0x55a72d2fcb10"
-"node_0x55a72d2fcb10" [label="b" shape=circle style=filled fillcolor="#CCFFFF"]
-"node_0x55a72d2fcbd0" -> "node_0x55a72d2fcc60"
-"node_0x55a72d2fcc60" [label=";" shape=invhouse style=filled fillcolor="#FFCCCC" fontsize=16]
-"node_0x55a72d2fcc60" -> "node_0x55a72d2fcc30"
-"node_0x55a72d2fcc30" [label="EXPR" shape=invhouse style=filled fillcolor="#CCCCFF"]
-"node_0x55a72d2fcc30" -> "node_0x55a72d2fcc00"
-"node_0x55a72d2fcc00" [label="10" shape=circle style=filled fillcolor="#FFFFCC"]
-"node_0x55a72d2fccc0" -> "node_0x55a72d2fcd50"
-"node_0x55a72d2fcd50" [label=";" shape=invhouse style=filled fillcolor="#FFCCCC" fontsize=16]
-"node_0x55a72d2fcd50" -> "node_0x55a72d2fcd20"
-"node_0x55a72d2fcd20" [label="EXPR" shape=invhouse style=filled fillcolor="#CCCCFF"]
-"node_0x55a72d2fcd20" -> "node_0x55a72d2fccf0"
-"node_0x55a72d2fccf0" [label="main" shape=circle style=filled fillcolor="#CCFFFF"]
+"node_0x5584b70296b0" [label="{" shape=invhouse style=filled fillcolor="#FFCCCC" fontsize=16]
+"node_0x5584b70296b0" -> "node_0x5584b70297d0"
+"node_0x5584b70297d0" [label=";" shape=invhouse style=filled fillcolor="#FFCCCC" fontsize=16]
+"node_0x5584b70297d0" -> "node_0x5584b70297a0"
+"node_0x5584b70297a0" [label="VAR_DEF" shape=invhouse style=filled fillcolor="#CCCCFF"]
+"node_0x5584b70297a0" -> "node_0x5584b7029770"
+"node_0x5584b7029770" [label="x" shape=circle style=filled fillcolor="#CCFFFF"]
+"node_0x5584b70297d0" -> "node_0x5584b7029980"
+"node_0x5584b7029980" [label=";" shape=invhouse style=filled fillcolor="#FFCCCC" fontsize=16]
+"node_0x5584b7029980" -> "node_0x5584b7029950"
+"node_0x5584b7029950" [label="EXPR" shape=invhouse style=filled fillcolor="#CCCCFF"]
+"node_0x5584b7029950" -> "node_0x5584b7029920"
+"node_0x5584b7029920" [label="=" shape=invhouse style=filled fillcolor="#FFCCCC" fontsize=16]
+"node_0x5584b7029920" -> "node_0x5584b7029800"
+"node_0x5584b7029800" [label="x" shape=circle style=filled fillcolor="#CCFFFF"]
+"node_0x5584b7029920" -> "node_0x5584b70298f0"
+"node_0x5584b70298f0" [label="+" shape=invhouse style=filled fillcolor="#FFCCCC" fontsize=16]
+"node_0x5584b70298f0" -> "node_0x5584b7029830"
+"node_0x5584b7029830" [label="5" shape=circle style=filled fillcolor="#FFFFCC"]
+"node_0x5584b70298f0" -> "node_0x5584b70298c0"
+"node_0x5584b70298c0" [label="*" shape=invhouse style=filled fillcolor="#FFCCCC" fontsize=16]
+"node_0x5584b70298c0" -> "node_0x5584b7029860"
+"node_0x5584b7029860" [label="7" shape=circle style=filled fillcolor="#FFFFCC"]
+"node_0x5584b70298c0" -> "node_0x5584b7029890"
+"node_0x5584b7029890" [label="9" shape=circle style=filled fillcolor="#FFFFCC"]
 }

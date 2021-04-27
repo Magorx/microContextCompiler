@@ -120,6 +120,8 @@ int RegManager::get_local_var_reg(int offset, const char* var_name) {
 	id_to_reg[reg_info[reg].id] = reg_info[reg];
 	local_var_to_id[offset] = reg_info[reg].id;
 
+	compiler->cpl_mov_reg_mem(reg_info[reg].reg, REG_RBP_DISPL(offset));
+
 	return reg_info[reg].reg;
 }
 
