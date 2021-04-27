@@ -23,7 +23,7 @@ struct ELF_Header {
     B2 E_TYPE        = ET_EXEC;              // executable file
     B2 E_MACHINE     = EM_X86_64;            // x86_64 AMD
     B4 E_VERSION     = EV_CURRENT;           // signature
-    B8 E_ENTRY       = 0x0000000000400080;   // entry point, = 400000 + sizeof(headers), HARCODED here
+    B8 E_ENTRY       = 0x0000000000400000;   // entry point, = 400000, we will fix it before writing to file
     B8 E_PHOFF       = 0x0000000000000040;   // start pf program header table
     B8 E_SHOFF       = 0x0000000000000000;   // start of the section header table
     B4 E_FLAGS       = 0x00000000;           // signature
@@ -53,14 +53,15 @@ void build_elf(const char *prog, const size_t prog_size, FILE *file) {
     ELF_Header elf_h ;
     ProgHeader prog_h;
 
-    printf("ENTRY: %lx\n", elf_h.E_ENTRY);
+    elf_h.E_ENTRY += sizeof(ELF_Header);
+    elf_h.E_ENTRY += sizeof(ProgHeader);
 
     prog_h.P_FILESZ += prog_size;
     prog_h.P_MEMSZ  += prog_size;
 
-    fwrite(&elf_h,    sizeof(elf_h),    1,           file);
-    fwrite(&prog_h,    sizeof(prog_h), 1,           file);
-    fwrite(prog,    sizeof(byte),     prog_size, file);
+    fwrite(&elf_h,  sizeof(elf_h),  1,         file);
+    fwrite(&prog_h, sizeof(prog_h), 1,         file);
+    fwrite(prog,    sizeof(byte),   prog_size, file);
 }
 
 void build_elf(const char *prog, const size_t prog_size, const char *filename) {

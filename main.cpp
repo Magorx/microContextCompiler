@@ -20,6 +20,13 @@ union IntToQWord {
 		c[2] = c3;
 		c[3] = c4;
 	}
+
+	IntToQWord(const char *str) {
+		c[0] = str[0];
+		c[1] = str[1];
+		c[2] = str[2];
+		c[3] = str[3];
+	}
 };
 
 int main() {//const int argc, const char **argv) {
@@ -74,7 +81,7 @@ int main() {//const int argc, const char **argv) {
 
 	// comp.cpl_xchg_rax_reg(REG_RBX);
 
-	comp.cpl_mov_reg_imm64(REG_RCX, IntToQWord('D', 'I', 'E', '\n').i);
+	comp.cpl_mov_reg_imm64(REG_RCX, IntToQWord("DIE\n").i);
 	comp.cpl_push_reg(REG_RCX);
 	comp.cpl_mov_reg_reg(REG_RSI, REG_RSP);
 

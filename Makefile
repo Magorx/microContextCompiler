@@ -37,8 +37,7 @@ run: all
 
 run_: all
 	./$(CUR_PROG)
-	kasm out.kc out.tf
-	kspu out.tf
+	./elf
 
 comp: all
 	kasm out.kc out.tf
