@@ -79,6 +79,21 @@ int main(const int argc, const char **argv) {
 
 	CodeNode::DELETE(prog, true, true);
 	file.dtor();
+
+	comp.cpl_mov_reg_imm64(REG_RCX, IntToQWord(0, 0, 0, 0).i);
+	comp.cpl_math_op(REG_RCX, REG_RAX, '+');
+	comp.cpl_push_reg(REG_RCX);
+	comp.cpl_mov_reg_reg(REG_RSI, REG_RSP);
+
+	comp.cpl_mov_reg_imm64(REG_RAX, 1);
+	comp.cpl_mov_reg_imm64(REG_RDI, 1);
+	comp.cpl_mov_reg_imm64(REG_RDX, 4);
+	comp.cpl_syscall();
+
+
+	build_elf((const char*) comp.cmd.get_data(), comp.cmd.get_size(), "elf");
+	comp.hexdump_cmd();
+
 	comp.dtor();
 
 	// printf(".doned.\n");

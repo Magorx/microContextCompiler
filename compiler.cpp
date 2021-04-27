@@ -195,42 +195,54 @@ void Compiler::cpl_operation(const CodeNode *node, FILE *file) {
 	#define CHECK_ERROR() do {if (ANNOUNCEMENT_ERROR) {return;}} while (0)
 
 	switch (node->get_op()) {
-		case '+' : {
+		case '+' :
+		case '*' :
+		case '^' :
+		
+		 {
 			if (node->L) {
-				COMPILE_LR();
-				fprintf(file, "add\n");
+				COMPILE_L();
+
+				int r1    = regman->get_tmp_reg();
+				int r1_id = regman->get_reg_id(r1);
+				cpl_mov_reg_reg(r1, REG_RAX);
+
+				COMPILE_R();
+				regman->restore_reg_info(r1_id, true);
+				cpl_math_op(REG_RAX, r1, node->get_op());
+
+				regman->release_tmp_reg(r1);
 			} else {
 				COMPILE_R();
+				if (node->get_op() == '-') {
+					int r1 = regman->get_tmp_reg();
+
+					cpl_mov_reg_imm64(r1, -1);
+					cpl_math_op(REG_RAX, r1, '*');
+
+					regman->release_tmp_reg(r1);
+				}
 			}
 			break;
 		}
 
-		case '-' : {
-			if (node->L) {
-				COMPILE_LR();
-			} else {
-				fprintf(file, "push 0\n");
-				COMPILE_R();
-			}
-			fprintf(file, "sub\n");
-			break;
-		}
-
+		case '-' :
 		case '/' : {
-			COMPILE_LR();
-			fprintf(file, "div\n");
-			break;
-		}
+			if (node->L && node->R) {
+				COMPILE_R();
 
-		case '*' : {
-			COMPILE_LR();
-			fprintf(file, "mul\n");
-			break;
-		}
+				int r1    = regman->get_tmp_reg();
+				int r1_id = regman->get_reg_id(r1);
+				cpl_mov_reg_reg(r1, REG_RAX);
 
-		case '^' : {
-			COMPILE_LR();
-			fprintf(file, "pow\n");
+				COMPILE_L();
+				regman->restore_reg_info(r1_id, true);
+				cpl_math_op(REG_RAX, r1, node->get_op());
+
+				regman->release_tmp_reg(r1);
+			} else {
+				LOG_ERROR_LINE_POS(node);
+			}
 			break;
 		}
 
@@ -246,473 +258,473 @@ void Compiler::cpl_operation(const CodeNode *node, FILE *file) {
 
 			break;
 		}
-		case OPCODE_ASGN_ADD :
-		case OPCODE_ASGN_SUB :
-		case OPCODE_ASGN_MUL :
-		case OPCODE_ASGN_DIV :
-		case OPCODE_ASGN_POW : {
-			fprintf(file, "push ");
-		    cpl_lvalue(node->L, file, false, true);
-			fprintf(file, "\n");
+		// case OPCODE_ASGN_ADD :
+		// case OPCODE_ASGN_SUB :
+		// case OPCODE_ASGN_MUL :
+		// case OPCODE_ASGN_DIV :
+		// case OPCODE_ASGN_POW : {
+		// 	fprintf(file, "push ");
+		//     cpl_lvalue(node->L, file, false, true);
+		// 	fprintf(file, "\n");
 
-			COMPILE_R();
-			fprintf_asgn_additional_operation(file, node->get_op());
+		// 	COMPILE_R();
+		// 	fprintf_asgn_additional_operation(file, node->get_op());
 
-			fprintf(file, "pop ");
-		    cpl_lvalue(node->L, file);
-			fprintf(file, "\n");
+		// 	fprintf(file, "pop ");
+		//     cpl_lvalue(node->L, file);
+		// 	fprintf(file, "\n");
 
-			fprintf(file, "push ");
-		    cpl_lvalue(node->L, file, true);
-			fprintf(file, "\n");
+		// 	fprintf(file, "push ");
+		//     cpl_lvalue(node->L, file, true);
+		// 	fprintf(file, "\n");
 
-			break;
-		}
+		// 	break;
+		// }
 
-		case '<' : {
-			COMPILE_LR();
-			fprintf(file, "lt\n");
-			break;
-		}
+		// case '<' : {
+		// 	COMPILE_LR();
+		// 	fprintf(file, "lt\n");
+		// 	break;
+		// }
 
-		case '>' : {
-			COMPILE_LR();
-			fprintf(file, "gt\n");
-			break;
-		}
+		// case '>' : {
+		// 	COMPILE_LR();
+		// 	fprintf(file, "gt\n");
+		// 	break;
+		// }
 
-		case OPCODE_LE  : {
-			COMPILE_LR();
-			fprintf(file, "le\n");
-			break;
-		}
-		case OPCODE_GE  : {
-			COMPILE_LR();
-			fprintf(file, "ge\n");
-			break;
-		}
+		// case OPCODE_LE  : {
+		// 	COMPILE_LR();
+		// 	fprintf(file, "le\n");
+		// 	break;
+		// }
+		// case OPCODE_GE  : {
+		// 	COMPILE_LR();
+		// 	fprintf(file, "ge\n");
+		// 	break;
+		// }
 
-		case OPCODE_EQ  : {
-			COMPILE_LR();
-			fprintf(file, "eq\n");
-			break;
-		}
+		// case OPCODE_EQ  : {
+		// 	COMPILE_LR();
+		// 	fprintf(file, "eq\n");
+		// 	break;
+		// }
 
-		case OPCODE_NEQ : {
-			COMPILE_LR();
-			fprintf(file, "neq\n");
-			break;
-		}
+		// case OPCODE_NEQ : {
+		// 	COMPILE_LR();
+		// 	fprintf(file, "neq\n");
+		// 	break;
+		// }
 
-		case OPCODE_OR : {
-			COMPILE_LR();
-			fprintf(file, "l_or\n");
-			break;
-		}
+		// case OPCODE_OR : {
+		// 	COMPILE_LR();
+		// 	fprintf(file, "l_or\n");
+		// 	break;
+		// }
 
-		case OPCODE_AND : {
-			COMPILE_LR();
-			fprintf(file, "l_and\n");
-			break;
-		}
+		// case OPCODE_AND : {
+		// 	COMPILE_LR();
+		// 	fprintf(file, "l_and\n");
+		// 	break;
+		// }
 
 		case OPCODE_EXPR : {
 		    cpl_expr(node, file, true);
 			break;
 		}
 
-		case OPCODE_VAR_DEF : {
-			if (!node->L || !node->L->is_id()) {
-				RAISE_ERROR("bad variable definition [\n");
-				node->space_dump();
-				printf("]\n");
-				LOG_ERROR_LINE_POS(node);
-				break;
-			}
+		// case OPCODE_VAR_DEF : {
+		// 	if (!node->L || !node->L->is_id()) {
+		// 		RAISE_ERROR("bad variable definition [\n");
+		// 		node->space_dump();
+		// 		printf("]\n");
+		// 		LOG_ERROR_LINE_POS(node);
+		// 		break;
+		// 	}
 
-			if (node->R) {
-				COMPILE_R();
-			}
+		// 	if (node->R) {
+		// 		COMPILE_R();
+		// 	}
 
-			bool ret = id_table.declare_var(node->L->get_id(), 1);
-			if (!ret) {
-				RAISE_ERROR("Redefinition of the id [");
-				node->L->get_id()->print();
-				printf("]\n");
-				LOG_ERROR_LINE_POS(node);
-				break;
-			}
+		// 	bool ret = id_table.declare_var(node->L->get_id(), 1);
+		// 	if (!ret) {
+		// 		RAISE_ERROR("Redefinition of the id [");
+		// 		node->L->get_id()->print();
+		// 		printf("]\n");
+		// 		LOG_ERROR_LINE_POS(node);
+		// 		break;
+		// 	}
 
-			if (node->R) {
-				fprintf(file, "pop ");
-			    cpl_lvalue(node->L, file, false, false, true);
-				fprintf(file, "\n");
-			}
+		// 	if (node->R) {
+		// 		fprintf(file, "pop ");
+		// 	    cpl_lvalue(node->L, file, false, false, true);
+		// 		fprintf(file, "\n");
+		// 	}
 
-			break;
-		}
+		// 	break;
+		// }
 
-		case OPCODE_ARR_DEF : {
-			CodeNode *arr_name = node->L->R;
-			if (!node->L || !node->L->is_op(OPCODE_ARR_INFO)) {
-				RAISE_ERROR("bad variable definition [\n");
-				node->space_dump();
-				printf("]\n");
-				LOG_ERROR_LINE_POS(node);
-				break;
-			}
+		// case OPCODE_ARR_DEF : {
+		// 	CodeNode *arr_name = node->L->R;
+		// 	if (!node->L || !node->L->is_op(OPCODE_ARR_INFO)) {
+		// 		RAISE_ERROR("bad variable definition [\n");
+		// 		node->space_dump();
+		// 		printf("]\n");
+		// 		LOG_ERROR_LINE_POS(node);
+		// 		break;
+		// 	}
 			
-			bool ret = id_table.declare_var(arr_name->get_id(), 1);
-			if (!ret) {
-				RAISE_ERROR("Redefinition of the id [");
-				arr_name->get_id()->print();
-				printf("]\n");
-				LOG_ERROR_LINE_POS(node);
-				break;
-			}
-			id_table.add_buffer_zone((int) node->L->L->get_val());
+		// 	bool ret = id_table.declare_var(arr_name->get_id(), 1);
+		// 	if (!ret) {
+		// 		RAISE_ERROR("Redefinition of the id [");
+		// 		arr_name->get_id()->print();
+		// 		printf("]\n");
+		// 		LOG_ERROR_LINE_POS(node);
+		// 		break;
+		// 	}
+		// 	id_table.add_buffer_zone((int) node->L->L->get_val());
 
-			int offset = 0;
-			id_table.find_var(arr_name->get_id(), &offset);
-			fprintf(file, "push rvx + %d\n", offset);
-			//fprintf(file, "add\n");
-			// fprintf(file, "dup\n");
-			// fprintf(file, "out\n");
-			// fprintf(file, "out_n\n");
-			fprintf(file, "pop [rvx + %d]\n", offset);
+		// 	int offset = 0;
+		// 	id_table.find_var(arr_name->get_id(), &offset);
+		// 	fprintf(file, "push rvx + %d\n", offset);
+		// 	//fprintf(file, "add\n");
+		// 	// fprintf(file, "dup\n");
+		// 	// fprintf(file, "out\n");
+		// 	// fprintf(file, "out_n\n");
+		// 	fprintf(file, "pop [rvx + %d]\n", offset);
 
-			break;
-		}
+		// 	break;
+		// }
 
-		case OPCODE_WHILE : {
-			int cur_while_cnt = ++while_cnt;
+		// case OPCODE_WHILE : {
+		// 	int cur_while_cnt = ++while_cnt;
 
-			cycles_end_stack.push_back(Loop(LOOP_TYPE_WHILE, cur_while_cnt));
-			fprintf(file, "while_%d_cond:\n", cur_while_cnt);
+		// 	cycles_end_stack.push_back(Loop(LOOP_TYPE_WHILE, cur_while_cnt));
+		// 	fprintf(file, "while_%d_cond:\n", cur_while_cnt);
 
-			COMPILE_L();
-			fprintf(file, "\npush 0\n");
-			fprintf(file, "je while_%d_end\n", cur_while_cnt);
+		// 	COMPILE_L();
+		// 	fprintf(file, "\npush 0\n");
+		// 	fprintf(file, "je while_%d_end\n", cur_while_cnt);
 
-			COMPILE_R();
-			fprintf(file, "jmp while_%d_cond\n", cur_while_cnt);
+		// 	COMPILE_R();
+		// 	fprintf(file, "jmp while_%d_cond\n", cur_while_cnt);
 
-			fprintf(file, "\nwhile_%d_end:\n", cur_while_cnt);
-			cycles_end_stack.pop_back();
-			break;
-		}
+		// 	fprintf(file, "\nwhile_%d_end:\n", cur_while_cnt);
+		// 	cycles_end_stack.pop_back();
+		// 	break;
+		// }
 
-		case OPCODE_BREAK : {
-			if (!cycles_end_stack.size()) {
-				RAISE_ERROR("You can't use |< outside of the loop\n");
-				LOG_ERROR_LINE_POS(node);
-				break;
-			}
+		// case OPCODE_BREAK : {
+		// 	if (!cycles_end_stack.size()) {
+		// 		RAISE_ERROR("You can't use |< outside of the loop\n");
+		// 		LOG_ERROR_LINE_POS(node);
+		// 		break;
+		// 	}
 
-			Loop cur_cycle = cycles_end_stack[cycles_end_stack.size() - 1];
-			if (cur_cycle.type == LOOP_TYPE_WHILE) {
-				fprintf(file, "jmp while_%d_end\n", cur_cycle.number);
-			} else if (cur_cycle.type == LOOP_TYPE_FOR) {
-				fprintf(file, "jmp for_%d_end\n", cur_cycle.number);
-			} else {
-				RAISE_ERROR("What cycle are you using??\n");
-				LOG_ERROR_LINE_POS(node);
-				break;
-			}
+		// 	Loop cur_cycle = cycles_end_stack[cycles_end_stack.size() - 1];
+		// 	if (cur_cycle.type == LOOP_TYPE_WHILE) {
+		// 		fprintf(file, "jmp while_%d_end\n", cur_cycle.number);
+		// 	} else if (cur_cycle.type == LOOP_TYPE_FOR) {
+		// 		fprintf(file, "jmp for_%d_end\n", cur_cycle.number);
+		// 	} else {
+		// 		RAISE_ERROR("What cycle are you using??\n");
+		// 		LOG_ERROR_LINE_POS(node);
+		// 		break;
+		// 	}
 
-			break;
-		}
+		// 	break;
+		// }
 
-		case OPCODE_CONTINUE : {
-			if (!cycles_end_stack.size()) {
-				RAISE_ERROR("You can't use |< outside of the loop\n");
-				LOG_ERROR_LINE_POS(node);
-				break;
-			}
+		// case OPCODE_CONTINUE : {
+		// 	if (!cycles_end_stack.size()) {
+		// 		RAISE_ERROR("You can't use |< outside of the loop\n");
+		// 		LOG_ERROR_LINE_POS(node);
+		// 		break;
+		// 	}
 
-			Loop cur_cycle = cycles_end_stack[cycles_end_stack.size() - 1];
-			if (cur_cycle.type == LOOP_TYPE_WHILE) {
-				fprintf(file, "jmp while_%d_cond\n", cur_cycle.number);
-			} else if (cur_cycle.type == LOOP_TYPE_FOR) {
-				fprintf(file, "jmp for_%d_action\n", cur_cycle.number);
-			} else {
-				RAISE_ERROR("What cycle are you using??\n");
-				LOG_ERROR_LINE_POS(node);
-				break;
-			}
+		// 	Loop cur_cycle = cycles_end_stack[cycles_end_stack.size() - 1];
+		// 	if (cur_cycle.type == LOOP_TYPE_WHILE) {
+		// 		fprintf(file, "jmp while_%d_cond\n", cur_cycle.number);
+		// 	} else if (cur_cycle.type == LOOP_TYPE_FOR) {
+		// 		fprintf(file, "jmp for_%d_action\n", cur_cycle.number);
+		// 	} else {
+		// 		RAISE_ERROR("What cycle are you using??\n");
+		// 		LOG_ERROR_LINE_POS(node);
+		// 		break;
+		// 	}
 
-			break;
-		}
+		// 	break;
+		// }
 
-		case OPCODE_IF : {
-			int cur_if_cnt = ++if_cnt;
-			fprintf(file, "if_%d_cond:\n", cur_if_cnt);
-			COMPILE_L();
-			fprintf(file, "\npush 0\n");
-			fprintf(file, "jne if_%d_true\n", cur_if_cnt);
-			COMPILE_R();
-			fprintf(file, "\nif_%d_end:\n", cur_if_cnt);
-			break;
-		}
+		// case OPCODE_IF : {
+		// 	int cur_if_cnt = ++if_cnt;
+		// 	fprintf(file, "if_%d_cond:\n", cur_if_cnt);
+		// 	COMPILE_L();
+		// 	fprintf(file, "\npush 0\n");
+		// 	fprintf(file, "jne if_%d_true\n", cur_if_cnt);
+		// 	COMPILE_R();
+		// 	fprintf(file, "\nif_%d_end:\n", cur_if_cnt);
+		// 	break;
+		// }
 
-		case OPCODE_FOR : {
-			int cur_for_cnt = ++for_cnt;
-			cycles_end_stack.push_back(Loop(LOOP_TYPE_FOR, cur_for_cnt));
+		// case OPCODE_FOR : {
+		// 	int cur_for_cnt = ++for_cnt;
+		// 	cycles_end_stack.push_back(Loop(LOOP_TYPE_FOR, cur_for_cnt));
 
-			if (!node->L || !node->R || !node->L->L || !node->L->R || !node->L->L->L || !node->L->L->R) {
-				RAISE_ERROR("bad for node, something is missing\n");
-				break;
-			}
+		// 	if (!node->L || !node->R || !node->L->L || !node->L->R || !node->L->L->L || !node->L->L->R) {
+		// 		RAISE_ERROR("bad for node, something is missing\n");
+		// 		break;
+		// 	}
 			
-			id_table.add_scope();
-			fprintf(file, "\nfor_%d_init_block:\n", cur_for_cnt);
-			compile(node->L->L->L, file);
+		// 	id_table.add_scope();
+		// 	fprintf(file, "\nfor_%d_init_block:\n", cur_for_cnt);
+		// 	compile(node->L->L->L, file);
 
-			fprintf(file, "\nfor_%d_start:\n", cur_for_cnt);
-			fprintf(file, "\nfor_%d_cond:\n", cur_for_cnt);
-			compile(node->L->L->R, file);
-			fprintf(file, "\npush 0\n");
-			fprintf(file, "je for_%d_end\n", cur_for_cnt);
+		// 	fprintf(file, "\nfor_%d_start:\n", cur_for_cnt);
+		// 	fprintf(file, "\nfor_%d_cond:\n", cur_for_cnt);
+		// 	compile(node->L->L->R, file);
+		// 	fprintf(file, "\npush 0\n");
+		// 	fprintf(file, "je for_%d_end\n", cur_for_cnt);
 
-			compile(node->R, file);
+		// 	compile(node->R, file);
 
-			fprintf(file, "for_%d_action:\n", cur_for_cnt);
-		    cpl_expr(node->L->R, file, true);
-			fprintf(file, "jmp for_%d_cond\n", cur_for_cnt);
+		// 	fprintf(file, "for_%d_action:\n", cur_for_cnt);
+		//     cpl_expr(node->L->R, file, true);
+		// 	fprintf(file, "jmp for_%d_cond\n", cur_for_cnt);
 			
-			fprintf(file, "\nfor_%d_end:\n", cur_for_cnt);
-			cycles_end_stack.pop_back();
-			id_table.remove_scope();
-			break;
-		}
+		// 	fprintf(file, "\nfor_%d_end:\n", cur_for_cnt);
+		// 	cycles_end_stack.pop_back();
+		// 	id_table.remove_scope();
+		// 	break;
+		// }
 
-		case OPCODE_COND_DEPENDENT : {
-			int cur_if_cnt = if_cnt;
-			fprintf(file, "if_%d_false:\n", cur_if_cnt);
-			COMPILE_L_COMMENT();
-			fprintf(file, "\njmp if_%d_end\n", cur_if_cnt);
-			fprintf(file, "\nif_%d_true:\n", cur_if_cnt);
-			COMPILE_R_COMMENT();
-			break;
-		}
+		// case OPCODE_COND_DEPENDENT : {
+		// 	int cur_if_cnt = if_cnt;
+		// 	fprintf(file, "if_%d_false:\n", cur_if_cnt);
+		// 	COMPILE_L_COMMENT();
+		// 	fprintf(file, "\njmp if_%d_end\n", cur_if_cnt);
+		// 	fprintf(file, "\nif_%d_true:\n", cur_if_cnt);
+		// 	COMPILE_R_COMMENT();
+		// 	break;
+		// }
 
-		case OPCODE_ELEM_EXIT : {
-			fprintf(file, "halt\n");
-			break;
-		}
+		// case OPCODE_ELEM_EXIT : {
+		// 	fprintf(file, "halt\n");
+		// 	break;
+		// }
 
-		case OPCODE_ELEM_RANDOM : {
-			//fprintf(file, "push\n");
-			COMPILE_L();
-			COMPILE_R();
-			fprintf(file, "bin_op $\n");
-			break;
-		}
+		// case OPCODE_ELEM_RANDOM : {
+		// 	//fprintf(file, "push\n");
+		// 	COMPILE_L();
+		// 	COMPILE_R();
+		// 	fprintf(file, "bin_op $\n");
+		// 	break;
+		// }
 
-		case OPCODE_ELEM_PUTN : {
-			if (node->R) {
-				COMPILE_R();
-				fprintf(file, "dup\n");
-				fprintf(file, "out\n");
-			} else {
-				fprintf(file, "push %d\n", '\n');
-				fprintf(file, "dup\n");
-				fprintf(file, "out_c\n");
-			}
+		// case OPCODE_ELEM_PUTN : {
+		// 	if (node->R) {
+		// 		COMPILE_R();
+		// 		fprintf(file, "dup\n");
+		// 		fprintf(file, "out\n");
+		// 	} else {
+		// 		fprintf(file, "push %d\n", '\n');
+		// 		fprintf(file, "dup\n");
+		// 		fprintf(file, "out_c\n");
+		// 	}
 
-			break;
-		}
+		// 	break;
+		// }
 
-		case OPCODE_ELEM_PUTC : {
-			if (node->R) {
-				COMPILE_R();
-			} else {
-				fprintf(file, "push %d\n", ' ');
-			}
-			fprintf(file, "dup\n");
-			fprintf(file, "out_c\n");
+		// case OPCODE_ELEM_PUTC : {
+		// 	if (node->R) {
+		// 		COMPILE_R();
+		// 	} else {
+		// 		fprintf(file, "push %d\n", ' ');
+		// 	}
+		// 	fprintf(file, "dup\n");
+		// 	fprintf(file, "out_c\n");
 
-			break;
-		}
+		// 	break;
+		// }
 
-		case OPCODE_ELEM_MALLOC : {
-			if (node->R) {
-				COMPILE_R();
-			} else {
-				fprintf(file, "push rmx\n");
-				break;
-			}
+		// case OPCODE_ELEM_MALLOC : {
+		// 	if (node->R) {
+		// 		COMPILE_R();
+		// 	} else {
+		// 		fprintf(file, "push rmx\n");
+		// 		break;
+		// 	}
 			
-			fprintf(file, "pop rax\n");
-			fprintf(file, "push rmx\n");
-			fprintf(file, "push rmx\n");
-			fprintf(file, "push rax\n");
-			fprintf(file, "add\n");
-			fprintf(file, "pop rmx\n");
+		// 	fprintf(file, "pop rax\n");
+		// 	fprintf(file, "push rmx\n");
+		// 	fprintf(file, "push rmx\n");
+		// 	fprintf(file, "push rax\n");
+		// 	fprintf(file, "add\n");
+		// 	fprintf(file, "pop rmx\n");
 
-			break;
-		}
+		// 	break;
+		// }
 
-		case OPCODE_ELEM_INPUT : {
-			fprintf(file, "in\n");
+		// case OPCODE_ELEM_INPUT : {
+		// 	fprintf(file, "in\n");
 
-			break;
-		}
+		// 	break;
+		// }
 
-		case OPCODE_ELEM_G_INIT : {
-			if (!node->R || !node->L) {
-				RAISE_ERROR("graphics initialization is invalid without paramets");
-				break;
-			}
+		// case OPCODE_ELEM_G_INIT : {
+		// 	if (!node->R || !node->L) {
+		// 		RAISE_ERROR("graphics initialization is invalid without paramets");
+		// 		break;
+		// 	}
 			
-			COMPILE_L();
-			fprintf(file, "dup\n");
-			fprintf(file, "pop rax\n");
-			COMPILE_R();
-			fprintf(file, "dup\n");
-			fprintf(file, "pop rbx\n");
-			fprintf(file, "g_init\n");
-			fprintf(file, "push rax\n");
-			fprintf(file, "push rbx\n");
-			fprintf(file, "mul\n");
+		// 	COMPILE_L();
+		// 	fprintf(file, "dup\n");
+		// 	fprintf(file, "pop rax\n");
+		// 	COMPILE_R();
+		// 	fprintf(file, "dup\n");
+		// 	fprintf(file, "pop rbx\n");
+		// 	fprintf(file, "g_init\n");
+		// 	fprintf(file, "push rax\n");
+		// 	fprintf(file, "push rbx\n");
+		// 	fprintf(file, "mul\n");
 
-			break;
-		}
+		// 	break;
+		// }
 
-		case OPCODE_ELEM_G_DRAW_TICK : {
-			fprintf(file, "g_draw\n");
-			fprintf(file, "push 0\n");
+		// case OPCODE_ELEM_G_DRAW_TICK : {
+		// 	fprintf(file, "g_draw\n");
+		// 	fprintf(file, "push 0\n");
 
-			break;
-		}
+		// 	break;
+		// }
 
-		case OPCODE_ELEM_G_PUT_PIXEL : {
-			if (!node->R || !node->L) {
-				RAISE_ERROR("graphics pixel put is invalid without paramets");
-				break;
-			}
+		// case OPCODE_ELEM_G_PUT_PIXEL : {
+		// 	if (!node->R || !node->L) {
+		// 		RAISE_ERROR("graphics pixel put is invalid without paramets");
+		// 		break;
+		// 	}
 			
-			COMPILE_L();
-			fprintf(file, "pop rax\n");
-			COMPILE_R();
-			fprintf(file, "dup\n");
-			fprintf(file, "pop (rax)\n");
+		// 	COMPILE_L();
+		// 	fprintf(file, "pop rax\n");
+		// 	COMPILE_R();
+		// 	fprintf(file, "dup\n");
+		// 	fprintf(file, "pop (rax)\n");
 
-			break;
-		}
+		// 	break;
+		// }
 
-		case OPCODE_ELEM_G_FILL : {
-			if (node->R) {
-				COMPILE_R();
-			} else {
-				fprintf(file, "push 256\n");
-				break;
-			}
+		// case OPCODE_ELEM_G_FILL : {
+		// 	if (node->R) {
+		// 		COMPILE_R();
+		// 	} else {
+		// 		fprintf(file, "push 256\n");
+		// 		break;
+		// 	}
 
-			fprintf(file, "dup\n");
-			fprintf(file, "g_fill\n");
+		// 	fprintf(file, "dup\n");
+		// 	fprintf(file, "g_fill\n");
 
-			break;
-		}
+		// 	break;
+		// }
 
-		case OPCODE_RET : {
-			if (!node->R) {
-				fprintf(file, "push 0\n");
-			} else {
-				COMPILE_R();
-			}
+		// case OPCODE_RET : {
+		// 	if (!node->R) {
+		// 		fprintf(file, "push 0\n");
+		// 	} else {
+		// 		COMPILE_R();
+		// 	}
 
-			fprintf(file, "swp\n");
-			fprintf(file, "ret\n");
+		// 	fprintf(file, "swp\n");
+		// 	fprintf(file, "ret\n");
 
-			break;
-		}
+		// 	break;
+		// }
 
-		case OPCODE_FUNC_DECL : {
-			if (!node->L) {
-				RAISE_ERROR("bad func decl node, func info node id is absent\n");
-				LOG_ERROR_LINE_POS(node);
-				break;
-			}
+		// case OPCODE_FUNC_DECL : {
+		// 	if (!node->L) {
+		// 		RAISE_ERROR("bad func decl node, func info node id is absent\n");
+		// 		LOG_ERROR_LINE_POS(node);
+		// 		break;
+		// 	}
 
-			if (!node->L->R) {
-				RAISE_ERROR("bad func info node, func id id is absent\n");
-				LOG_ERROR_LINE_POS(node);
-				break;
-			}
+		// 	if (!node->L->R) {
+		// 		RAISE_ERROR("bad func info node, func id id is absent\n");
+		// 		LOG_ERROR_LINE_POS(node);
+		// 		break;
+		// 	}
 
-			StringView *id = node->L->R->get_id();
-			if (id_table.find_in_upper_scope(ID_TYPE_FUNC, id) != NOT_FOUND) {
-				RAISE_ERROR("Redifenition of function [");
-				id->print();
-				printf("]\n");
-				LOG_ERROR_LINE_POS(node);
-			}
+		// 	StringView *id = node->L->R->get_id();
+		// 	if (id_table.find_in_upper_scope(ID_TYPE_FUNC, id) != NOT_FOUND) {
+		// 		RAISE_ERROR("Redifenition of function [");
+		// 		id->print();
+		// 		printf("]\n");
+		// 		LOG_ERROR_LINE_POS(node);
+		// 	}
 
-			id_table.declare_func(id, node->L->L, id_table.size());
-			int offset = id_table.find_func(id);
+		// 	id_table.declare_func(id, node->L->L, id_table.size());
+		// 	int offset = id_table.find_func(id);
 
-			fprintf(file, "jmp _func_");
-			id->print(file);
-			fprintf(file, "_%d_END\n", offset);
-			fprintf(file, "_func_");
-			id->print(file);
-			fprintf(file, "_%d_BEGIN:\n", offset);
+		// 	fprintf(file, "jmp _func_");
+		// 	id->print(file);
+		// 	fprintf(file, "_%d_END\n", offset);
+		// 	fprintf(file, "_func_");
+		// 	id->print(file);
+		// 	fprintf(file, "_%d_BEGIN:\n", offset);
 
-			id_table.add_scope(FUNC_SCOPE);
-			COMPILE_L();
-			COMPILE_R();
-			id_table.remove_scope();
-			fprintf(file, "push 0\n");
-			fprintf(file, "swp\n");
-			fprintf(file, "ret\n");
-			fprintf(file, "_func_");
-			id->print(file);
-			fprintf(file, "_%d_END:\n", offset);
-			break;
-		}
+		// 	id_table.add_scope(FUNC_SCOPE);
+		// 	COMPILE_L();
+		// 	COMPILE_R();
+		// 	id_table.remove_scope();
+		// 	fprintf(file, "push 0\n");
+		// 	fprintf(file, "swp\n");
+		// 	fprintf(file, "ret\n");
+		// 	fprintf(file, "_func_");
+		// 	id->print(file);
+		// 	fprintf(file, "_%d_END:\n", offset);
+		// 	break;
+		// }
 
-		case OPCODE_FUNC_INFO : {
-			COMPILE_L();
+		// case OPCODE_FUNC_INFO : {
+		// 	COMPILE_L();
 
-			node->R->get_id()->print(file);
-			fprintf(file, "_%d:\n", id_table.find_func(node->R->get_id()));
-			break;
-		}
+		// 	node->R->get_id()->print(file);
+		// 	fprintf(file, "_%d:\n", id_table.find_func(node->R->get_id()));
+		// 	break;
+		// }
 
-		case OPCODE_FUNC_ARG_DECL : {
-			if (!node->L) {
-				if (node->R) {
-					RAISE_ERROR("bad argument node, arg is absent\n");
-					LOG_ERROR_LINE_POS(node);
-				}
-				break;
-			}
+		// case OPCODE_FUNC_ARG_DECL : {
+		// 	if (!node->L) {
+		// 		if (node->R) {
+		// 			RAISE_ERROR("bad argument node, arg is absent\n");
+		// 			LOG_ERROR_LINE_POS(node);
+		// 		}
+		// 		break;
+		// 	}
 
-			if (node->L->is_op(OPCODE_VAR_DEF)) {
-				if (!node->L->L) {
-					RAISE_ERROR("bad argument node, name of arg is absent\n");
-					LOG_ERROR_LINE_POS(node);
-					break;
-				}
+		// 	if (node->L->is_op(OPCODE_VAR_DEF)) {
+		// 		if (!node->L->L) {
+		// 			RAISE_ERROR("bad argument node, name of arg is absent\n");
+		// 			LOG_ERROR_LINE_POS(node);
+		// 			break;
+		// 		}
 
-				id_table.declare_var(node->L->L->get_id(), 1);
-			} else if (node->L->is_id()) {
-				id_table.declare_var(node->L->get_id(), 1);
-			} 
+		// 		id_table.declare_var(node->L->L->get_id(), 1);
+		// 	} else if (node->L->is_id()) {
+		// 		id_table.declare_var(node->L->get_id(), 1);
+		// 	} 
 
-			COMPILE_R();
-			break;
-		}
+		// 	COMPILE_R();
+		// 	break;
+		// }
 
-		case OPCODE_FUNC_CALL : {
-			if (id_table.find_func(node->R->get_id()) == NOT_FOUND) {
-			    cpl_arr_call(node, file);
-			} else {
-			    cpl_func_call(node, file);
-			}
-			break;
-		}
+		// case OPCODE_FUNC_CALL : {
+		// 	if (id_table.find_func(node->R->get_id()) == NOT_FOUND) {
+		// 	    cpl_arr_call(node, file);
+		// 	} else {
+		// 	    cpl_func_call(node, file);
+		// 	}
+		// 	break;
+		// }
 
 		case '{' : {
 			id_table.add_scope();
@@ -1021,7 +1033,7 @@ bool Compiler::cpl_value(const CodeNode *node, FILE *file) {
 	assert(node);
 	assert(file);
 
-	fprintf(file, "%.7lg", node->get_val());
+	cpl_mov_reg_imm64(REG_RAX, node->get_val());
 	return true;
 }
 
@@ -1155,7 +1167,7 @@ void Compiler::compile(const CodeNode *node, FILE *file) {
 
 	switch (node->type) {
 		case VALUE : {
-		    cpl_push(node, file);
+		    cpl_value(node, file);
 			break;
 		}
 

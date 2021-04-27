@@ -19,6 +19,8 @@ enum REGMAN_VAR_TYPE {
 const int REGMAN_REGS[] = {
 	REG_R8,
 	REG_R9,
+	REG_R10,
+	// REG_R11
 };
 const int REGMAN_REGS_CNT = sizeof(REGMAN_REGS) / sizeof(REGMAN_REGS[0]);
 
@@ -75,7 +77,7 @@ public:
 	void release_tmp_reg(int reg);
 
 	int store_reg_info  (const int reg);
-	int restore_reg_info(const int id);
+	int restore_reg_info(const int id, bool to_store=false);
 
 	int push(const int reg);
 	int pop (const int reg);

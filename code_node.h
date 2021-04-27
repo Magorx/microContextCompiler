@@ -59,6 +59,9 @@ public:
 // Setters & Getters ==========================================================
 //=============================================================================
 
+	CodeNode *get_L() const;
+	CodeNode *get_R() const;
+
 	void set_L(CodeNode *L_);
 	void set_R(CodeNode *R_);
 	void set_LR(CodeNode *L_, CodeNode *R_);

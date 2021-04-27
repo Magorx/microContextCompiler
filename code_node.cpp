@@ -123,6 +123,14 @@ void CodeNode::DELETE(CodeNode *node, bool recursive, bool to_delete_id) {
 // Setters & Getters ==========================================================
 //=============================================================================
 
+CodeNode *CodeNode::get_L() const {
+	return L;
+}
+
+CodeNode *CodeNode::get_R() const {
+	return R;
+}
+
 void CodeNode::set_L(CodeNode *L_) {
 	L = L_;
 }

@@ -120,7 +120,7 @@ int RegManager::get_local_var_reg(int offset, const char* var_name) {
 	id_to_reg[reg_info[reg].id] = reg_info[reg];
 	local_var_to_id[offset] = reg_info[reg].id;
 
-	compiler->cpl_mov_reg_mem(reg_info[reg].reg, REG_RBP_DISPL(offset));
+	compiler->cpl_mov_reg_mem(reg_info[reg].reg, REG_RBP_DISPL(offset * -8));
 
 	return reg_info[reg].reg;
 }
@@ -178,6 +178,7 @@ void RegManager::release_var_reg(int reg) {
 }
 
 void RegManager::release_tmp_reg(int reg) {
+	reg = get_ind_by_reg(reg);
 	reg_info[reg].is_used = 0;
 	id_to_reg.erase(reg_info[reg].id);
 }
@@ -208,36 +209,46 @@ int RegManager::get_tmp_reg(int id) {
 }
 
 int RegManager::store_reg_info(const int reg) {
-	printf("reg to store: %d\n", reg);
 	int id = reg_info[reg].id;
+	ANNOUNCE("  store", "regman", "reg[%d] -> id[%d]", reg, id);
 
 	if (reg_info[reg].is_local == -1) {
 		if (reg_info[reg].offset < 0) {
-			printf("pushing\n");
 			push(reg_info[reg].reg);
 			id_to_stack_offset[id] = cur_stack_size;
 			reg_info[reg].offset = cur_stack_size;
 			id_to_reg[id] = reg_info[reg];
 		} else {
-			printf("put\n");
-			compiler->cpl_mov_mem_reg(REG_RSP_DISPL(id_to_stack_offset[id] - cur_stack_size), reg_info[reg].reg);
+			compiler->cpl_mov_mem_reg(REG_RSP_DISPL((id_to_stack_offset[id] - cur_stack_size) * -8), reg_info[reg].reg);
 		}
 	} else {
-		compiler->cpl_mov_mem_reg(REG_RBP_DISPL(reg_info[reg].offset), reg_info[reg].reg);
+		compiler->cpl_mov_mem_reg(REG_RBP_DISPL(reg_info[reg].offset * -8), reg_info[reg].reg);
 	}
 
 	return 0;
 }
 
-int RegManager::restore_reg_info(const int id) {
+int RegManager::restore_reg_info(const int id, bool to_store) {
 	int reg = id_to_reg[id].reg;
+	ANNOUNCE("restore", "regman", "id[%d] -> reg[%d]", id, reg);
+
+	if (reg_info[get_ind_by_reg(reg)].id == id) {
+		return 0;
+	}
+
+	if (to_store) {
+		store_reg_info(get_ind_by_reg(id_to_reg[id].reg));
+	}
+
 	int stack_offset = id_to_stack_offset[id];
 	reg_info[get_ind_by_reg(id_to_reg[id].reg)] = id_to_reg[id];
 
-	if (reg_info[reg].is_local == -1) {
-		compiler->cpl_mov_reg_mem(reg, REG_RSP_DISPL(stack_offset - cur_stack_size));
+	if (reg_info[get_ind_by_reg(reg)].is_local == -1) {
+		ANNOUNCE("restore", "regman", "is a tmp reg");
+		compiler->cpl_mov_reg_mem(reg, REG_RSP_DISPL((stack_offset - cur_stack_size) * -8));
 	} else {
-		compiler->cpl_mov_reg_mem(reg, REG_RBP_DISPL(reg_info[get_ind_by_reg(reg)].offset));
+		ANNOUNCE("restore", "regman", "is a local var reg");
+		compiler->cpl_mov_reg_mem(reg, REG_RBP_DISPL(reg_info[get_ind_by_reg(reg)].offset * -8));
 	}
 
 	return 0;
