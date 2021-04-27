@@ -1,5 +1,7 @@
 /*
-sponsored by https://github.com/alpocnito/MIPT/blob/master/2_semestr/RealAsmTranslator/translator.cpp
+sponsored by
+1) https://github.com/alpocnito/MIPT/blob/master/2_semestr/RealAsmTranslator/translator.cpp
+2) https://en.wikipedia.org/wiki/Executable_and_Linkable_Format
 */
 
 #include <elf.h>
@@ -12,7 +14,7 @@ sponsored by https://github.com/alpocnito/MIPT/blob/master/2_semestr/RealAsmTran
 #define B8 __uint64_t    // 8 bytes
 
 struct ELF_Header {
-    B4 ei_MAG        = 0x464C457F;           // signature
+    B4 ei_MAG        = 0x464C457F;           // signature - " ELF"
     B1 ei_CLASS      = ELFCLASS64;           // 64 bit format
     B1 ei_DATA       = ELFDATA2LSB;          // little endian
     B4 ei_VERSION    = 0x00000001;           // signature
