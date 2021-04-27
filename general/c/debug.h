@@ -6,8 +6,8 @@
 
 #define KCTF_DEBUG_LEVEL 0 ///< Just a mode for debugging
 
-#define DEBUG_NUMBER 1;   ///< Just an int for debugging
-#define DEBUG_LETTER 'a'; ///< Just a char for debugging
+extern int DEBUG_NUMBER; ///< Just an int for debugging
+extern int DEBUG_LETTER; ///< Just a char for debugging
 
 #define DEBUG_NUMBER_PRINT() printf("[deb] %d [deb]\n", DEBUG_NUMBER++);
 #define DEBUG_LETTER_PRINT() printf("[deb] %c [deb]\n", DEBUG_LETTER++);

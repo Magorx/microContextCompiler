@@ -26,7 +26,7 @@ main_cpp: main.cpp general_cpp.h
 	./out
 
 %.o : c/%.c
-	@echo !!!
+	@echo build general $<
 	$(CPP) $(C_FLAGS) -c $< -o $@
 
 %.o : cpp/%.cpp

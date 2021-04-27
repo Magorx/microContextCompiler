@@ -22,6 +22,10 @@ void Compiler::fprintf_asgn_additional_operation(FILE *file, const int op) {
 	}
 }
 
+void Compiler::cpl_nop() {
+	cmd.put(0x90);
+}
+
 void Compiler::cpl_math_op(const int reg_dst, const int reg_src, const char op) {
 	switch(op) {
 		case '+' : {
@@ -1211,7 +1215,7 @@ void Compiler::ctor() {
 	while_cnt = 0;
 	for_cnt   = 0;
 
-	// regstack.ctor();
+	regman = RegManager::NEW(this);
 }
 
 Compiler *Compiler::NEW() {
@@ -1226,6 +1230,7 @@ Compiler *Compiler::NEW() {
 
 void Compiler::dtor() {
 	id_table.dtor();
+	RegManager::DELETE(regman);
 }
 
 void Compiler::DELETE(Compiler *compiler) {

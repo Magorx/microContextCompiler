@@ -15,7 +15,9 @@
 #include "byte_buffer.h"
 
 #include "machine_codes/defines.h"
-// #include "reg_manager.h"
+#include "reg_manager.h"
+
+class RegManager;
 
 //=============================================================================
 // Compiler ===================================================================
@@ -34,8 +36,7 @@ private:
 	int while_cnt;
 	int for_cnt;
 //=============================================================================
-	// RegManager regman;
-	ByteBuffer cmd;
+	
 //=============================================================================
 	void fprintf_asgn_additional_operation(FILE *file, const int op);
 	void cpl_operation(const CodeNode *node, FILE *file);
@@ -57,6 +58,9 @@ private:
 
 
 public:
+	RegManager *regman;
+	ByteBuffer cmd;
+
 	void cpl_math_op       (const int reg_dst, const int reg_src, const char op);
 
 	void cpl_cmp_reg_reg	 (const int reg_src, const int reg_dst);
@@ -87,6 +91,7 @@ public:
 
 	void cpl_breakpoint();
 	void cpl_syscall();
+	void cpl_nop();
 
 	void hexdump_cmd() const;
 
