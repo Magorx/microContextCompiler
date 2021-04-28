@@ -62,7 +62,7 @@ size_t ByteBuffer::get_size() const {
     return size;
 }
 
-const byte *ByteBuffer::get_data() const {
+byte *ByteBuffer::get_data() {
     return data;
 }
 

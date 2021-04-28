@@ -20,8 +20,8 @@ all: kncc
 update: all
 	mv $(CUR_PROG) bin
 
-kncc: main.cpp elf_builder.h compiler.o id_table_scope.o id_table.o compiler_options.o recursive_parser.o lexical_parser.o lex_token.o announcement.o code_node.o opcodes.h byte_buffer.o machine_codes/defines.h reg_manager.o debug.o
-	$(CPP) $(CFLAGS) main.cpp compiler.o recursive_parser.o code_node.o compiler_options.o lex_token.o lexical_parser.o id_table.o id_table_scope.o byte_buffer.o $(G)/announcement.o reg_manager.o $(G)/debug.o -o kncc
+kncc: main.cpp compiler.o id_table_scope.o id_table.o compiler_options.o recursive_parser.o lexical_parser.o lex_token.o announcement.o code_node.o opcodes.h byte_buffer.o machine_codes/defines.h reg_manager.o debug.o hashtable.o ht_node.h linker.o elf_builder.o
+	$(CPP) $(CFLAGS) main.cpp compiler.o recursive_parser.o code_node.o compiler_options.o lex_token.o lexical_parser.o id_table.o id_table_scope.o byte_buffer.o $(G)/announcement.o reg_manager.o $(G)/debug.o hashtable.o linker.o elf_builder.o -o kncc
 
 %.o : %.cpp %.h
 	$(CPP) $(C_FLAGS) -c $< -o $@

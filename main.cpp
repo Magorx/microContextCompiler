@@ -8,7 +8,7 @@
 #include "reg_stack.h"
 #include "byte_buffer.h"
 
-#include "elf_builder.h"
+#include "linker.h"
 
 union IntToQWord {
 	int i;
@@ -80,6 +80,14 @@ int main(const int argc, const char **argv) {
 	CodeNode::DELETE(prog, true, true);
 	file.dtor();
 
+	MicroLinker linker;
+	linker.ctor();
+
+	comp.cpl_jmp_rel32(0);
+
+	linker.request_fixup({"jump_1", (int) comp.cmd.get_size() - 4, fxp_ABSOLUTE});
+	linker.add_fixup    ({"jump_2", (int) comp.cmd.get_size() - 4, fxp_RELATIVE});
+
 	comp.cpl_mov_reg_imm64(REG_RCX, IntToQWord(0, 0, 0, 0).i);
 	comp.cpl_math_op(REG_RCX, REG_RAX, '+');
 	comp.cpl_push_reg(REG_RCX);
@@ -90,8 +98,17 @@ int main(const int argc, const char **argv) {
 	comp.cpl_mov_reg_imm64(REG_RDX, 4);
 	comp.cpl_syscall();
 
+	comp.cpl_jmp_rel32(0);
+	
+	linker.request_fixup({"jump_3", (int) comp.cmd.get_size() - 4, fxp_RELATIVE});
+	linker.add_fixup    ({"jump_1", 0, fxp_ABSOLUTE});
 
-	build_elf((const char*) comp.cmd.get_data(), comp.cmd.get_size(), "elf");
+	comp.cpl_jmp_rel32(0);
+
+	linker.request_fixup({"jump_2", (int) comp.cmd.get_size() - 4, fxp_RELATIVE});
+	linker.add_fixup    ({"jump_3", (int) comp.cmd.get_size() - 4, fxp_RELATIVE});
+
+	linker.link_programm((char*) comp.cmd.get_data(), comp.cmd.get_size(), "elf");
 	comp.hexdump_cmd();
 
 	comp.dtor();
@@ -125,7 +142,7 @@ void test() {
 	comp.cpl_nop();
 	comp.cpl_nop();
 
-	build_elf((const char*) comp.cmd.get_data(), comp.cmd.get_size(), "elf");
+	build_elf((const char*) comp.cmd.get_data(), comp.cmd.get_size(), "elf", 0);
 
 	comp.hexdump_cmd();
 }

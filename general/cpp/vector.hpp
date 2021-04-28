@@ -100,6 +100,7 @@ public:
 		if (cur_size + 1 == capacity) {
 			realloc_bufer(capacity * 2);
 		}
+
 		return buffer[cur_size++] = val;
 	}
 

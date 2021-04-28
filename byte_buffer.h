@@ -31,7 +31,7 @@ public:
    	void put_with_offset(const byte *mem, size_t mem_size, size_t offset);
    	
    	size_t get_size() const;
-    const byte *get_data() const;
+    byte *get_data();
 
     void hexdump(FILE *file = stdout) const;
 };

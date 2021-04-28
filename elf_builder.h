@@ -1,3 +1,6 @@
+#ifndef ELF_BUILDER
+#define ELF_BUILDER
+
 /*
 sponsored by
 1) https://github.com/alpocnito/MIPT/blob/master/2_semestr/RealAsmTranslator/translator.cpp
@@ -5,6 +8,9 @@ sponsored by
 */
 
 #include <elf.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cassert>
 
 #pragma pack(push, 1)    // that's important to make compiler pack headers withour any alignments to preserve header's sizes
 
@@ -12,6 +18,8 @@ sponsored by
 #define B2 __uint16_t    // 2 bytes
 #define B4 __uint32_t    // 4 bytes
 #define B8 __uint64_t    // 8 bytes
+
+#define byte char
 
 struct ELF_Header {
     B4 ei_MAG        = 0x464C457F;           // signature - " ELF"
@@ -46,47 +54,39 @@ struct ProgHeader {
     B8 P_ALIGN   = 0x0000000000200000;         // P_VADDR = P_OFFSET % P_ALIGN ???
 };
 
+struct SectionHeader {
+    B4 SH_NAME      = 0x00000000;
+    B4 SH_TYPE      = 0x00000000 | SHT_STRTAB;
+    B8 SH_FLAGS     = 0x0000000000000000 | SHF_WRITE;
+    B8 SH_ADDR      = 0x0000000000000000;
+    B8 SH_OFFSET    = 0x0000000000000000;
+    B8 SH_SIZE      = 0x0000000000000020;
+    B4 SH_LINK      = 0x00000000;
+    B4 SH_INFO      = 0x00000000;
+    B8 SH_ADDRALIGN = 0x0000000000000000;
+    B8 SH_ENTSIZE   = 0x0000000000000000;
+};
+
+struct SectionShstrtab {
+    const char names[2][10] = {
+        "aaaa",
+        "bbbb"
+    };
+};
+
 #pragma pack(pop)
 
 
-void build_elf(const char *prog, const size_t prog_size, FILE *file, bool to_add_exit_code_zero = true) {
-    ELF_Header elf_h ;
-    ProgHeader prog_h;
+void build_elf(const char *prog, 
+               const size_t prog_size, 
+               FILE *file, 
+               int global_data_size, 
+               bool to_add_exit_code_zero = true);
 
-    elf_h.E_ENTRY += sizeof(ELF_Header);
-    elf_h.E_ENTRY += sizeof(ProgHeader);
+void build_elf(const char *prog, 
+               const size_t prog_size,
+               const char *filename,
+               int global_data_size, 
+               bool to_add_exit_code_zero = true);
 
-    prog_h.P_FILESZ += prog_size;
-    prog_h.P_MEMSZ  += prog_size;
-
-    fwrite(&elf_h,  sizeof(elf_h),  1,         file);
-    fwrite(&prog_h, sizeof(prog_h), 1,         file);
-    fwrite(prog,    sizeof(byte),   prog_size, file);
-    
-    // don't forget, your prog has to finish itself with:
-    // 
-    // mov rax, 60 <- exit syscall
-    // mov rdi, 0  <- exit code
-    // syscall
-    //
-    // YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
-
-    if (to_add_exit_code_zero) {
-        unsigned char buffer[] = {
-            0x48, 0xc7, 0xc0, 0x3c, 0x00, 0x00, 0x00, // mov rax, 60
-            0x48, 0xc7, 0xc7, 0x00, 0x00, 0x00, 0x00, // mov rdi, 0
-            0x0f, 0x05                                // syscall
-        };
-
-        fwrite(buffer, sizeof(char), sizeof(buffer), file);
-    }
-}
-
-void build_elf(const char *prog, const size_t prog_size, const char *filename, bool to_add_exit_code_zero = true) {
-    FILE *file = fopen(filename, "wb");
-    assert(file);
-
-    build_elf(prog, prog_size, file, to_add_exit_code_zero);
-
-    fclose(file);
-}
+#endif // ELF_BUILDER

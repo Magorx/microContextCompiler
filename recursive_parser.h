@@ -15,7 +15,7 @@
 typedef CodeNode ParseNode;
 
 enum PARSER_ERROR {
-	OK = 0,
+	prs_OK = 0,
 
 	ERROR_SYNTAX = 100,
 };
