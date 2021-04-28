@@ -31,8 +31,8 @@ struct ELF_Header {
     B2 E_PHENTSIZE   = 0x0038;               // size of program header table 
     B2 E_PHNUM       = 0x0001;               // number of entries in the progtam header file
     B2 E_SHENTSIZE   = 0x0040;               // size of the section header table
-    B2 E_SHNUM       = 0x0005;               // number of entries in the section header table
-    B2 E_SHSTRNDX    = 0x0004;               // section header, that contains section names
+    B2 E_SHNUM       = 0x0000;               // number of entries in the section header table
+    B2 E_SHSTRNDX    = 0x0000;               // section header, that contains section names
 };
 
 struct ProgHeader {
@@ -44,7 +44,6 @@ struct ProgHeader {
     B8 P_FILESZ  = 0x0000000000000080;         // Size on file
     B8 P_MEMSZ   = 0x0000000000000080;         // Size in memory (??)
     B8 P_ALIGN   = 0x0000000000200000;         // P_VADDR = P_OFFSET % P_ALIGN ???
-    B8 zeoroz    = 0x0000000000000000;         // (zeroes?)
 };
 
 #pragma pack(pop)
