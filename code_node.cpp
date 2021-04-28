@@ -6,7 +6,8 @@ data(),
 L(nullptr),
 R(nullptr),
 line(0),
-pos(0)
+pos(0),
+ershov_number(0)
 {}
 
 CodeNode::~CodeNode() {}
@@ -19,6 +20,7 @@ void CodeNode::ctor() {
 
 	line = 0;
 	pos  = 0;
+	ershov_number = 0;
 }
 
 CodeNode *CodeNode::NEW() {
@@ -32,14 +34,14 @@ CodeNode *CodeNode::NEW() {
 }
 
 void CodeNode::ctor(const char type_, const int op_or_var, CodeNode *L_, CodeNode *R_, const int line_, const int pos_) {
-	type = type_;
+	set_type(type_);
 	if (type == OPERATION) {
-		data.op = op_or_var;
+		set_op(op_or_var);
 	} else {
-		data.var = op_or_var;
+		set_var(op_or_var);
 	}
-	L = L_;
-	R = R_;
+	set_L(L_);
+	set_R(R_);
 	line = line_;
 	pos  = pos_;
 }
@@ -55,12 +57,12 @@ CodeNode *CodeNode::NEW(const char type_, const int op_or_var, CodeNode *L_, Cod
 }
 
 void CodeNode::ctor(const char type_, const double val_, CodeNode *L_, CodeNode *R_, const int line_, const int pos_) {
-	type     = type_;
-	data.val = val_;
-	L        = L_;
-	R        = R_;
-	line     = line_;
-	pos      = pos_;
+	set_type(type_);
+	set_val(val_);
+	set_L(L_);
+	set_R(R_);
+	line = line_;
+	pos = pos_;
 }
 
 CodeNode *CodeNode::NEW(const char type_, const double val_, CodeNode *L_, CodeNode *R_, const int line_, const int pos_) {
@@ -74,10 +76,10 @@ CodeNode *CodeNode::NEW(const char type_, const double val_, CodeNode *L_, CodeN
 }
 
 void CodeNode::ctor(const char type_, StringView *id_, CodeNode *L_, CodeNode *R_, const int line_, const int pos_) {
-	type    = type_;
+	set_type(type_);
 	data.id = id_;
-	L       = L_;
-	R       = R_;
+	set_L(L_);
+	set_R(R_);
 	line    = line_;
 	pos     = pos_;
 }
@@ -123,6 +125,18 @@ void CodeNode::DELETE(CodeNode *node, bool recursive, bool to_delete_id) {
 // Setters & Getters ==========================================================
 //=============================================================================
 
+int CodeNode::get_ershov_number(const CodeNode *node) {
+	if (!node) {
+		return 0;
+	} else {
+		return node->ershov_number;
+	}
+}
+
+int inline max_int(int a, int b) {
+	return a > b ? a : b;
+}
+
 CodeNode *CodeNode::get_L() const {
 	return L;
 }
@@ -133,19 +147,35 @@ CodeNode *CodeNode::get_R() const {
 
 void CodeNode::set_L(CodeNode *L_) {
 	L = L_;
+	ershov_number = max_int(ershov_number, get_ershov_number(L) + 1);
 }
 
 void CodeNode::set_R(CodeNode *R_) {
 	R = R_;
+	ershov_number = max_int(ershov_number, get_ershov_number(R) + 1);
 }
 
 void CodeNode::set_LR(CodeNode *L_, CodeNode *R_) {
-	L = L_;
-	R = R_;
+	set_L(L_);
+	set_R(R_);
 }
 
 void CodeNode::set_type(const char type_) {
 	type = type_;
+
+	switch(type) {
+		VALUE:
+		ID:
+			ershov_number = 0;
+		VARIABLE:
+			ershov_number = 1;
+			break;
+		OPERATION:
+			ershov_number = max_int(get_ershov_number(L), get_ershov_number(R)) + 1;
+			break;
+		default:
+			ershov_number = 0;
+	}
 }
 
 void CodeNode::set_op(const int op_) {
@@ -292,6 +322,7 @@ void CodeNode::gv_dump(FILE *file, const char *name) const {
 	}
 
 	fprintf(file, "\"node_%p\" [label=\"", this);
+	fprintf(file, "[%d]\n", ershov_number);
 
 	if (type == VALUE) {
 		fprintf(file, "%lg\" shape=circle style=filled fillcolor=\"#FFFFCC\"", get_val());

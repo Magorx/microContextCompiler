@@ -194,6 +194,13 @@ void Compiler::cpl_operation(const CodeNode *node, FILE *file) {
 
 	#define CHECK_ERROR() do {if (ANNOUNCEMENT_ERROR) {return;}} while (0)
 
+	int LAST_COMPILED = -1;
+	int L_COMPLEX = CodeNode::get_ershov_number(node->get_L());
+	int R_COMPLEX = CodeNode::get_ershov_number(node->get_R());
+
+	#define COMPILE_MORE_COMPLEX() if (L_COMPLEX > R_COMPLEX) {COMPILE_L(); LAST_COMPILED = 0;} else {COMPILE_R(); LAST_COMPILED = 1;}
+	#define COMPILE_ANOTHER() if (LAST_COMPILED) {COMPILE_L(); LAST_COMPILED = 0;} else {COMPILE_R(); LAST_COMPILED = 1;}
+
 	switch (node->get_op()) {
 		case '+' :
 		case '*' :
@@ -201,26 +208,22 @@ void Compiler::cpl_operation(const CodeNode *node, FILE *file) {
 		
 		 {
 			if (node->L) {
-				COMPILE_L();
+				COMPILE_MORE_COMPLEX();
 
 				int r1    = regman->get_tmp_reg();
 				int r1_id = regman->get_reg_id(r1);
 				cpl_mov_reg_reg(r1, REG_RAX);
 
-				COMPILE_R();
-				regman->restore_reg_info(r1_id, true);
+				COMPILE_ANOTHER();
+				regman->restore_reg_info(r1_id);
 				cpl_math_op(REG_RAX, r1, node->get_op());
 
 				regman->release_tmp_reg(r1);
 			} else {
-				COMPILE_R();
-				if (node->get_op() == '-') {
-					int r1 = regman->get_tmp_reg();
-
-					cpl_mov_reg_imm64(r1, -1);
-					cpl_math_op(REG_RAX, r1, '*');
-
-					regman->release_tmp_reg(r1);
+				if (node->get_op() == '+') {
+					COMPILE_R();
+				} else {
+					LOG_ERROR_LINE_POS(node);
 				}
 			}
 			break;
@@ -229,32 +232,49 @@ void Compiler::cpl_operation(const CodeNode *node, FILE *file) {
 		case '-' :
 		case '/' : {
 			if (node->L && node->R) {
-				COMPILE_R();
+				COMPILE_MORE_COMPLEX();
 
 				int r1    = regman->get_tmp_reg();
 				int r1_id = regman->get_reg_id(r1);
 				cpl_mov_reg_reg(r1, REG_RAX);
 
-				COMPILE_L();
-				regman->restore_reg_info(r1_id, true);
+				COMPILE_ANOTHER();
+				regman->restore_reg_info(r1_id);
+
+				if (LAST_COMPILED) {
+					cpl_xchg_rax_reg(r1);
+				}
+
 				cpl_math_op(REG_RAX, r1, node->get_op());
 
 				regman->release_tmp_reg(r1);
 			} else {
-				LOG_ERROR_LINE_POS(node);
+				if (node->get_op() == '-') {
+					int r1 = regman->get_tmp_reg();
+
+					cpl_mov_reg_imm64(r1, -1);
+					cpl_math_op(REG_RAX, r1, '*');
+
+					regman->release_tmp_reg(r1);
+				} else {
+					LOG_ERROR_LINE_POS(node);
+				}
 			}
 			break;
 		}
 
 		case '=' : {
 			COMPILE_R();
-			fprintf(file, "pop ");
-		    cpl_lvalue(node->L, file);
-			fprintf(file, "\n");
 
-			fprintf(file, "push ");
-		    cpl_lvalue(node->L, file, true);
-			fprintf(file, "\n");
+			int offset, found;
+			cpl_lvalue(node->L, offset, found);
+			if (found == NOT_FOUND || found == ID_TYPE_GLOBAL) {
+				return;
+			}
+
+			int r1 = regman->get_var_reg(offset, REGMAN_VAR_LOCAL, "var");
+			cpl_mov_reg_reg(r1, REG_RAX);
+			regman->release_var_reg(r1);
 
 			break;
 		}
@@ -333,36 +353,36 @@ void Compiler::cpl_operation(const CodeNode *node, FILE *file) {
 			break;
 		}
 
-		// case OPCODE_VAR_DEF : {
-		// 	if (!node->L || !node->L->is_id()) {
-		// 		RAISE_ERROR("bad variable definition [\n");
-		// 		node->space_dump();
-		// 		printf("]\n");
-		// 		LOG_ERROR_LINE_POS(node);
-		// 		break;
-		// 	}
+		case OPCODE_VAR_DEF : {
+			if (!node->L || !node->L->is_id()) {
+				RAISE_ERROR("bad variable definition [\n");
+				node->space_dump();
+				printf("]\n");
+				LOG_ERROR_LINE_POS(node);
+				break;
+			}
 
-		// 	if (node->R) {
-		// 		COMPILE_R();
-		// 	}
+			if (node->R) {
+				COMPILE_R();
+			}
 
-		// 	bool ret = id_table.declare_var(node->L->get_id(), 1);
-		// 	if (!ret) {
-		// 		RAISE_ERROR("Redefinition of the id [");
-		// 		node->L->get_id()->print();
-		// 		printf("]\n");
-		// 		LOG_ERROR_LINE_POS(node);
-		// 		break;
-		// 	}
+			bool ret = id_table.declare_var(node->L->get_id(), 1);
+			if (!ret) {
+				RAISE_ERROR("Redefinition of the id [");
+				node->L->get_id()->print();
+				printf("]\n");
+				LOG_ERROR_LINE_POS(node);
+				break;
+			}
 
-		// 	if (node->R) {
-		// 		fprintf(file, "pop ");
-		// 	    cpl_lvalue(node->L, file, false, false, true);
-		// 		fprintf(file, "\n");
-		// 	}
+			// if (node->R) {
+			// 	fprintf(file, "pop ");
+			//     cpl_lvalue(node->L, file, false, false, true);
+			// 	fprintf(file, "\n");
+			// }
 
-		// 	break;
-		// }
+			break;
+		}
 
 		// case OPCODE_ARR_DEF : {
 		// 	CodeNode *arr_name = node->L->R;
@@ -758,276 +778,272 @@ void Compiler::cpl_expr(const CodeNode *node, FILE *file, const bool to_pop) {
 	} else {
 		compile(node, file);
 	}
-
-	if (to_pop) {
-		fprintf(file, "pop rzx\n");
-	}
 }
 
-void Compiler::cpl_func_call(const CodeNode *node, FILE *file) {
-	assert(node);
-	assert(file);
+// void Compiler::cpl_func_call(const CodeNode *node, FILE *file) {
+// 	assert(node);
+// 	assert(file);
 
-	if (false && !node->L) {
-		RAISE_ERROR("bad func call, arglist is absent\n");
-		LOG_ERROR_LINE_POS(node);
-		return;
-	}
+// 	if (false && !node->L) {
+// 		RAISE_ERROR("bad func call, arglist is absent\n");
+// 		LOG_ERROR_LINE_POS(node);
+// 		return;
+// 	}
 
-	const StringView *id = nullptr;
-	if (!node->R) {
-		if (node->is_id()) {
-			id = node->get_id();
-		} else {
-			RAISE_ERROR("bad func call, func name is absent\n");
-			LOG_ERROR_LINE_POS(node);
-			return;
-		}
-	} else {
-		if (!node->R->is_id()) {
-			RAISE_ERROR("bad func call, func name is not a name lol\n");
-			LOG_ERROR_LINE_POS(node);
-			return;
-		}
-		id = node->R->get_id();
-	}
+// 	const StringView *id = nullptr;
+// 	if (!node->R) {
+// 		if (node->is_id()) {
+// 			id = node->get_id();
+// 		} else {
+// 			RAISE_ERROR("bad func call, func name is absent\n");
+// 			LOG_ERROR_LINE_POS(node);
+// 			return;
+// 		}
+// 	} else {
+// 		if (!node->R->is_id()) {
+// 			RAISE_ERROR("bad func call, func name is not a name lol\n");
+// 			LOG_ERROR_LINE_POS(node);
+// 			return;
+// 		}
+// 		id = node->R->get_id();
+// 	}
 
-	const CodeNode *arglist = node->L;
+// 	const CodeNode *arglist = node->L;
 
-	int func_offset = 0;
-	if ((func_offset = id_table.find_func(id)) == NOT_FOUND) {
-		RAISE_ERROR("bad func call, func not declared [");
-		id->print();
-		printf("]\n");
-		LOG_ERROR_LINE_POS(node);
-		return;
-	}
+// 	int func_offset = 0;
+// 	if ((func_offset = id_table.find_func(id)) == NOT_FOUND) {
+// 		RAISE_ERROR("bad func call, func not declared [");
+// 		id->print();
+// 		printf("]\n");
+// 		LOG_ERROR_LINE_POS(node);
+// 		return;
+// 	}
 
-	const CodeNode *func_arglist = id_table.get_arglist(id);
-	if (!func_arglist) {
-		RAISE_ERROR("bad func call, declared func arglist is absent\n");
-		LOG_ERROR_LINE_POS(node);
-		return;
-	}
+// 	const CodeNode *func_arglist = id_table.get_arglist(id);
+// 	if (!func_arglist) {
+// 		RAISE_ERROR("bad func call, declared func arglist is absent\n");
+// 		LOG_ERROR_LINE_POS(node);
+// 		return;
+// 	}
 
-	//=====================================================================
-	// here we definetly will compile a function
+// 	//=====================================================================
+// 	// here we definetly will compile a function
 
-	id_table.add_scope(ARG_SCOPE);
+// 	id_table.add_scope(ARG_SCOPE);
 
-	while (arglist && func_arglist && arglist->L && func_arglist->L) {
-		const CodeNode *arg  = arglist->L;
-		const CodeNode *prot = func_arglist->L;
+// 	while (arglist && func_arglist && arglist->L && func_arglist->L) {
+// 		const CodeNode *arg  = arglist->L;
+// 		const CodeNode *prot = func_arglist->L;
 
-		if (arg->is_op(OPCODE_DEFAULT_ARG)) {
-		    cpl_default_arg(arg, prot, file);
-		} else if (arg->is_op(OPCODE_CONTEXT_ARG)) {
-		    cpl_context_arg(arg, prot, file);
-		} else if (arg->is_op(OPCODE_EXPR)) {
-		    cpl_expr_arg(arg, prot, file);
-		}
+// 		if (arg->is_op(OPCODE_DEFAULT_ARG)) {
+// 		    cpl_default_arg(arg, prot, file);
+// 		} else if (arg->is_op(OPCODE_CONTEXT_ARG)) {
+// 		    cpl_context_arg(arg, prot, file);
+// 		} else if (arg->is_op(OPCODE_EXPR)) {
+// 		    cpl_expr_arg(arg, prot, file);
+// 		}
 
-		arglist = arglist->R;
-		func_arglist = func_arglist->R;
-		CHECK_ERROR();
-	}
+// 		arglist = arglist->R;
+// 		func_arglist = func_arglist->R;
+// 		CHECK_ERROR();
+// 	}
 
-	while (func_arglist && func_arglist->L) {
-	    cpl_default_arg(node, func_arglist->L, file);
-		func_arglist = func_arglist->R;
-		CHECK_ERROR();
-	}
+// 	while (func_arglist && func_arglist->L) {
+// 	    cpl_default_arg(node, func_arglist->L, file);
+// 		func_arglist = func_arglist->R;
+// 		CHECK_ERROR();
+// 	}
 
-	id_table.remove_scope();
+// 	id_table.remove_scope();
 
-	fprintf(file, "push rvx\n");
-	fprintf(file, "push %d\n", id_table.get_func_offset());
-	fprintf(file, "add\n");
-	fprintf(file, "pop rvx\n");
+// 	fprintf(file, "push rvx\n");
+// 	fprintf(file, "push %d\n", id_table.get_func_offset());
+// 	fprintf(file, "add\n");
+// 	fprintf(file, "pop rvx\n");
 
-	fprintf(file, "call ");
-	id->print(file);
-	fprintf(file, "_%d\n", func_offset);
+// 	fprintf(file, "call ");
+// 	id->print(file);
+// 	fprintf(file, "_%d\n", func_offset);
 
-	fprintf(file, "push rvx\n");
-	fprintf(file, "push %d\n", id_table.get_func_offset());
-	fprintf(file, "sub\n");
-	fprintf(file, "pop rvx\n");
-}
+// 	fprintf(file, "push rvx\n");
+// 	fprintf(file, "push %d\n", id_table.get_func_offset());
+// 	fprintf(file, "sub\n");
+// 	fprintf(file, "pop rvx\n");
+// }
 
-void Compiler::cpl_default_arg(const CodeNode *arg, const CodeNode *prot, FILE *file) {
-	if (prot->is_id()) {
-		id_table.shift_backward();
-		bool ret = cpl_push(prot, file);
-		id_table.shift_forward();
+// void Compiler::cpl_default_arg(const CodeNode *arg, const CodeNode *prot, FILE *file) {
+// 	if (prot->is_id()) {
+// 		id_table.shift_backward();
+// 		bool ret = cpl_push(prot, file);
+// 		id_table.shift_forward();
 
-		if (!ret) {
-			RAISE_ERROR("func call arg position:\n");
-			LOG_ERROR_LINE_POS(arg);
-			return;
-		}
+// 		if (!ret) {
+// 			RAISE_ERROR("func call arg position:\n");
+// 			LOG_ERROR_LINE_POS(arg);
+// 			return;
+// 		}
 
-		id_table.declare_var(prot->get_id(), 1);
-		fprintf(file, "pop ");
-	    cpl_lvalue(prot, file, false, false, true);
-		fprintf(file, "\n");
-	} else if (prot->is_op(OPCODE_VAR_DEF)) {
-		if (!prot->R) {
-			RAISE_ERROR("bad func call, required arg [");
-			prot->L->get_id()->print();
-			printf("] has no default set\n");
-			LOG_ERROR_LINE_POS(arg);
-			return;
-		}
+// 		id_table.declare_var(prot->get_id(), 1);
+// 		fprintf(file, "pop ");
+// 	    cpl_lvalue(prot, file, false, false, true);
+// 		fprintf(file, "\n");
+// 	} else if (prot->is_op(OPCODE_VAR_DEF)) {
+// 		if (!prot->R) {
+// 			RAISE_ERROR("bad func call, required arg [");
+// 			prot->L->get_id()->print();
+// 			printf("] has no default set\n");
+// 			LOG_ERROR_LINE_POS(arg);
+// 			return;
+// 		}
 
-		id_table.shift_backward();
-		compile(prot->R, file);
-		id_table.shift_forward();
+// 		id_table.shift_backward();
+// 		compile(prot->R, file);
+// 		id_table.shift_forward();
 
-		id_table.declare_var(prot->L->get_id(), 1);
-		fprintf(file, "pop ");
-	    cpl_lvalue(prot->L, file, false, false, true);
-		fprintf(file, "\n");
-	} else {
-		RAISE_ERROR("bad func call, unexpected PROT type [");
-		printf("%d]\n", prot->get_op());
-		LOG_ERROR_LINE_POS(prot);
-		return;
-	}
-}
+// 		id_table.declare_var(prot->L->get_id(), 1);
+// 		fprintf(file, "pop ");
+// 	    cpl_lvalue(prot->L, file, false, false, true);
+// 		fprintf(file, "\n");
+// 	} else {
+// 		RAISE_ERROR("bad func call, unexpected PROT type [");
+// 		printf("%d]\n", prot->get_op());
+// 		LOG_ERROR_LINE_POS(prot);
+// 		return;
+// 	}
+// }
 
-void Compiler::cpl_context_arg(const CodeNode *arg, const CodeNode *prot, FILE *file) {
-	if (prot->is_id()) {
-		id_table.shift_backward();
-		bool ret = cpl_push(prot, file);
-		id_table.shift_forward();
+// void Compiler::cpl_context_arg(const CodeNode *arg, const CodeNode *prot, FILE *file) {
+// 	if (prot->is_id()) {
+// 		id_table.shift_backward();
+// 		bool ret = cpl_push(prot, file);
+// 		id_table.shift_forward();
 
-		if (!ret) {
-			RAISE_ERROR("func call arg position:\n");
-			LOG_ERROR_LINE_POS(arg);
-			return;
-		}
+// 		if (!ret) {
+// 			RAISE_ERROR("func call arg position:\n");
+// 			LOG_ERROR_LINE_POS(arg);
+// 			return;
+// 		}
 
-		id_table.declare_var(prot->get_id(), 1);
-		fprintf(file, "pop ");
-	    cpl_lvalue(prot, file, false, false, true);
-		fprintf(file, "\n");
-	} else if (prot->is_op(OPCODE_VAR_DEF)) {
-		id_table.shift_backward();
-		bool ret = cpl_push(prot->L, file);
-		id_table.shift_forward();
+// 		id_table.declare_var(prot->get_id(), 1);
+// 		fprintf(file, "pop ");
+// 	    cpl_lvalue(prot, file, false, false, true);
+// 		fprintf(file, "\n");
+// 	} else if (prot->is_op(OPCODE_VAR_DEF)) {
+// 		id_table.shift_backward();
+// 		bool ret = cpl_push(prot->L, file);
+// 		id_table.shift_forward();
 
-		if (!ret) {
-			RAISE_ERROR("func call arg position:\n");
-			LOG_ERROR_LINE_POS(arg);
-			return;
-		}
+// 		if (!ret) {
+// 			RAISE_ERROR("func call arg position:\n");
+// 			LOG_ERROR_LINE_POS(arg);
+// 			return;
+// 		}
 
-		id_table.declare_var(prot->L->get_id(), 1);
-		fprintf(file, "pop ");
-	    cpl_lvalue(prot->L, file, false, false, true);
-		fprintf(file, "\n");
-	} else {
-		RAISE_ERROR("bad func call, unexpected PROT type [");
-		printf("%d]\n", prot->get_op());
-		LOG_ERROR_LINE_POS(arg);
-		return;
-	}
-}
+// 		id_table.declare_var(prot->L->get_id(), 1);
+// 		fprintf(file, "pop ");
+// 	    cpl_lvalue(prot->L, file, false, false, true);
+// 		fprintf(file, "\n");
+// 	} else {
+// 		RAISE_ERROR("bad func call, unexpected PROT type [");
+// 		printf("%d]\n", prot->get_op());
+// 		LOG_ERROR_LINE_POS(arg);
+// 		return;
+// 	}
+// }
 
-void Compiler::cpl_expr_arg(const CodeNode *arg, const CodeNode *prot, FILE *file) {
-	if (!arg->L) {
-		RAISE_ERROR("bad func call, expr node has no expression inside\n");
-		LOG_ERROR_LINE_POS(arg);
-		return;
-	}
-	CodeNode *expr = arg->L;
-	id_table.shift_backward();
-	compile(expr, file);
-	id_table.shift_forward();
+// void Compiler::cpl_expr_arg(const CodeNode *arg, const CodeNode *prot, FILE *file) {
+// 	if (!arg->L) {
+// 		RAISE_ERROR("bad func call, expr node has no expression inside\n");
+// 		LOG_ERROR_LINE_POS(arg);
+// 		return;
+// 	}
+// 	CodeNode *expr = arg->L;
+// 	id_table.shift_backward();
+// 	compile(expr, file);
+// 	id_table.shift_forward();
 
-	if (prot->is_id()) {
-		id_table.declare_var(prot->get_id(), 1);
-		fprintf(file, "pop ");
-	    cpl_lvalue(prot, file, false, false, true);
-		fprintf(file, "\n");
-	} else if (prot->is_op(OPCODE_VAR_DEF)) {
-		id_table.declare_var(prot->L->get_id(), 1);
-		fprintf(file, "pop ");
-	    cpl_lvalue(prot->L, file, false, false, true);
-		fprintf(file, "\n");
-	} else {
-		RAISE_ERROR("bad func call, unexpected PROT type [");
-		printf("%d]\n", prot->get_op());
-		LOG_ERROR_LINE_POS(arg);
-		return;
-	}
-}
+// 	if (prot->is_id()) {
+// 		id_table.declare_var(prot->get_id(), 1);
+// 		fprintf(file, "pop ");
+// 	    cpl_lvalue(prot, file, false, false, true);
+// 		fprintf(file, "\n");
+// 	} else if (prot->is_op(OPCODE_VAR_DEF)) {
+// 		id_table.declare_var(prot->L->get_id(), 1);
+// 		fprintf(file, "pop ");
+// 	    cpl_lvalue(prot->L, file, false, false, true);
+// 		fprintf(file, "\n");
+// 	} else {
+// 		RAISE_ERROR("bad func call, unexpected PROT type [");
+// 		printf("%d]\n", prot->get_op());
+// 		LOG_ERROR_LINE_POS(arg);
+// 		return;
+// 	}
+// }
 
-void Compiler::cpl_arr_call(const CodeNode *node, FILE *file) {
-	if (!node->R) {
-		RAISE_ERROR("bad arr call, where is name, you are worthless [");
-		printf("%d]\n", node->get_op());
-		LOG_ERROR_LINE_POS(node);
-		return;
-	}
+// void Compiler::cpl_arr_call(const CodeNode *node, FILE *file) {
+// 	if (!node->R) {
+// 		RAISE_ERROR("bad arr call, where is name, you are worthless [");
+// 		printf("%d]\n", node->get_op());
+// 		LOG_ERROR_LINE_POS(node);
+// 		return;
+// 	}
 
-	CodeNode *id = node->R;
-	CodeNode *args = node->L;
-	// if (!arg->is_op(OPCODE_EXPR)) {
-	// 	RAISE_ERROR("bad arr call, argument is not an expr [");
-	// 	printf("%d]\n", node->get_op());
-	// 	LOG_ERROR_LINE_POS(node);
-	// 	return;
-	// }
+// 	CodeNode *id = node->R;
+// 	CodeNode *args = node->L;
+// 	// if (!arg->is_op(OPCODE_EXPR)) {
+// 	// 	RAISE_ERROR("bad arr call, argument is not an expr [");
+// 	// 	printf("%d]\n", node->get_op());
+// 	// 	LOG_ERROR_LINE_POS(node);
+// 	// 	return;
+// 	// }
 
-	int offset = 0;
-	int ret = id_table.find_var(id->get_id(), &offset);
-	if (ret == NOT_FOUND) {
-		RAISE_ERROR("variable does not exist [");
-		id->get_id()->print();
-		printf("]\n");
-		LOG_ERROR_LINE_POS(node);
-		return;
-	}
+// 	int offset = 0;
+// 	int ret = id_table.find_var(id->get_id(), &offset);
+// 	if (ret == NOT_FOUND) {
+// 		RAISE_ERROR("variable does not exist [");
+// 		id->get_id()->print();
+// 		printf("]\n");
+// 		LOG_ERROR_LINE_POS(node);
+// 		return;
+// 	}
 
-	fprintf(file, "push [rvx + %d]\n", offset);
+// 	fprintf(file, "push [rvx + %d]\n", offset);
 
-	while (args && args->L) {
-		CodeNode *arg = args->L;
-	    cpl_expr(arg, file);
-		fprintf(file, "add\n");
-		fprintf(file, "pop rax\n");
-		fprintf(file, "push [rax + 1]\n");
-		args = args->R;
-	}
-}
+// 	while (args && args->L) {
+// 		CodeNode *arg = args->L;
+// 	    cpl_expr(arg, file);
+// 		fprintf(file, "add\n");
+// 		fprintf(file, "pop rax\n");
+// 		fprintf(file, "push [rax + 1]\n");
+// 		args = args->R;
+// 	}
+// }
 
-bool Compiler::cpl_push(const CodeNode *node, FILE *file) {
-	assert(node);
-	assert(file);
+// bool Compiler::cpl_push(const CodeNode *node, FILE *file) {
+// 	assert(node);
+// 	assert(file);
 
-	fprintf(file, "push ");
-	bool result = false;
-	if (node->type == VALUE) {
-		if (node->get_val() < 0) {
-			fprintf(file, "0\npush ");
+// 	fprintf(file, "push ");
+// 	bool result = false;
+// 	if (node->type == VALUE) {
+// 		if (node->get_val() < 0) {
+// 			fprintf(file, "0\npush ");
 			
-			CodeNode tmp = {};
-			tmp.ctor(VALUE, fabs(node->get_val()), nullptr, nullptr, node->line, node->pos);
-		    cpl_value(&tmp, file);
-			tmp.dtor();
+// 			CodeNode tmp = {};
+// 			tmp.ctor(VALUE, fabs(node->get_val()), nullptr, nullptr, node->line, node->pos);
+// 		    cpl_value(&tmp, file);
+// 			tmp.dtor();
 
-			fprintf(file, "\nsub\n");
-		} else {
-			result = cpl_value(node, file);
-		}
-	} else if (node->type == ID) {
-		result = cpl_lvalue(node, file, false, false, true);
-	}
-	fprintf(file, "\n");
-	return result;
-}
+// 			fprintf(file, "\nsub\n");
+// 		} else {
+// 			result = cpl_value(node, file);
+// 		}
+// 	} else if (node->type == ID) {
+// 		result = cpl_lvalue(node, file, false, false, true);
+// 	}
+// 	fprintf(file, "\n");
+// 	return result;
+// }
 
 bool Compiler::cpl_value(const CodeNode *node, FILE *file) {
 	assert(node);
@@ -1037,15 +1053,11 @@ bool Compiler::cpl_value(const CodeNode *node, FILE *file) {
 	return true;
 }
 
-bool Compiler::cpl_lvalue(const CodeNode *node, FILE *file, 
-					const bool for_asgn_dup, 
-					const bool to_push, 
-					const bool initialization) {
+bool Compiler::cpl_lvalue(const CodeNode *node, int &offset, int &found) {
 	assert(node);
-	assert(file);
 
 	if (node->is_id()) {
-		if (!initialization && node->get_id()->starts_with("_") && !node->get_id()->starts_with("_)")) {
+		if (node->get_id()->starts_with("_") && !node->get_id()->starts_with("_)")) {
 			RAISE_ERROR("_varname is a constant, dont change it please: [");
 			node->get_id()->print();
 			printf("]\n");
@@ -1059,96 +1071,102 @@ bool Compiler::cpl_lvalue(const CodeNode *node, FILE *file,
 		// printf("cur id_table:\n");
 		// id_table.dump();
 
-		int offset = 0;
 		int is_found = id_table.find_var(node->get_id(), &offset);
+		found = is_found;
 
 		// printf("\nfound = %d", offset);
 		// printf("\n==================\n");
 
 
 
-		if (is_found == NOT_FOUND) {
-			RAISE_ERROR("variable does not exist [");
+		if (is_found == NOT_FOUND || is_found == ID_TYPE_GLOBAL) {
+			RAISE_ERROR("variable does not exist or is global [");
 			node->get_id()->print();
 			printf("]\n");
 			LOG_ERROR_LINE_POS(node);
+
 			return false;
 		}
 
-		if (is_found == ID_TYPE_GLOBAL) {
-			fprintf(file, "[%d]\n", GLOBAL_VARS_OFFSET + offset);
-		} else {
-			fprintf(file, "[rvx + %d]", offset);
-		}
+		// if (is_found == ID_TYPE_GLOBAL) {
+		// 	fprintf(file, "[%d]\n", GLOBAL_VARS_OFFSET + offset);
+		// } else {
+		// 	fprintf(file, "[rvx + %d]", offset);
+		// }
 		return true;
-	} else if (node->is_op(OPCODE_FUNC_CALL) && id_table.find_func(node->R->get_id()) == NOT_FOUND) { // so that's an array
-		CodeNode *id  = node->R;
-		CodeNode *args = node->L;
-
-		if (!initialization && id->get_id()->starts_with("_") && !id->get_id()->starts_with("_)")) {
-			RAISE_ERROR("_varname is a constant, dont change it please: [");
-			node->get_id()->print();
-			printf("]\n");
-			LOG_ERROR_LINE_POS(node);
-		}
-
-		int offset = 0;
-		int ret = id_table.find_var(id->get_id(), &offset);
-		if (ret == NOT_FOUND) {
-			RAISE_ERROR("variable does not exist [");
-			id->get_id()->print();
-			printf("]\n");
-			LOG_ERROR_LINE_POS(node);
-			return false;
-		}
-
-		// we are called by assign, so there's 'pop ' already written in assembler, let's fix it
-		if (for_asgn_dup) {
-			fprintf(file, "[rcx]\n");
-			//fprintf(file, "pop rzx\n");
-			// fprintf(file, "push [rax + %d + 1]\n", offset);
-			return true;
-		}
-
-		if (to_push) {
-			fprintf(file, "0\n");
-			fprintf(file, "pop rzx\n");
-		} else {
-			fprintf(file, "rbx\n");
-			fprintf(file, "push rbx\n");
-		}
-
-		fprintf(file, "push rvx + %d\n", offset);
-		fprintf(file, "pop rax\n");
-		while (args && args->L) {
-			fprintf(file, "push [rax]\n");
-			CodeNode *arg = args->L;
-		    cpl_expr(arg, file);
-			// TODO wtf is this... it works... so let it be... for 2d arrs... but not anyhow more...
-			//if (args->R->L) {
-				fprintf(file, "push 1\n");
-				fprintf(file, "add\n");
-			//}
-			// -------------------------------------------------------------------------------------
-			fprintf(file, "add\n");
-			fprintf(file, "pop rax\n");
-			//fprintf(file, "push [rax]\n");
-			args = args->R;
-		};
-
-		fprintf(file, "push rax\n");
-		fprintf(file, "pop rcx\n");
-		if (to_push) {
-			fprintf(file, "push [rax]\n");
-		} else {
-			fprintf(file, "pop [rax]\n");
-		}
-		return true;
-	} else {
-		RAISE_ERROR("bad compiling type, node is [%d]\n", node->get_type());
-		LOG_ERROR_LINE_POS(node);
-		return false;
 	}
+	// } else if (node->is_op(OPCODE_FUNC_CALL) && id_table.find_func(node->R->get_id()) == NOT_FOUND) { // so that's an array
+	// 	CodeNode *id  = node->R;
+	// 	CodeNode *args = node->L;
+
+	// 	if (!initialization && id->get_id()->starts_with("_") && !id->get_id()->starts_with("_)")) {
+	// 		RAISE_ERROR("_varname is a constant, dont change it please: [");
+	// 		node->get_id()->print();
+	// 		printf("]\n");
+	// 		LOG_ERROR_LINE_POS(node);
+	// 	}
+
+	// 	int offset = 0;
+	// 	int ret = id_table.find_var(id->get_id(), &offset);
+	// 	if (ret == NOT_FOUND) {
+	// 		RAISE_ERROR("variable does not exist [");
+	// 		id->get_id()->print();
+	// 		printf("]\n");
+	// 		LOG_ERROR_LINE_POS(node);
+	// 		return false;
+	// 	}
+
+	// 	// we are called by assign, so there's 'pop ' already written in assembler, let's fix it
+	// 	if (for_asgn_dup) {
+	// 		fprintf(file, "[rcx]\n");
+	// 		//fprintf(file, "pop rzx\n");
+	// 		// fprintf(file, "push [rax + %d + 1]\n", offset);
+	// 		return true;
+	// 	}
+
+	// 	if (to_push) {
+	// 		fprintf(file, "0\n");
+	// 		fprintf(file, "pop rzx\n");
+	// 	} else {
+	// 		fprintf(file, "rbx\n");
+	// 		fprintf(file, "push rbx\n");
+	// 	}
+
+	// 	fprintf(file, "push rvx + %d\n", offset);
+	// 	fprintf(file, "pop rax\n");
+	// 	while (args && args->L) {
+	// 		fprintf(file, "push [rax]\n");
+	// 		CodeNode *arg = args->L;
+	// 	    cpl_expr(arg, file);
+	// 		// TODO wtf is this... it works... so let it be... for 2d arrs... but not anyhow more...
+	// 		//if (args->R->L) {
+	// 			fprintf(file, "push 1\n");
+	// 			fprintf(file, "add\n");
+	// 		//}
+	// 		// -------------------------------------------------------------------------------------
+	// 		fprintf(file, "add\n");
+	// 		fprintf(file, "pop rax\n");
+	// 		//fprintf(file, "push [rax]\n");
+	// 		args = args->R;
+	// 	};
+
+	// 	fprintf(file, "push rax\n");
+	// 	fprintf(file, "pop rcx\n");
+	// 	if (to_push) {
+	// 		fprintf(file, "push [rax]\n");
+	// 	} else {
+	// 		fprintf(file, "pop [rax]\n");
+	// 	}
+	// 	return true;
+	// } else {
+	// 	RAISE_ERROR("bad compiling type, node is [%d]\n", node->get_type());
+	// 	LOG_ERROR_LINE_POS(node);
+	// 	return false;
+	// }
+
+	offset = -0x111111;
+	found = 0;
+	return false;
 }
 
 void Compiler::cpl_id(const CodeNode *node, FILE *file) {
@@ -1176,21 +1194,21 @@ void Compiler::compile(const CodeNode *node, FILE *file) {
 			break;
 		}
 
-		case VARIABLE : {
-		    cpl_lvalue(node, file);
-			break;
-		}
+		// case VARIABLE : {
+		//     cpl_lvalue(node, file);
+		// 	break;
+		// }
 
-		case ID : {
-			if (id_table.find_func(node->get_id()) != NOT_FOUND) {
-			    cpl_func_call(node, file);
-			} else if (node->R) {
-			    cpl_arr_call(node, file);
-			} else {
-			    cpl_push(node, file);
-			}
-			break;
-		}
+		// case ID : {
+		// 	if (id_table.find_func(node->get_id()) != NOT_FOUND) {
+		// 	    cpl_func_call(node, file);
+		// 	} else if (node->R) {
+		// 	    cpl_arr_call(node, file);
+		// 	} else {
+		// 	    cpl_push(node, file);
+		// 	}
+		// 	break;
+		// }
 
 		default: {
 			printf("A strange node detected... [");
@@ -1290,6 +1308,9 @@ bool Compiler::compile(const CodeNode *prog, const char *filename) {
 	id_table.ctor();
 	cycles_end_stack.dtor();
 	cycles_end_stack.ctor();
+
+	cpl_mov_reg_imm64(REG_RAX, -INIT_RVX_OFFSET);
+	cpl_math_op(REG_RSP, REG_RAX, '+');
 
 	fprintf(file, "push %d\n", INIT_RVX_OFFSET);
 	fprintf(file, "pop rvx\n");

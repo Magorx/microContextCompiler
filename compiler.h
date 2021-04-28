@@ -51,10 +51,7 @@ private:
 	bool cpl_value 		(const CodeNode *node, FILE *file);
 	void cpl_id			(const CodeNode *node, FILE *file);
 	void compile 		(const CodeNode *node, FILE *file);
-	bool cpl_lvalue		(const CodeNode *node, FILE *file, 
-						 const bool for_asgn_dup = false, 
-						 const bool to_push = false, 
-						 const bool initialization = false);
+	bool cpl_lvalue		(const CodeNode *node, int &offset, int &found);
 
 
 public:

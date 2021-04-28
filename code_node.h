@@ -36,6 +36,7 @@ struct CodeNode {
 public:
 	int line;
 	int pos;
+	int ershov_number;
 	CodeNode            (const CodeNode&) = delete;
 	CodeNode &operator= (const CodeNode&) = delete;
 
@@ -91,6 +92,8 @@ public:
 	void full_dump (FILE *file = stdout) const;
 
 	void gv_dump(FILE *file = nullptr, const char *name = (const char*) "code_tree") const;
+
+	static int get_ershov_number(const CodeNode *node);
 };
 
 #endif // CODENODE_H

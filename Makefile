@@ -37,7 +37,9 @@ run: all
 
 run_: all
 	./$(CUR_PROG)
+	@printf "[-----]\n"
 	./elf
+	@printf "\n[-----]\n"
 
 comp: all
 	kasm out.kc out.tf

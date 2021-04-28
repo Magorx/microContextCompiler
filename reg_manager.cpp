@@ -162,9 +162,13 @@ int RegManager::get_var_reg(int offset, REGMAN_VAR_TYPE var_type, const char* va
 }
 
 void RegManager::release_var_reg(int reg) {
+	reg = get_ind_by_reg(reg);
+
 	if (!reg_info[reg].is_used) {
 		return;
 	}
+
+	store_reg_info(reg);
 
 	int offset = reg_info[reg].offset;
 	if (reg_info[reg].is_local) {
@@ -210,7 +214,7 @@ int RegManager::get_tmp_reg(int id) {
 
 int RegManager::store_reg_info(const int reg) {
 	int id = reg_info[reg].id;
-	ANNOUNCE("  store", "regman", "reg[%d] -> id[%d]", reg, id);
+	// ANNOUNCE("  store", "regman", "reg[%d] -> id[%d]", reg, id);
 
 	if (reg_info[reg].is_local == -1) {
 		if (reg_info[reg].offset < 0) {
@@ -230,13 +234,13 @@ int RegManager::store_reg_info(const int reg) {
 
 int RegManager::restore_reg_info(const int id, bool to_store) {
 	int reg = id_to_reg[id].reg;
-	ANNOUNCE("restore", "regman", "id[%d] -> reg[%d]", id, reg);
+	// ANNOUNCE("restore", "regman", "id[%d] -> reg[%d]", id, reg);
 
 	if (reg_info[get_ind_by_reg(reg)].id == id) {
 		return 0;
 	}
 
-	if (to_store) {
+	if (to_store && reg_info[get_ind_by_reg(reg)].is_used) {
 		store_reg_info(get_ind_by_reg(id_to_reg[id].reg));
 	}
 
@@ -244,10 +248,10 @@ int RegManager::restore_reg_info(const int id, bool to_store) {
 	reg_info[get_ind_by_reg(id_to_reg[id].reg)] = id_to_reg[id];
 
 	if (reg_info[get_ind_by_reg(reg)].is_local == -1) {
-		ANNOUNCE("restore", "regman", "is a tmp reg");
+		// ANNOUNCE("restore", "regman", "is a tmp reg");
 		compiler->cpl_mov_reg_mem(reg, REG_RSP_DISPL((stack_offset - cur_stack_size) * -8));
 	} else {
-		ANNOUNCE("restore", "regman", "is a local var reg");
+		// ANNOUNCE("restore", "regman", "is a local var reg");
 		compiler->cpl_mov_reg_mem(reg, REG_RBP_DISPL(reg_info[get_ind_by_reg(reg)].offset * -8));
 	}
 
