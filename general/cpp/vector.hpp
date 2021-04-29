@@ -111,8 +111,12 @@ public:
 		return buffer[--cur_size];
 	}
 
-	size_t size() const {
+	inline size_t size() const {
 		return cur_size;
+	}
+
+	inline void clear() {
+		cur_size = 0;
 	}
 
 	T *get_buffer() {

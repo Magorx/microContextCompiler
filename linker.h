@@ -36,7 +36,8 @@ public:
 	void add_fixup     (FixupInfo info);
 	void request_fixup (const FixupInfo &info);
 
-	void link_programm(char *cmd, size_t cmd_size, const char *filename);
+	void link_program(char *cmd, size_t cmd_size, size_t entry_offset, const char *filename);
+	void link_objectives(const Vector<MicroObj*> &objs, const size_t entry_obj, const char *filename, ByteBuffer *result_cmd);
 };
 
 #endif // LINKER_H

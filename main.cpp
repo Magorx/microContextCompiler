@@ -83,33 +83,53 @@ int main(const int argc, const char **argv) {
 	MicroLinker linker;
 	linker.ctor();
 
+	MicroObj obj1;
+	obj1.ctor();
+
 	comp.cpl_jmp_rel32(0);
 
-	linker.request_fixup({"jump_1", (int) comp.cmd.get_size() - 4, fxp_RELATIVE});
-	linker.add_fixup    ({"jump_2", (int) comp.cmd.get_size() - 4, fxp_RELATIVE});
+	obj1.request_fixup({"write_result", (int) comp.cmd.get_size() - 4, fxp_RELATIVE});
+	obj1.add_fixup    ({"prog_end",     (int) comp.cmd.get_size() - 4, fxp_RELATIVE});
+	obj1.add_fixup    ({"GLOB_VAR", 0, fxp_ABSOLUTE, 8});
 
-	comp.cpl_mov_reg_imm64(REG_RCX, IntToQWord(0, 0, 0, '\n').i);
-	comp.cpl_math_op(REG_RCX, REG_RAX, '+');
-	comp.cpl_push_reg(REG_RCX);
-	comp.cpl_mov_reg_reg(REG_RSI, REG_RSP);
-
-	comp.cpl_mov_reg_imm64(REG_RAX, 1);
-	comp.cpl_mov_reg_imm64(REG_RDI, 1);
-	comp.cpl_mov_reg_imm64(REG_RDX, 4);
+	comp.cpl_mov_reg_imm64(REG_RAX, 60);
+	comp.cpl_math_op(REG_RDI, REG_RDI, '^');
 	comp.cpl_syscall();
 
-	comp.cpl_jmp_rel32(0);
-	
-	linker.request_fixup({"jump_3", (int) comp.cmd.get_size() - 4, fxp_RELATIVE});
-	linker.add_fixup    ({"jump_1", (int) comp.cmd.get_size() - 4, fxp_RELATIVE});
+	Compiler comp2;
+	comp2.ctor();
+	MicroObj obj2;
+	obj2.ctor();
 
-	comp.cpl_jmp_rel32(0);
+	obj2.add_fixup({"write_result", (int) comp2.cmd.get_size() - 4, fxp_RELATIVE});
 
-	linker.request_fixup({"jump_2", (int) comp.cmd.get_size() - 4, fxp_RELATIVE});
-	linker.add_fixup    ({"jump_3", (int) comp.cmd.get_size() - 4, fxp_RELATIVE});
+	comp2.cpl_mov_reg_imm64(REG_RCX, IntToQWord(0, 0, 0, '\n').i);
+	comp2.cpl_math_op(REG_RCX, REG_RAX, '+');
+	comp2.cpl_push_reg(REG_RCX);
+	comp2.cpl_mov_reg_reg(REG_RSI, REG_RSP);
 
-	linker.link_programm((char*) comp.cmd.get_data(), comp.cmd.get_size(), "elf");
-	comp.hexdump_cmd();
+	comp2.cpl_mov_reg_imm64(REG_RAX, 1);
+	comp2.cpl_mov_reg_imm64(REG_RDI, 1);
+	comp2.cpl_mov_reg_imm64(REG_RDX, 4);
+	comp2.cpl_syscall();
+
+	comp2.cpl_jmp_rel32(0);
+
+	obj2.request_fixup({"prog_end", (int) comp2.cmd.get_size() - 4, fxp_RELATIVE});
+
+	Vector<MicroObj*> objs = {};
+	objs.ctor();
+
+	obj1.set_prog((byte*) comp.cmd.get_data(), comp.cmd.get_size());
+	obj2.set_prog((byte*) comp2.cmd.get_data(), comp2.cmd.get_size());
+
+	objs.push_back(&obj2);
+	objs.push_back(&obj1);
+
+	ByteBuffer result_cmd;
+
+	linker.link_objectives(objs, 1, "elf", &result_cmd);
+	result_cmd.hexdump();
 
 	comp.dtor();
 
@@ -142,7 +162,7 @@ void test() {
 	comp.cpl_nop();
 	comp.cpl_nop();
 
-	build_elf((const char*) comp.cmd.get_data(), comp.cmd.get_size(), "elf", 0);
+	build_elf((const char*) comp.cmd.get_data(), 0, comp.cmd.get_size(), "elf", 0);
 
 	comp.hexdump_cmd();
 }

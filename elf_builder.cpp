@@ -1,12 +1,13 @@
 #include "elf_builder.h"
 
-void build_elf(const char *prog, const size_t prog_size, FILE *file, int global_data_size, bool to_add_exit_code_zero) {
+void build_elf(const char *prog, const size_t prog_size, size_t entry_offset, FILE *file, int global_data_size, bool to_add_exit_code_zero) {
     ELF_Header elf_h ;
     ProgHeader prog_h;
 
     elf_h.E_ENTRY += sizeof(ELF_Header);
     elf_h.E_ENTRY += sizeof(ProgHeader);
     elf_h.E_ENTRY += global_data_size;
+    elf_h.E_ENTRY += entry_offset;
 
     prog_h.P_FILESZ += prog_size;
     prog_h.P_MEMSZ  += prog_size;
@@ -39,11 +40,11 @@ void build_elf(const char *prog, const size_t prog_size, FILE *file, int global_
     }
 }
 
-void build_elf(const char *prog, const size_t prog_size, const char *filename, int global_data_size, bool to_add_exit_code_zero) {
+void build_elf(const char *prog, const size_t prog_size, size_t entry_offset, const char *filename, int global_data_size, bool to_add_exit_code_zero) {
     FILE *file = fopen(filename, "wb");
     assert(file);
 
-    build_elf(prog, prog_size, file, global_data_size, to_add_exit_code_zero);
+    build_elf(prog, prog_size, entry_offset, file, global_data_size, to_add_exit_code_zero);
 
     fclose(file);
 }

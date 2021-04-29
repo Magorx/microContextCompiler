@@ -1309,8 +1309,8 @@ bool Compiler::compile(const CodeNode *prog, const char *filename) {
 	cycles_end_stack.dtor();
 	cycles_end_stack.ctor();
 
-	cpl_mov_reg_imm64(REG_RAX, -INIT_RVX_OFFSET);
-	cpl_math_op(REG_RSP, REG_RAX, '+');
+	// cpl_mov_reg_imm64(REG_RAX, -INIT_RVX_OFFSET);
+	// cpl_math_op(REG_RSP, REG_RAX, '+');
 
 	fprintf(file, "push %d\n", INIT_RVX_OFFSET);
 	fprintf(file, "pop rvx\n");

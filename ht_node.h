@@ -53,6 +53,22 @@ struct HT_Node {
 		hash();
 	}
 
+	HT_Node(const char *string):
+	val(0),
+	hashed(0),
+	is_alive(1)
+	{
+		assert(string != nullptr);
+
+		memset (key, 0, 	 MAX_KEY_LEN);
+		strncpy(key, string, MAX_KEY_LEN - 1);
+		val = 0;
+		is_alive = IS_ALIVE;
+
+		hashed = 0;
+		hash();
+	}
+
 	void ctor() {
 		memset (key, 0, MAX_KEY_LEN);
 		val = 0;

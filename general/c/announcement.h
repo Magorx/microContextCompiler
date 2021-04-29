@@ -10,6 +10,7 @@ extern int         THE_LAST_ANNOUNCER_LEN;
 extern const char *THE_LAST_CODE;
 extern int         THE_LAST_CODE_LEN;
 
+extern int THE_NOCODE;
 
 #define ANNOUNCEMENT(fileptr, code, announcer, format, ...)                                               \
     do {                                                                                                  \
@@ -30,31 +31,41 @@ extern int         THE_LAST_CODE_LEN;
             to_print_announcer = true;                                                                    \
         }                                                                                                 \
                                                                                                           \
-        if (to_print_code) {                                                                              \
-            fprintf((fileptr), "[%s]", (code));                                                           \
-        } else {                                                                                          \
-            fputc('[', (fileptr));                                                                        \
-            for (int i = 0; i < THE_LAST_CODE_LEN; ++i) {                                                 \
-                fputc(' ', (fileptr));                                                                    \
-            }                                                                                             \
-            fputc(']', (fileptr));                                                                        \
-        }                                                                                                 \
-                                                                                                          \
-        if (to_print_announcer) {                                                                         \
-            fprintf((fileptr), "<%s>: ", (announcer));                                                    \
-        } else {                                                                                          \
-            fputc('<', (fileptr));                                                                        \
-            for (int i = 0; i < THE_LAST_ANNOUNCER_LEN; ++i) {                                            \
-                fputc(' ', (fileptr));                                                                    \
-            }                                                                                             \
-            fprintf((fileptr), ">: ");                                                                    \
-        }                                                                                                 \
+        if (!THE_NOCODE) {                                                                                \
+            if (to_print_code) {                                                                              \
+                fprintf((fileptr), "[%s]", (code));                                                           \
+            } else {                                                                                          \
+                fputc('[', (fileptr));                                                                        \
+                for (int i = 0; i < THE_LAST_CODE_LEN; ++i) {                                                 \
+                    fputc(' ', (fileptr));                                                                    \
+                }                                                                                             \
+                fputc(']', (fileptr));                                                                        \
+            }                                                                                                 \
+                                                                                                              \
+            if (to_print_announcer) {                                                                         \
+                fprintf((fileptr), "<%s>: ", (announcer));                                                    \
+            } else {                                                                                          \
+                fputc('<', (fileptr));                                                                        \
+                for (int i = 0; i < THE_LAST_ANNOUNCER_LEN; ++i) {                                            \
+                    fputc(' ', (fileptr));                                                                    \
+                }                                                                                             \
+                fprintf((fileptr), ">: ");                                                                    \
+            }                                                                                                 \
+        } else {\
+            for (int i = 0; i < THE_LAST_ANNOUNCER_LEN + THE_LAST_CODE_LEN + 4; ++i) {\
+                fputc(' ', (fileptr));\
+            }\
+            fputc(':', (fileptr));\
+            fputc(' ', (fileptr));\
+            THE_NOCODE = 0;\
+        }\
                                                                                                           \
         fprintf((fileptr), (format) __VA_OPT__(,) __VA_ARGS__);                                           \
                                                                                                           \
     } while (0)
 
 #define ANNOUNCE(code, announcer, format, ...) ANNOUNCEMENT(stdout, code, announcer, format "\n", __VA_ARGS__)
+#define ANNOUNCE_NOCODE(format, ...) THE_NOCODE = 1; ANNOUNCE(THE_LAST_CODE, THE_LAST_ANNOUNCER, format, __VA_ARGS__)
 
 
 extern const char *ANNOUNCEMENT_ERROR;

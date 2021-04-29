@@ -155,7 +155,7 @@ HT_RET_TYPE Hashtable::find(const HT_Node &node) const {
 	for (size_t i = 0; i < max_i; ++i, ++coord) {
 		HT_Node &n = data[coord];
 		if (n.is() == IS_DEAD) {
-			return (HT_RET_TYPE) 0;
+			return (HT_RET_TYPE) -1;
 		}
 		
 		if (n.is() == IS_ALIVE && n == node) {

@@ -78,13 +78,15 @@ struct SectionShstrtab {
 
 
 void build_elf(const char *prog, 
-               const size_t prog_size, 
+               const size_t prog_size,
+               size_t entry_offset,
                FILE *file, 
                int global_data_size, 
                bool to_add_exit_code_zero = true);
 
 void build_elf(const char *prog, 
                const size_t prog_size,
+               size_t entry_offset,
                const char *filename,
                int global_data_size, 
                bool to_add_exit_code_zero = true);

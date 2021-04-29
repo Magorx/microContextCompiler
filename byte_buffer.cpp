@@ -13,12 +13,16 @@ ByteBuffer::~ByteBuffer() {
     }
 }
 
+inline size_t bbuf_size_t_max(size_t a, size_t b) {
+    return a > b ? a : b;
+}
+
 void ByteBuffer::reallocate(size_t add_size) {
     if (size + add_size < capacity) {
         return;
     }
 
-    void *new_data = realloc(data, capacity * 2);
+    void *new_data = realloc(data, bbuf_size_t_max(capacity * 2, size + add_size + 1));
     if (!new_data) {
         ANNOUNCE("ERR", "byte_buffer", "failed to reallocate");
         return;
