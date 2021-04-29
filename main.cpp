@@ -83,14 +83,11 @@ int main(const int argc, const char **argv) {
 	MicroLinker linker;
 	linker.ctor();
 
-	MicroObj obj1;
-	obj1.ctor();
-
 	comp.cpl_jmp_rel32(0);
 
-	obj1.request_fixup({"write_result", (int) comp.cmd.get_size() - 4, fxp_RELATIVE});
-	obj1.add_fixup    ({"prog_end",     (int) comp.cmd.get_size() - 4, fxp_RELATIVE});
-	obj1.add_fixup    ({"GLOB_VAR", 0, fxp_ABSOLUTE, 8});
+	comp.obj.request_fixup({"write_result", (int) comp.cmd.get_size() - 4, fxp_RELATIVE});
+	comp.obj.add_fixup    ({"prog_end",     (int) comp.cmd.get_size() - 4, fxp_RELATIVE});
+	comp.obj.add_fixup    ({"GLOB_VAR", 0, fxp_ABSOLUTE, 8});
 
 	comp.cpl_mov_reg_imm64(REG_RAX, 60);
 	comp.cpl_math_op(REG_RDI, REG_RDI, '^');
@@ -120,11 +117,11 @@ int main(const int argc, const char **argv) {
 	Vector<MicroObj*> objs = {};
 	objs.ctor();
 
-	obj1.set_prog((byte*) comp.cmd.get_data(), comp.cmd.get_size());
+	comp.obj.set_prog((byte*) comp.cmd.get_data(), comp.cmd.get_size());
 	obj2.set_prog((byte*) comp2.cmd.get_data(), comp2.cmd.get_size());
 
 	objs.push_back(&obj2);
-	objs.push_back(&obj1);
+	objs.push_back(&comp.obj);
 
 	ByteBuffer result_cmd;
 

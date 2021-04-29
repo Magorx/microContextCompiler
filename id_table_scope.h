@@ -8,11 +8,13 @@
 
 enum ID_TYPE {
 	ID_TYPE_NONE   = 0,
-	ID_TYPE_VAR    = 1,
-	ID_TYPE_FUNC   = 2,
-	ID_TYPE_STRUCT = 3,
-	ID_TYPE_GLOBAL = 4,
-	ID_TYPE_FOUND  = 5,
+
+	ID_TYPE_FOUND  = 1, // dont change it - it's up with reg manager and objs
+	ID_TYPE_GLOBAL = 2, // dont change it - it's up with reg manager and objs
+	ID_TYPE_VAR    = 3,
+	ID_TYPE_FUNC   = 4,
+	ID_TYPE_STRUCT = 5,
+	
 	NOT_FOUND      = -999999999,
 };
 

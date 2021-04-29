@@ -13,7 +13,8 @@ class Compiler;
 
 enum REGMAN_VAR_TYPE {
 	REGMAN_VAR_LOCAL  = 1,
-	REGMAN_VAR_GLOBAL = 2
+	REGMAN_VAR_GLOBAL = 2,
+	REGMAN_TMP_REG = 3
 };
 
 const int REGMAN_REGS[] = {
@@ -32,7 +33,7 @@ struct RegUseInfo {
 	const char *id_name;
 	int   offset;
 	char  enabled;
-	char  is_local;
+	char  var_type;
 };
 
 class RegManager {
@@ -50,8 +51,8 @@ private:
 	int cur_stack_size;
 //=============================================================================
 
-	int get_local_var_reg(int offset, const char* var_name=nullptr);
-	int get_globl_var_reg(int offset, const char *var_name=nullptr);
+	int get_local_var_reg(int offset, const char* var_name);
+	int get_globl_var_reg(int offset, const char *var_name);
 
 public:
 	 RegManager();
@@ -66,11 +67,12 @@ public:
 	void dtor();
 	static void DELETE(RegManager *classname);
 //=============================================================================
-	int get_least_used_reg();
+	int  get_least_used_reg();
+	int  get_var_used_reg(int offset, REGMAN_VAR_TYPE var_type);
 	void disable_reg(const int reg);
 	void enable_reg (const int reg);
 
-	int get_var_reg(int offset, REGMAN_VAR_TYPE var_type, const char* var_name=nullptr);
+	int get_var_reg(int offset, REGMAN_VAR_TYPE var_type, const char* var_name);
 	int get_tmp_reg(int id = 0);
 
 	void release_var_reg(int reg);

@@ -14,7 +14,7 @@ void RegManager::ctor(Compiler *compiler_) {
 
 	compiler = compiler_;
 	for (int i = 0; i < REGMAN_REGS_CNT; ++i) {
-		reg_info[i] = {i, 0, 0, -1, nullptr, -1, 1, -1};
+		reg_info[i] = {i, 0, 0, -1, nullptr, -1, 1, REGMAN_TMP_REG};
 	}
 
 	max_id  = 0;
@@ -23,8 +23,8 @@ void RegManager::ctor(Compiler *compiler_) {
 
 	id_to_reg = std::unordered_map<int, RegUseInfo>();
 	id_to_stack_offset = std::unordered_map<int, int>();
-	local_var_to_id = std::unordered_map<int, int>();
-	globl_var_to_id = std::unordered_map<int, int>();
+	// local_var_to_id = std::unordered_map<int, int>();
+	// globl_var_to_id = std::unordered_map<int, int>();
 }
 
 RegManager *RegManager::NEW(Compiler *compiler_) {
@@ -62,12 +62,25 @@ int RegManager::pop(const int reg) {
 int RegManager::get_least_used_reg() {
 	int min_use = 1000000000;
 	int min_idx = 0;
+
+	for (int i = 0; i < REGMAN_REGS_CNT; ++i) {
+		if (!reg_info[i].enabled || reg_info[i].is_used || reg_info[i].var_type != REGMAN_TMP_REG) {
+			continue;
+		}
+
+		return i;
+	}
+
 	for (int i = 0; i < REGMAN_REGS_CNT; ++i) {
 		if (!reg_info[i].enabled) {
 			continue;
 		}
 
 		if (!reg_info[i].is_used) {
+			if (reg_info[i].var_type != REGMAN_TMP_REG) {
+				store_reg_info(i);
+			}
+
 			return i;
 		}
 
@@ -101,84 +114,70 @@ void RegManager::enable_reg(const int reg) {
 }
 
 int RegManager::get_local_var_reg(int offset, const char* var_name) {
-	if (local_var_to_id.find(offset) != local_var_to_id.end()) {
-		int id = local_var_to_id[offset];
-		int reg = id_to_reg[id].reg;
-		check_restore_reg(get_ind_by_reg(reg), id);
-		return reg;
-	}
-
 	int reg = get_least_used_reg();
 
-	reg_info[reg].reg 	   = REGMAN_REGS[reg];
-	reg_info[reg].is_used  = 1;
-	reg_info[reg].is_local = 1;
-	reg_info[reg].id_name  = var_name;
-	reg_info[reg].offset   = offset;
-	reg_info[reg].id  	   = ++max_id;
+	reg_info[reg].reg 	  = REGMAN_REGS[reg];
+	reg_info[reg].is_used = 1;
+	reg_info[reg].id  	  = ++max_id;
 	
 	id_to_reg[reg_info[reg].id] = reg_info[reg];
-	local_var_to_id[offset] = reg_info[reg].id;
 
 	compiler->cpl_mov_reg_mem(reg_info[reg].reg, REG_RBP_DISPL(offset * -8));
 
-	return reg_info[reg].reg;
+	return reg;
 }
 
 int RegManager::get_globl_var_reg(int offset, const char* var_name) {
-	if (globl_var_to_id.find(offset) != globl_var_to_id.end()) {
-		int id = globl_var_to_id[offset];
-		int reg = id_to_reg[id].reg;
-		check_restore_reg(get_ind_by_reg(reg), id);
-		return reg;
-	}
-
 	int reg = get_least_used_reg();
 
-	reg_info[reg].reg 	   = REGMAN_REGS[reg];
-	reg_info[reg].is_used  = 1;
-	reg_info[reg].is_local = 0;
-	reg_info[reg].id_name  = var_name;
-	reg_info[reg].offset   = offset;
-	reg_info[reg].id   	   = ++max_id;
+	reg_info[reg].reg 	  = REGMAN_REGS[reg];
+	reg_info[reg].is_used = 1;
+	reg_info[reg].id   	  = ++max_id;
 	
 	id_to_reg[reg_info[reg].id] = reg_info[reg];
-	globl_var_to_id[offset] = reg_info[reg].id;
 
-	return reg_info[reg].reg;
+	compiler->cpl_mov_reg_mem64(reg_info[reg].reg, 0);
+	compiler->obj.request_fixup({var_name, (int) compiler->cmd.get_size() - 4, fxp_ABSOLUTE});
+
+	printf("REQUEST %s\n", var_name);
+
+	return reg;
+}
+
+int RegManager::get_var_used_reg(int offset, REGMAN_VAR_TYPE var_type) {
+	for (int reg = 0; reg < REGMAN_REGS_CNT; ++reg) {
+		if (reg_info[reg].offset == offset && reg_info[reg].var_type == var_type) {
+			reg_info[reg].is_used = 1;
+			id_to_reg[reg_info[reg].id] = reg_info[reg];
+			return reg;
+		}
+	}
+
+	return -1;
 }
 
 int RegManager::get_var_reg(int offset, REGMAN_VAR_TYPE var_type, const char* var_name) {
-	int reg = 0;
-	if (var_type == REGMAN_VAR_LOCAL) {
-		reg = get_local_var_reg(offset, var_name);
-	} else {
-		printf("[ERR]<=>: THATS A FUCKEN ERROR = REGMAN CANT USE GLOBAL VARIABLES\n");
-		reg = get_globl_var_reg(offset, var_name);
+	int reg = get_var_used_reg(offset, var_type);
+	if (reg == -1) {
+		if (var_type == REGMAN_VAR_LOCAL) {
+			reg = get_local_var_reg(offset, var_name);
+		} else {
+			reg = get_globl_var_reg(offset, var_name);
+		}
 	}
 
-	reg_info[get_ind_by_reg(reg)].last_use = ++max_use;
-	return reg;
+	reg_info[reg].offset   = offset;
+	reg_info[reg].var_type = var_type;
+	reg_info[reg].id_name  = var_name;
+
+	reg_info[reg].last_use = ++max_use;
+	return REGMAN_REGS[reg];
 }
 
 void RegManager::release_var_reg(int reg) {
 	reg = get_ind_by_reg(reg);
-
-	if (!reg_info[reg].is_used) {
-		return;
-	}
-
-	store_reg_info(reg);
-
-	int offset = reg_info[reg].offset;
-	if (reg_info[reg].is_local) {
-		local_var_to_id.erase(offset);
-	} else {
-		globl_var_to_id.erase(offset);
-	}
-
 	reg_info[reg].is_used = 0;
-	reg_info[reg].offset = -1;
+	id_to_reg.erase(reg_info[reg].id);
 }
 
 void RegManager::release_tmp_reg(int reg) {
@@ -205,7 +204,7 @@ int RegManager::get_tmp_reg(int id) {
 	reg_info[reg].offset 	= -1;
 	reg_info[reg].id 		= ++max_id;
 	reg_info[reg].id_name   = "/0/";
-	reg_info[reg].is_local  = -1;
+	reg_info[reg].var_type  = REGMAN_TMP_REG;
 
 	id_to_reg[reg_info[reg].id] = reg_info[reg];
 
@@ -214,9 +213,9 @@ int RegManager::get_tmp_reg(int id) {
 
 int RegManager::store_reg_info(const int reg) {
 	int id = reg_info[reg].id;
-	// ANNOUNCE("  store", "regman", "reg[%d] -> id[%d]", reg, id);
+	ANNOUNCE("  store", "regman", "reg[%d] -> id[%d]", reg, id);
 
-	if (reg_info[reg].is_local == -1) {
+	if (reg_info[reg].var_type == REGMAN_TMP_REG) {
 		if (reg_info[reg].offset < 0) {
 			push(reg_info[reg].reg);
 			id_to_stack_offset[id] = cur_stack_size;
@@ -226,7 +225,12 @@ int RegManager::store_reg_info(const int reg) {
 			compiler->cpl_mov_mem_reg(REG_RSP_DISPL((id_to_stack_offset[id] - cur_stack_size) * -8), reg_info[reg].reg);
 		}
 	} else {
-		compiler->cpl_mov_mem_reg(REG_RBP_DISPL(reg_info[reg].offset * -8), reg_info[reg].reg);
+		if (reg_info[reg].var_type == REGMAN_VAR_LOCAL) {
+			compiler->cpl_mov_mem_reg(REG_RBP_DISPL(reg_info[reg].offset * -8), reg_info[reg].reg);
+		} else {
+			compiler->cpl_mov_mem64_reg(reg_info[reg].reg, 0);
+			compiler->obj.request_fixup({reg_info[reg].id_name, (int) compiler->cmd.get_size() - 4, fxp_ABSOLUTE});
+		}
 	}
 
 	return 0;
@@ -247,7 +251,7 @@ int RegManager::restore_reg_info(const int id, bool to_store) {
 	int stack_offset = id_to_stack_offset[id];
 	reg_info[get_ind_by_reg(id_to_reg[id].reg)] = id_to_reg[id];
 
-	if (reg_info[get_ind_by_reg(reg)].is_local == -1) {
+	if (reg_info[get_ind_by_reg(reg)].var_type == REGMAN_TMP_REG) {
 		// ANNOUNCE("restore", "regman", "is a tmp reg");
 		compiler->cpl_mov_reg_mem(reg, REG_RSP_DISPL((stack_offset - cur_stack_size) * -8));
 	} else {

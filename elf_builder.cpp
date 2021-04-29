@@ -9,6 +9,11 @@ void build_elf(const char *prog, const size_t prog_size, size_t entry_offset, FI
     elf_h.E_ENTRY += global_data_size;
     elf_h.E_ENTRY += entry_offset;
 
+    elf_h.E_SHOFF += sizeof(ELF_Header);
+    elf_h.E_SHOFF += sizeof(ProgHeader);
+    elf_h.E_SHOFF += global_data_size;
+    elf_h.E_SHOFF += prog_size;
+
     prog_h.P_FILESZ += prog_size;
     prog_h.P_MEMSZ  += prog_size;
 
@@ -20,6 +25,9 @@ void build_elf(const char *prog, const size_t prog_size, size_t entry_offset, FI
     free(buf);
 
     fwrite(prog, sizeof(byte), prog_size, file);
+
+    SectionHeader sh;
+    fwrite(&sh, sizeof(SectionHeader), 1, file);
     
     // don't forget, your prog has to finish itself with:
     // 

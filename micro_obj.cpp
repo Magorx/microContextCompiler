@@ -48,7 +48,7 @@ void MicroObj::request_fixup(const FixupInfo &info) {
 	to_fixup.push_back(info);
 }
 
-void MicroObj::set_prog(char *cmd_, size_t cmd_size_) {
+void MicroObj::set_prog(byte *cmd_, size_t cmd_size_) {
 	cmd = cmd_;
 	cmd_size = cmd_size_;
 }

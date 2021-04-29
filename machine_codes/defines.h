@@ -3404,6 +3404,79 @@ constexpr static unsigned char cmd_MOVIMM64TABLE[cmd_REGSNUM][3] = {
 
 
 
+#define cmd_MOV_RAX_MEM64 0x48, 0x8B, 0x04, 0x25 
+#define cmd_MOV_RCX_MEM64 0x48, 0x8B, 0x0C, 0x25 
+#define cmd_MOV_RDX_MEM64 0x48, 0x8B, 0x14, 0x25 
+#define cmd_MOV_RBX_MEM64 0x48, 0x8B, 0x1C, 0x25 
+#define cmd_MOV_RSP_MEM64 0x48, 0x8B, 0x24, 0x25 
+#define cmd_MOV_RBP_MEM64 0x48, 0x8B, 0x2C, 0x25 
+#define cmd_MOV_RSI_MEM64 0x48, 0x8B, 0x34, 0x25 
+#define cmd_MOV_RDI_MEM64 0x48, 0x8B, 0x3C, 0x25 
+
+#define cmd_MOV_R8_MEM64 0x4C, 0x8B, 0x04, 0x25 
+#define cmd_MOV_R9_MEM64 0x4C, 0x8B, 0x0C, 0x25 
+#define cmd_MOV_R10_MEM64 0x4C, 0x8B, 0x14, 0x25 
+#define cmd_MOV_R11_MEM64 0x4C, 0x8B, 0x1C, 0x25 
+#define cmd_MOV_R12_MEM64 0x4C, 0x8B, 0x24, 0x25 
+#define cmd_MOV_R13_MEM64 0x4C, 0x8B, 0x2C, 0x25 
+#define cmd_MOV_R14_MEM64 0x4C, 0x8B, 0x34, 0x25 
+#define cmd_MOV_R15_MEM64 0x4C, 0x8B, 0x3C, 0x25 
+
+constexpr static unsigned char cmd_MOV_REG_MEM64[cmd_REGSNUM][4] = {
+{cmd_MOV_RAX_MEM64},
+{cmd_MOV_RCX_MEM64},
+{cmd_MOV_RDX_MEM64},
+{cmd_MOV_RBX_MEM64},
+{cmd_MOV_RSP_MEM64},
+{cmd_MOV_RBP_MEM64},
+{cmd_MOV_RSI_MEM64},
+{cmd_MOV_RDI_MEM64},
+{cmd_MOV_R8_MEM64},
+{cmd_MOV_R9_MEM64},
+{cmd_MOV_R10_MEM64},
+{cmd_MOV_R11_MEM64},
+{cmd_MOV_R12_MEM64},
+{cmd_MOV_R13_MEM64},
+{cmd_MOV_R14_MEM64},
+{cmd_MOV_R15_MEM64},
+};
+
+#define cmd_MOV_MEM64_RAX 0x48, 0x89, 0x04, 0x25
+#define cmd_MOV_MEM64_RCX 0x48, 0x89, 0x0C, 0x25
+#define cmd_MOV_MEM64_RDX 0x48, 0x89, 0x14, 0x25
+#define cmd_MOV_MEM64_RBX 0x48, 0x89, 0x1C, 0x25
+#define cmd_MOV_MEM64_RSP 0x48, 0x89, 0x24, 0x25
+#define cmd_MOV_MEM64_RBP 0x48, 0x89, 0x2C, 0x25
+#define cmd_MOV_MEM64_RSI 0x48, 0x89, 0x34, 0x25
+#define cmd_MOV_MEM64_RDI 0x48, 0x89, 0x3C, 0x25
+
+#define cmd_MOV_MEM64_R8 0x4C, 0x89, 0x04, 0x25
+#define cmd_MOV_MEM64_R9 0x4C, 0x89, 0x0C, 0x25
+#define cmd_MOV_MEM64_R10 0x4C, 0x89, 0x14, 0x25
+#define cmd_MOV_MEM64_R11 0x4C, 0x89, 0x1C, 0x25
+#define cmd_MOV_MEM64_R12 0x4C, 0x89, 0x24, 0x25
+#define cmd_MOV_MEM64_R13 0x4C, 0x89, 0x2C, 0x25
+#define cmd_MOV_MEM64_R14 0x4C, 0x89, 0x34, 0x25
+#define cmd_MOV_MEM64_R15 0x4C, 0x89, 0x3C, 0x25
+
+constexpr static unsigned char cmd_MOV_MEM64_REG[cmd_REGSNUM][4] = {
+{cmd_MOV_MEM64_RAX},
+{cmd_MOV_MEM64_RCX},
+{cmd_MOV_MEM64_RDX},
+{cmd_MOV_MEM64_RBX},
+{cmd_MOV_MEM64_RSP},
+{cmd_MOV_MEM64_RBP},
+{cmd_MOV_MEM64_RSI},
+{cmd_MOV_MEM64_RDI},
+{cmd_MOV_MEM64_R8},
+{cmd_MOV_MEM64_R9},
+{cmd_MOV_MEM64_R10},
+{cmd_MOV_MEM64_R11},
+{cmd_MOV_MEM64_R12},
+{cmd_MOV_MEM64_R13},
+{cmd_MOV_MEM64_R14},
+{cmd_MOV_MEM64_R15},
+};
 
 #endif //MACHINE_CODE_DEFINES
 

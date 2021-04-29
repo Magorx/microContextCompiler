@@ -101,6 +101,16 @@ void Compiler::cpl_mov_reg_mem(const int reg_dst, const int reg_src, const int o
 	}
 }
 
+void Compiler::cpl_mov_reg_mem64(const int reg_dst, const int offset) {
+	cmd.put(cmd_MOV_REG_MEM64[reg_dst], 4);
+	cmd.put((byte*) &offset, 4);
+}
+
+void Compiler::cpl_mov_mem64_reg(const int offset, const int reg_src) {
+	cmd.put(cmd_MOV_MEM64_REG[reg_src], 4);
+	cmd.put((byte*) &offset, 4);
+}
+
 void Compiler::cpl_cmp_reg_reg(const int reg_src, const int reg_dst) {
 	cmd.put(cmd_CMPTABLE[reg_src][reg_dst], 3);
 }
@@ -268,11 +278,21 @@ void Compiler::cpl_operation(const CodeNode *node, FILE *file) {
 
 			int offset, found;
 			cpl_lvalue(node->L, offset, found);
-			if (found == NOT_FOUND || found == ID_TYPE_GLOBAL) {
+			if (found == NOT_FOUND) {
+				RAISE_ERROR("can't find variable, sry\n");
+				LOG_ERROR_LINE_POS(node);
 				return;
 			}
 
-			int r1 = regman->get_var_reg(offset, REGMAN_VAR_LOCAL, "var");
+			int r1 = 0;
+			char *name = node->L->get_id()->dup();
+			if (found == ID_TYPE_GLOBAL) {
+				r1 = regman->get_var_reg(offset, REGMAN_VAR_GLOBAL, name);
+			} else {
+				r1 = regman->get_var_reg(offset, REGMAN_VAR_LOCAL, name);
+			}
+			//free(name);
+
 			cpl_mov_reg_reg(r1, REG_RAX);
 			regman->release_var_reg(r1);
 
@@ -373,6 +393,16 @@ void Compiler::cpl_operation(const CodeNode *node, FILE *file) {
 				printf("]\n");
 				LOG_ERROR_LINE_POS(node);
 				break;
+			}
+
+			int offset, found;
+			cpl_lvalue(node->L, offset, found);
+			if (found == ID_TYPE_GLOBAL) {
+				char *name = node->L->get_id()->dup();
+
+				obj.add_fixup({name, offset * (int) sizeof(long long), fxp_ABSOLUTE, sizeof(long long)});
+
+				//free(name);
 			}
 
 			// if (node->R) {
@@ -1053,6 +1083,30 @@ bool Compiler::cpl_value(const CodeNode *node, FILE *file) {
 	return true;
 }
 
+bool Compiler::cpl_rvalue(const CodeNode *node) {
+	if (node->is_id()) {
+		int offset = 0;
+		int found = id_table.find_var(node->get_id(), &offset);
+
+		if (!found) {
+			RAISE_ERROR("can't find varname [");
+			node->get_id()->print();
+			printf("]\n");
+			LOG_ERROR_LINE_POS(node);
+			return false;
+		}
+
+		char *name = node->get_id()->dup();
+		int r1 = regman->get_var_reg(offset, found == ID_TYPE_GLOBAL ? REGMAN_VAR_GLOBAL : REGMAN_VAR_LOCAL, name);
+		//free(name);
+
+		cpl_mov_reg_reg(REG_RAX, r1);
+		regman->release_var_reg(r1);
+	}
+
+	return true;
+}
+
 bool Compiler::cpl_lvalue(const CodeNode *node, int &offset, int &found) {
 	assert(node);
 
@@ -1079,8 +1133,8 @@ bool Compiler::cpl_lvalue(const CodeNode *node, int &offset, int &found) {
 
 
 
-		if (is_found == NOT_FOUND || is_found == ID_TYPE_GLOBAL) {
-			RAISE_ERROR("variable does not exist or is global [");
+		if (is_found == NOT_FOUND) {
+			RAISE_ERROR("variable does not exist [");
 			node->get_id()->print();
 			printf("]\n");
 			LOG_ERROR_LINE_POS(node);
@@ -1194,21 +1248,21 @@ void Compiler::compile(const CodeNode *node, FILE *file) {
 			break;
 		}
 
-		// case VARIABLE : {
-		//     cpl_lvalue(node, file);
-		// 	break;
-		// }
+		case VARIABLE : {
+		    cpl_rvalue(node);
+			break;
+		}
 
-		// case ID : {
-		// 	if (id_table.find_func(node->get_id()) != NOT_FOUND) {
-		// 	    cpl_func_call(node, file);
-		// 	} else if (node->R) {
-		// 	    cpl_arr_call(node, file);
-		// 	} else {
-		// 	    cpl_push(node, file);
-		// 	}
-		// 	break;
-		// }
+		case ID : {
+			if (id_table.find_func(node->get_id()) != NOT_FOUND) {
+			    // cpl_func_call(node, file);
+			} else if (node->R) {
+			    // cpl_arr_call(node, file);
+			} else {
+			    cpl_rvalue(node);
+			}
+			break;
+		}
 
 		default: {
 			printf("A strange node detected... [");
@@ -1246,6 +1300,7 @@ void Compiler::ctor() {
 	for_cnt   = 0;
 
 	regman = RegManager::NEW(this);
+	obj.ctor();
 }
 
 Compiler *Compiler::NEW() {
@@ -1260,6 +1315,7 @@ Compiler *Compiler::NEW() {
 
 void Compiler::dtor() {
 	id_table.dtor();
+	obj.dtor();
 	RegManager::DELETE(regman);
 }
 
@@ -1308,9 +1364,6 @@ bool Compiler::compile(const CodeNode *prog, const char *filename) {
 	id_table.ctor();
 	cycles_end_stack.dtor();
 	cycles_end_stack.ctor();
-
-	// cpl_mov_reg_imm64(REG_RAX, -INIT_RVX_OFFSET);
-	// cpl_math_op(REG_RSP, REG_RAX, '+');
 
 	fprintf(file, "push %d\n", INIT_RVX_OFFSET);
 	fprintf(file, "pop rvx\n");

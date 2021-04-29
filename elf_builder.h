@@ -19,7 +19,7 @@ sponsored by
 #define B4 __uint32_t    // 4 bytes
 #define B8 __uint64_t    // 8 bytes
 
-#define byte char
+typedef unsigned char byte;
 
 struct ELF_Header {
     B4 ei_MAG        = 0x464C457F;           // signature - " ELF"
@@ -39,7 +39,7 @@ struct ELF_Header {
     B2 E_PHENTSIZE   = 0x0038;               // size of program header table 
     B2 E_PHNUM       = 0x0001;               // number of entries in the progtam header file
     B2 E_SHENTSIZE   = 0x0040;               // size of the section header table
-    B2 E_SHNUM       = 0x0000;               // number of entries in the section header table
+    B2 E_SHNUM       = 0x0001;               // number of entries in the section header table
     B2 E_SHSTRNDX    = 0x0000;               // section header, that contains section names
 };
 
@@ -56,11 +56,11 @@ struct ProgHeader {
 
 struct SectionHeader {
     B4 SH_NAME      = 0x00000000;
-    B4 SH_TYPE      = 0x00000000 | SHT_STRTAB;
-    B8 SH_FLAGS     = 0x0000000000000000 | SHF_WRITE;
+    B4 SH_TYPE      = 0x00000000 | SHT_PROGBITS;
+    B8 SH_FLAGS     = 0x0000000000000000 | SHF_EXECINSTR;
     B8 SH_ADDR      = 0x0000000000000000;
-    B8 SH_OFFSET    = 0x0000000000000000;
-    B8 SH_SIZE      = 0x0000000000000020;
+    B8 SH_OFFSET    = 0x0000000000000078;
+    B8 SH_SIZE      = 0x0000000000100000;
     B4 SH_LINK      = 0x00000000;
     B4 SH_INFO      = 0x00000000;
     B8 SH_ADDRALIGN = 0x0000000000000000;

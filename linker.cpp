@@ -75,11 +75,11 @@ void MicroLinker::link_program(char *cmd, size_t cmd_size, size_t entry_offset, 
 		_LOG ANNOUNCE("+FX", "linker", "| fixing [%s]", to_fix.label);
 		if (fix.type == fxp_RELATIVE) {
 			int rel_fix = fix.displ - to_fix.displ;
-			_LOG ANNOUNCE_NOCODE("|-- displ[0x%d]", rel_fix);
+			_LOG ANNOUNCE_NOCODE("|-- rel displ[0x%x]", rel_fix);
 			memcpy(cmd + to_fix.displ, &rel_fix, 4);
 		} else {
 			int abs_fix = 0x400000 + fix.displ + sizeof(ELF_Header) + sizeof(ProgHeader);
-			_LOG ANNOUNCE_NOCODE("|-- displ[0x%d]", abs_fix);
+			_LOG ANNOUNCE_NOCODE("|-- abs displ[0x%x]", abs_fix);
 			memcpy(cmd + to_fix.displ, &abs_fix, 4);
 		}
 	}
@@ -143,7 +143,7 @@ void MicroLinker::link_objectives(const Vector<MicroObj*> &objs, const size_t en
 				RAISE_ERROR("duplicate fixup[%s]\n", fx.label);
 			}
 
-			_LOG ANNOUNCE("+FX", "linker", "| adding fixup[%s]", fx.label);
+			_LOG ANNOUNCE("+FX", "linker", "| adding fixup[%s] (dspl %d)", fx.label, fx.displ);
 			
 			if (fx.type == fxp_RELATIVE) {
 				fx.displ += cur_offset;
@@ -165,7 +165,8 @@ void MicroLinker::link_objectives(const Vector<MicroObj*> &objs, const size_t en
 			FixupInfo to_fx = obj->to_fixup[fx_i];
 			to_fx.displ += cur_offset;
 
-			_LOG ANNOUNCE("?FX", "linker", "adding to_fixup[%s] |> displ[0x%x]", to_fx.label, to_fx.displ);
+			_LOG ANNOUNCE("?FX", "linker", "| adding to_fixup[%s]", to_fx.label);
+			_LOG ANNOUNCE_NOCODE("|-- displ[0x%x]", to_fx.displ);
 
 			to_fixup.push_back(to_fx);
 		}
@@ -179,7 +180,7 @@ void MicroLinker::link_objectives(const Vector<MicroObj*> &objs, const size_t en
 	_LOG ANNOUNCE("===", "linker", "finished building prog buffer (size = %lu) & fixups\n", prog_size);
 
 	_LOG ANNOUNCE("___", "linker", "==+=======================+==");
-	_LOG ANNOUNCE("LNK", "linker", "  | entry offset [0x%04x] |   ", (int) entry_offset);
+	_LOG ANNOUNCE("LNK", "linker", "  | entry offset [0x%04x] |   ", (int) entry_offset + global_data_size);
 	_LOG ANNOUNCE("___", "linker", "==+=======================+==\n");
 
 	link_program(prog, prog_size, entry_offset, filename);

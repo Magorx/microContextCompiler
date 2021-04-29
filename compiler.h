@@ -16,6 +16,9 @@
 
 #include "machine_codes/defines.h"
 #include "reg_manager.h"
+#include "micro_obj.h"
+
+typedef unsigned char byte;
 
 class RegManager;
 
@@ -52,11 +55,12 @@ private:
 	void cpl_id			(const CodeNode *node, FILE *file);
 	void compile 		(const CodeNode *node, FILE *file);
 	bool cpl_lvalue		(const CodeNode *node, int &offset, int &found);
-
+	bool cpl_rvalue		(const CodeNode *node);
 
 public:
 	RegManager *regman;
 	ByteBuffer  cmd;
+	MicroObj 	obj;
 
 	void cpl_math_op    	(const int reg_dst, const int reg_src, const char op);
 
@@ -69,6 +73,9 @@ public:
 
 	void cpl_mov_mem_reg	(					const int reg_dst, const int offset, const int reg_src);
 	void cpl_mov_reg_mem	(const int reg_dst, const int reg_src, const int offset);
+
+	void cpl_mov_reg_mem64  (const int reg_dst, const int offset);
+	void cpl_mov_mem64_reg  (const int offset, const int reg_src);
 
 	void cpl_xchg_rax_reg	(const int reg_dst);
 

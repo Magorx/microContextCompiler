@@ -27,7 +27,9 @@ struct FixupInfo {
 	displ(displ_),
 	type(type_),
 	global_size(global_size_)
-	{}
+	{
+		printf("CREATED WITH %s LABEL\n", label);
+	}
 
 	FixupInfo(const FixupInfo& other):
 	label(other.label),
@@ -49,7 +51,7 @@ struct MicroObj {
 
 	int global_data_size;
 
-	char *cmd;
+	byte *cmd;
 	size_t cmd_size;
 
 	MicroObj ();
@@ -68,7 +70,7 @@ struct MicroObj {
 	void add_fixup     (FixupInfo info);
 	void request_fixup (const FixupInfo &info);
 
-	void set_prog(char *cmd_, size_t cmd_size_);
+	void set_prog(byte *cmd_, size_t cmd_size_);
 };
 
 #endif // MICRO_OBJ

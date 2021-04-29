@@ -217,6 +217,12 @@ public:
 
 		return true;
 	}
+
+	char *dup(char *output = nullptr) const {
+		if (!output) output = (char*) calloc(length() + 2, sizeof(char));
+		memcpy(output, buffer, size);
+		return output;
+	}
 };
 
 #endif // GENERAL_STRINGVIEW
