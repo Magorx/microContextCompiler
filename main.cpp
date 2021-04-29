@@ -85,10 +85,10 @@ int main(const int argc, const char **argv) {
 
 	comp.cpl_jmp_rel32(0);
 
-	linker.request_fixup({"jump_1", (int) comp.cmd.get_size() - 4, fxp_ABSOLUTE});
+	linker.request_fixup({"jump_1", (int) comp.cmd.get_size() - 4, fxp_RELATIVE});
 	linker.add_fixup    ({"jump_2", (int) comp.cmd.get_size() - 4, fxp_RELATIVE});
 
-	comp.cpl_mov_reg_imm64(REG_RCX, IntToQWord(0, 0, 0, 0).i);
+	comp.cpl_mov_reg_imm64(REG_RCX, IntToQWord(0, 0, 0, '\n').i);
 	comp.cpl_math_op(REG_RCX, REG_RAX, '+');
 	comp.cpl_push_reg(REG_RCX);
 	comp.cpl_mov_reg_reg(REG_RSI, REG_RSP);
@@ -101,7 +101,7 @@ int main(const int argc, const char **argv) {
 	comp.cpl_jmp_rel32(0);
 	
 	linker.request_fixup({"jump_3", (int) comp.cmd.get_size() - 4, fxp_RELATIVE});
-	linker.add_fixup    ({"jump_1", 0, fxp_ABSOLUTE});
+	linker.add_fixup    ({"jump_1", (int) comp.cmd.get_size() - 4, fxp_RELATIVE});
 
 	comp.cpl_jmp_rel32(0);
 

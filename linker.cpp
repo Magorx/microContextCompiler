@@ -68,14 +68,14 @@ void MicroLinker::link_programm(char *cmd, size_t cmd_size, const char *filename
 		
 
 		FixupInfo fix = fixup[idx];
-		ANNOUNCE("FIX", "linker", "fixing [%s]", to_fix.label);
+		_log ANNOUNCE("FIX", "linker", "fixing [%s]", to_fix.label);
 		if (fix.type == fxp_RELATIVE) {
 			int rel_fix = fix.displ - to_fix.displ;
-			ANNOUNCE("FIX", "linker", "                relative -> %d", rel_fix);
+			_log ANNOUNCE("FIX", "linker", "                relative -> %d", rel_fix);
 			memcpy(cmd + to_fix.displ, &rel_fix, 4);
 		} else {
 			int abs_fix = 0x400000 + fix.displ + sizeof(ELF_Header) + sizeof(ProgHeader);
-			ANNOUNCE("FIX", "linker", "                absolute -> %d", abs_fix);
+			_log ANNOUNCE("FIX", "linker", "                absolute -> %d", abs_fix);
 			memcpy(cmd + to_fix.displ, &abs_fix, 4);
 		}
 	}

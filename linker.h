@@ -9,44 +9,7 @@
 #include "general/c/announcement.h"
 
 #include "elf_builder.h"
-
-enum FIXUP_INFO {
-	fxp_RELATIVE = 1,
-	fxp_ABSOLUTE = 2
-};
-
-struct FixupInfo {
-	char *label;
-	int   displ;
-	int	  type;
-	int   global_size = 0;
-
-	FixupInfo(const char *label_, const int displ_, const int type_, int global_size_=0):
-	label(label_ ? strdup(label_) : nullptr),
-	displ(displ_),
-	type(type_),
-	global_size(global_size_)
-	{}
-
-	FixupInfo(const FixupInfo& other):
-	label(other.label),
-	displ(other.displ),
-	type(other.type),
-	global_size(other.global_size)
-	{}
-
-	// FixupInfo &operator=(const FixupInfo& other) {
-	// 	label = other.label;
-	// 	displ = other.displ;
-	// 	type = other.type;
-	// 	global_size = other.global_size;
-	// 	return *this;
-	// }
-
-	void inline dtor() {
-		if (label) free(label);
-	}
-};
+#include "micro_obj.h"
 
 class MicroLinker {
 private:
