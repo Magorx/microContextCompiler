@@ -113,7 +113,7 @@ void RegManager::enable_reg(const int reg) {
 	reg_info[reg].enabled = 1;
 }
 
-int RegManager::get_local_var_reg(int offset, const char* var_name) {
+int RegManager::get_local_var_reg(int offset, const char* var_name, char to_prevent_load) {
 	int reg = get_least_used_reg();
 
 	reg_info[reg].reg 	  = REGMAN_REGS[reg];
@@ -121,13 +121,14 @@ int RegManager::get_local_var_reg(int offset, const char* var_name) {
 	reg_info[reg].id  	  = ++max_id;
 	
 	id_to_reg[reg_info[reg].id] = reg_info[reg];
-
-	compiler->cpl_mov_reg_mem(reg_info[reg].reg, REG_RBP_DISPL(offset * -8));
+	if (!to_prevent_load) {
+		compiler->cpl_mov_reg_mem(reg_info[reg].reg, REG_RBP_DISPL(offset * -8));
+	}
 
 	return reg;
 }
 
-int RegManager::get_globl_var_reg(int offset, const char* var_name) {
+int RegManager::get_globl_var_reg(int offset, const char* var_name, char to_prevent_load) {
 	int reg = get_least_used_reg();
 
 	reg_info[reg].reg 	  = REGMAN_REGS[reg];
@@ -136,10 +137,10 @@ int RegManager::get_globl_var_reg(int offset, const char* var_name) {
 	
 	id_to_reg[reg_info[reg].id] = reg_info[reg];
 
-	compiler->cpl_mov_reg_mem64(reg_info[reg].reg, 0);
-	compiler->obj.request_fixup({var_name, (int) compiler->cmd.get_size() - 4, fxp_ABSOLUTE});
-
-	printf("REQUEST %s\n", var_name);
+	if (!to_prevent_load) {
+		compiler->cpl_mov_reg_mem64(reg_info[reg].reg, 0);
+		compiler->obj.request_fixup({var_name, (int) compiler->cmd.get_size() - 4, fxp_ABSOLUTE});
+	}
 
 	return reg;
 }
@@ -156,13 +157,13 @@ int RegManager::get_var_used_reg(int offset, REGMAN_VAR_TYPE var_type) {
 	return -1;
 }
 
-int RegManager::get_var_reg(int offset, REGMAN_VAR_TYPE var_type, const char* var_name) {
+int RegManager::get_var_reg(int offset, REGMAN_VAR_TYPE var_type, const char* var_name, char to_prevent_load) {
 	int reg = get_var_used_reg(offset, var_type);
 	if (reg == -1) {
 		if (var_type == REGMAN_VAR_LOCAL) {
-			reg = get_local_var_reg(offset, var_name);
+			reg = get_local_var_reg(offset, var_name, to_prevent_load);
 		} else {
-			reg = get_globl_var_reg(offset, var_name);
+			reg = get_globl_var_reg(offset, var_name, to_prevent_load);
 		}
 	}
 
@@ -213,7 +214,7 @@ int RegManager::get_tmp_reg(int id) {
 
 int RegManager::store_reg_info(const int reg) {
 	int id = reg_info[reg].id;
-	ANNOUNCE("  store", "regman", "reg[%d] -> id[%d]", reg, id);
+	_log ANNOUNCE("  store", "regman", "reg[%d] -> id[%d]", reg, id);
 
 	if (reg_info[reg].var_type == REGMAN_TMP_REG) {
 		if (reg_info[reg].offset < 0) {

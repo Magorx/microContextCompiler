@@ -78,7 +78,7 @@ void MicroLinker::link_program(char *cmd, size_t cmd_size, size_t entry_offset, 
 			_LOG ANNOUNCE_NOCODE("|-- rel displ[0x%x]", rel_fix);
 			memcpy(cmd + to_fix.displ, &rel_fix, 4);
 		} else {
-			int abs_fix = 0x400000 + fix.displ + sizeof(ELF_Header) + sizeof(ProgHeader);
+			int abs_fix = GLOBL_DISPL + fix.displ + HDR_SIZE;
 			_LOG ANNOUNCE_NOCODE("|-- abs displ[0x%x]", abs_fix);
 			memcpy(cmd + to_fix.displ, &abs_fix, 4);
 		}

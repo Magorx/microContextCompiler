@@ -287,9 +287,9 @@ void Compiler::cpl_operation(const CodeNode *node, FILE *file) {
 			int r1 = 0;
 			char *name = node->L->get_id()->dup();
 			if (found == ID_TYPE_GLOBAL) {
-				r1 = regman->get_var_reg(offset, REGMAN_VAR_GLOBAL, name);
+				r1 = regman->get_var_reg(offset, REGMAN_VAR_GLOBAL, name, true);
 			} else {
-				r1 = regman->get_var_reg(offset, REGMAN_VAR_LOCAL, name);
+				r1 = regman->get_var_reg(offset, REGMAN_VAR_LOCAL, name, true);
 			}
 			//free(name);
 

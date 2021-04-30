@@ -27,9 +27,7 @@ struct FixupInfo {
 	displ(displ_),
 	type(type_),
 	global_size(global_size_)
-	{
-		printf("CREATED WITH %s LABEL\n", label);
-	}
+	{}
 
 	FixupInfo(const FixupInfo& other):
 	label(other.label),

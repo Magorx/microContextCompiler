@@ -14,7 +14,7 @@ sponsored by
 
 #pragma pack(push, 1)    // that's important to make compiler pack headers withour any alignments to preserve header's sizes
 
-#define B1 __uint8_t    // 1 byte
+#define B1 __uint8_t     // 1 byte
 #define B2 __uint16_t    // 2 bytes
 #define B4 __uint32_t    // 4 bytes
 #define B8 __uint64_t    // 8 bytes
@@ -37,27 +37,27 @@ struct ELF_Header {
     B4 E_FLAGS       = 0x00000000;           // signature
     B2 E_EHSIZE      = 0x0040;               // size of this header
     B2 E_PHENTSIZE   = 0x0038;               // size of program header table 
-    B2 E_PHNUM       = 0x0001;               // number of entries in the progtam header file
+    B2 E_PHNUM       = 0x0002;               // number of entries in the progtam header file
     B2 E_SHENTSIZE   = 0x0040;               // size of the section header table
-    B2 E_SHNUM       = 0x0001;               // number of entries in the section header table
+    B2 E_SHNUM       = 0x0000;               // number of entries in the section header table
     B2 E_SHSTRNDX    = 0x0000;               // section header, that contains section names
 };
 
 struct ProgHeader {
     B4 P_TYPE    = 0x00000000 | PT_LOAD;       // Segment will loaded in memory
-    B4 P_FLAGS   = 0x00000000 | PF_R | PF_X;   // Read and Execute
+    B4 P_FLAGS   = 0x00000000;   // Read and Execute
     B8 P_OFFSET  = 0x0000000000000000;         // Offset where it should be read
     B8 P_VADDR   = 0x0000000000400000;         // Virtual address where it should be loaded
     B8 P_PADDR   = 0x0000000000400000;         // Phsical address where it should be loaded
     B8 P_FILESZ  = 0x0000000000000080;         // Size on file
     B8 P_MEMSZ   = 0x0000000000000080;         // Size in memory (??)
-    B8 P_ALIGN   = 0x0000000000200000;         // P_VADDR = P_OFFSET % P_ALIGN ???
+    B8 P_ALIGN   = 0x0000000000000001;         // P_VADDR = P_OFFSET % P_ALIGN ???
 };
 
 struct SectionHeader {
     B4 SH_NAME      = 0x00000000;
     B4 SH_TYPE      = 0x00000000 | SHT_PROGBITS;
-    B8 SH_FLAGS     = 0x0000000000000000 | SHF_EXECINSTR;
+    B8 SH_FLAGS     = 0x0000000000000000 | SHF_WRITE | SHF_EXECINSTR | SHF_ALLOC;
     B8 SH_ADDR      = 0x0000000000000000;
     B8 SH_OFFSET    = 0x0000000000000078;
     B8 SH_SIZE      = 0x0000000000100000;
@@ -66,6 +66,17 @@ struct SectionHeader {
     B8 SH_ADDRALIGN = 0x0000000000000000;
     B8 SH_ENTSIZE   = 0x0000000000000000;
 };
+
+extern const int ELFHDR_SIZE;
+extern const int PRGHDR_SIZE;
+extern const int PRGHDR_CNT;
+extern const int HDR_SIZE;
+
+extern const int GLOBL_DISPL;
+extern const int ENTRY_POINT;
+
+extern const int ELF_TEXT_OFFSET;
+extern const int ELF_DATA_OFFSET;
 
 struct SectionShstrtab {
     const char names[2][10] = {

@@ -1,33 +1,47 @@
 #include "elf_builder.h"
 
+const int ELFHDR_SIZE = sizeof(ELF_Header);
+const int PRGHDR_SIZE = sizeof(ProgHeader);
+const int PRGHDR_CNT  = 2;
+const int HDR_SIZE    = ELFHDR_SIZE + PRGHDR_SIZE * PRGHDR_CNT;
+
+const int GLOBL_DISPL = 0x400000;
+const int ENTRY_POINT = 0x1000;
+
+const int ELF_TEXT_OFFSET = 0x1000;
+const int ELF_DATA_OFFSET = 0x0000;
+
 void build_elf(const char *prog, const size_t prog_size, size_t entry_offset, FILE *file, int global_data_size, bool to_add_exit_code_zero) {
     ELF_Header elf_h ;
     ProgHeader prog_h;
 
-    elf_h.E_ENTRY += sizeof(ELF_Header);
-    elf_h.E_ENTRY += sizeof(ProgHeader);
-    elf_h.E_ENTRY += global_data_size;
-    elf_h.E_ENTRY += entry_offset;
+    elf_h.E_PHNUM = PRGHDR_CNT;
+    elf_h.E_ENTRY = GLOBL_DISPL + ENTRY_POINT + entry_offset;
+    fwrite(&elf_h, sizeof(elf_h), 1, file);
 
-    elf_h.E_SHOFF += sizeof(ELF_Header);
-    elf_h.E_SHOFF += sizeof(ProgHeader);
-    elf_h.E_SHOFF += global_data_size;
-    elf_h.E_SHOFF += prog_size;
+    prog_h.P_VADDR  = GLOBL_DISPL + ENTRY_POINT;
+    prog_h.P_OFFSET = ELF_TEXT_OFFSET;
+    prog_h.P_FILESZ = prog_size;
+    prog_h.P_MEMSZ  = prog_size;
+    prog_h.P_FLAGS  = PF_R | PF_X | PF_W;
+    fwrite(&prog_h, sizeof(prog_h), 1, file);
+    // fwrite(&prog_h, sizeof(prog_h), 1, file);
 
-    prog_h.P_FILESZ += prog_size;
-    prog_h.P_MEMSZ  += prog_size;
+    prog_h.P_VADDR  = GLOBL_DISPL;
+    prog_h.P_OFFSET = ELF_DATA_OFFSET;
+    prog_h.P_FILESZ = global_data_size;
+    prog_h.P_MEMSZ  = global_data_size;
+    prog_h.P_FLAGS  = PF_R | PF_X | PF_W;
+    fwrite(&prog_h, sizeof(prog_h), 1, file);
 
-    fwrite(&elf_h,     sizeof(elf_h),     1,         file);
-    fwrite(&prog_h,    sizeof(prog_h),    1,         file);
-
-    char *buf = (char*) calloc(global_data_size, 1);
-    fwrite(buf, 1, global_data_size, file); // writing 'global data section' to our elf file, remove if not needed
+    char *buf = (char*) calloc(ELF_TEXT_OFFSET - HDR_SIZE, 1);
+    fwrite(buf, 1, ELF_TEXT_OFFSET - HDR_SIZE, file); // writing 'global data section' to our elf file, remove if not needed
     free(buf);
 
     fwrite(prog, sizeof(byte), prog_size, file);
 
-    SectionHeader sh;
-    fwrite(&sh, sizeof(SectionHeader), 1, file);
+    // SectionHeader sh;
+    // fwrite(&sh, sizeof(SectionHeader), 1, file);
     
     // don't forget, your prog has to finish itself with:
     // 

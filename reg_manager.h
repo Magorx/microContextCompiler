@@ -21,7 +21,11 @@ const int REGMAN_REGS[] = {
 	REG_R8,
 	REG_R9,
 	REG_R10,
-	REG_R11
+	REG_R11,
+	REG_R12,
+	REG_R13,
+	REG_R14,
+	REG_R15
 };
 const int REGMAN_REGS_CNT = sizeof(REGMAN_REGS) / sizeof(REGMAN_REGS[0]);
 
@@ -51,8 +55,8 @@ private:
 	int cur_stack_size;
 //=============================================================================
 
-	int get_local_var_reg(int offset, const char* var_name);
-	int get_globl_var_reg(int offset, const char *var_name);
+	int get_local_var_reg(int offset, const char* var_name, char to_prevent_load = false);
+	int get_globl_var_reg(int offset, const char *var_name, char to_prevent_load = false);
 
 public:
 	 RegManager();
@@ -72,7 +76,7 @@ public:
 	void disable_reg(const int reg);
 	void enable_reg (const int reg);
 
-	int get_var_reg(int offset, REGMAN_VAR_TYPE var_type, const char* var_name);
+	int get_var_reg(int offset, REGMAN_VAR_TYPE var_type, const char* var_name, char to_prevent_load = false);
 	int get_tmp_reg(int id = 0);
 
 	void release_var_reg(int reg);
