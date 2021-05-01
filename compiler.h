@@ -119,4 +119,26 @@ public:
 
 };
 
+inline int asgn_op_to_op(int op) {
+	switch(op) {
+		case OPCODE_ASGN_ADD:
+			return '+';
+
+		case OPCODE_ASGN_SUB:
+			return '-';
+
+		case OPCODE_ASGN_MUL:
+			return '*';
+
+		case OPCODE_ASGN_DIV:
+			return '/';
+
+		case OPCODE_ASGN_POW:
+			return '^';
+
+		default:
+			return 0;
+	}
+}
+
 #endif // COMPILER

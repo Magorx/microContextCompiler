@@ -44,6 +44,11 @@ void Compiler::cpl_math_op(const int reg_dst, const int reg_src, const char op) 
 		}
 
 		case '/' : {
+			if (reg_dst != REG_RAX) {
+				RAISE_ERROR("wrong reg_dst for IDIV: %d\n", reg_dst);
+				return;
+			}
+
 			cmd.put(cmd_XORTABLE[REG_RDX][REG_RDX], 3);
 			cmd.put(cmd_IDIVTABLE[reg_src], 3);
 			break;
@@ -53,6 +58,41 @@ void Compiler::cpl_math_op(const int reg_dst, const int reg_src, const char op) 
 			cmd.put(cmd_XORTABLE[reg_dst][reg_src], 3);
 			break;
 		}
+	}
+}
+
+void Compiler::cpl_log_op(const int reg_dst, const int reg_src, const char op) {
+	cmd.put(cmd_CMPTABLE[reg_dst][reg_src], 3);
+	cmd.put(cmd_XORTABLE[REG_RAX][REG_RAX], 3);
+
+	switch(op) {
+		case OPCODE_LE:
+			cpl_mov_reg_reg();
+			break;
+
+		case OPCODE_GE:
+
+			break;
+
+		case OPCODE_EQ:
+
+			break;
+
+		case OPCODE_NEQ:
+
+			break;
+
+		case OPCODE_OR:
+
+			break;
+
+		case OPCODE_AND:
+
+			break;
+
+		default:
+			RAISE_ERROR("Invalid log_op: %d\n", op);
+
 	}
 }
 
@@ -286,11 +326,7 @@ void Compiler::cpl_operation(const CodeNode *node, FILE *file) {
 
 			int r1 = 0;
 			char *name = node->L->get_id()->dup();
-			if (found == ID_TYPE_GLOBAL) {
-				r1 = regman->get_var_reg(offset, REGMAN_VAR_GLOBAL, name, true);
-			} else {
-				r1 = regman->get_var_reg(offset, REGMAN_VAR_LOCAL, name, true);
-			}
+			r1 = regman->get_var_reg(offset, found == ID_TYPE_GLOBAL ? REGMAN_VAR_GLOBAL : REGMAN_VAR_LOCAL, name, true);
 			//free(name);
 
 			cpl_mov_reg_reg(r1, REG_RAX);
@@ -298,28 +334,40 @@ void Compiler::cpl_operation(const CodeNode *node, FILE *file) {
 
 			break;
 		}
-		// case OPCODE_ASGN_ADD :
-		// case OPCODE_ASGN_SUB :
-		// case OPCODE_ASGN_MUL :
-		// case OPCODE_ASGN_DIV :
-		// case OPCODE_ASGN_POW : {
-		// 	fprintf(file, "push ");
-		//     cpl_lvalue(node->L, file, false, true);
-		// 	fprintf(file, "\n");
 
-		// 	COMPILE_R();
-		// 	fprintf_asgn_additional_operation(file, node->get_op());
+		case OPCODE_ASGN_ADD :
+		case OPCODE_ASGN_SUB :
+		case OPCODE_ASGN_MUL :
+		case OPCODE_ASGN_DIV :
+		case OPCODE_ASGN_POW : {
+			COMPILE_R();
 
-		// 	fprintf(file, "pop ");
-		//     cpl_lvalue(node->L, file);
-		// 	fprintf(file, "\n");
+			int offset, found;
+			cpl_lvalue(node->L, offset, found);
+			if (found == NOT_FOUND) {
+				RAISE_ERROR("can't find variable, sry\n");
+				LOG_ERROR_LINE_POS(node);
+				return;
+			}
 
-		// 	fprintf(file, "push ");
-		//     cpl_lvalue(node->L, file, true);
-		// 	fprintf(file, "\n");
+			int r1 = 0;
+			char *name = node->L->get_id()->dup();
+			r1 = regman->get_var_reg(offset, found == ID_TYPE_GLOBAL ? REGMAN_VAR_GLOBAL : REGMAN_VAR_LOCAL, name);
+			//free(name);
 
-		// 	break;
-		// }
+			int op = asgn_op_to_op(node->get_op());
+
+			if (op != '/') {
+				cpl_math_op(r1, REG_RAX, op);
+			} else {
+				cpl_xchg_rax_reg(r1);
+				cpl_math_op(REG_RAX, r1, op);
+				cpl_mov_reg_reg(r1, REG_RAX);
+			}
+			regman->release_var_reg(r1);
+
+			break;
+		}
 
 		// case '<' : {
 		// 	COMPILE_LR();
@@ -394,6 +442,7 @@ void Compiler::cpl_operation(const CodeNode *node, FILE *file) {
 			int offset, found;
 			cpl_lvalue(node->L, offset, found);
 			char *name = node->L->get_id()->dup();
+			//free(name); // mem leak
 
 			if (!found) {
 				printf("WTFWTFWTF\n");
@@ -402,8 +451,6 @@ void Compiler::cpl_operation(const CodeNode *node, FILE *file) {
 
 			if (found == ID_TYPE_GLOBAL) {
 				obj.add_fixup({name, offset, fxp_ABSOLUTE, sizeof(long long)});
-
-				//free(name); // mem leak
 			}
 
 			if (node->R) {
