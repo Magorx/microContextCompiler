@@ -12,8 +12,9 @@ CC = gcc
 CPP = g++
 
 WARNINGS = -Wall -Wextra -Wno-multichar
-STANDARD =  
-CFLAGS = $(STANDARD) $(WARNINGS) -lm -std=c++17
+STANDARD = 
+OPTIMIZATION = -O3
+CFLAGS = $(STANDARD) $(WARNINGS) $(OPTIMIZATION) -lm -std=c++17
 
 all: kncc
 

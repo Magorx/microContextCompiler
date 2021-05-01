@@ -1,5 +1,5 @@
 OPDEF(OPCODE_LE   , 5 , "<=", "<=", "")
-OPDEF(OPCODE_GE   , 6 , ">=", ">=", "") 
+OPDEF(OPCODE_GE   , 6 , ">=", ">=", "")
 OPDEF(OPCODE_EQ   , 7 , "==", "==", "")
 OPDEF(OPCODE_NEQ  , 8 , "!=", "!=", "")
 OPDEF(OPCODE_OR   , 10, "||", "||", "")

@@ -229,7 +229,7 @@ int RegManager::store_reg_info(const int reg) {
 		if (reg_info[reg].var_type == REGMAN_VAR_LOCAL) {
 			compiler->cpl_mov_mem_reg(REG_RBP_DISPL(reg_info[reg].offset * -8), reg_info[reg].reg);
 		} else {
-			compiler->cpl_mov_mem64_reg(reg_info[reg].reg, 0);
+			compiler->cpl_mov_mem64_reg(0, reg_info[reg].reg);
 			compiler->obj.request_fixup({reg_info[reg].id_name, (int) compiler->cmd.get_size() - 4, fxp_ABSOLUTE});
 		}
 	}

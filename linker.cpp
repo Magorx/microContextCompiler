@@ -143,7 +143,7 @@ void MicroLinker::link_objectives(const Vector<MicroObj*> &objs, const size_t en
 				RAISE_ERROR("duplicate fixup[%s]\n", fx.label);
 			}
 
-			_LOG ANNOUNCE("+FX", "linker", "| adding fixup[%s] (dspl %d)", fx.label, fx.displ);
+			_LOG ANNOUNCE("+FX", "linker", "| adding fixup[%s] (displ %d)", fx.label, fx.displ);
 			
 			if (fx.type == fxp_RELATIVE) {
 				fx.displ += cur_offset;

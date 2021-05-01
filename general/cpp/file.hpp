@@ -64,7 +64,8 @@ public:
 	        return;
 	    }
 
-		fread(data, (size_t) info.st_size, 1, fileptr);
+		size_t a = fread(data, (size_t) info.st_size, 1, fileptr);
+		if (!a) {} // just for warning...
 	}
 
 	static File *NEW(const char *name_) {

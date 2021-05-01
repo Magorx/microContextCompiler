@@ -42,20 +42,20 @@ private:
 	
 //=============================================================================
 	void fprintf_asgn_additional_operation(FILE *file, const int op);
-	void cpl_operation(const CodeNode *node, FILE *file);
+	void cpl_operation		(const CodeNode *node, FILE *file);
 
-	void cpl_expr 		(const CodeNode *node, FILE *file, const bool to_pop = false);
-	void cpl_func_call	(const CodeNode *node, FILE *file);
+	void cpl_expr 			(const CodeNode *node, FILE *file, const bool to_pop = false);
+	void cpl_func_call		(const CodeNode *node, FILE *file);
 	void cpl_default_arg	(const CodeNode *arg, const CodeNode *prot, FILE *file);
 	void cpl_context_arg	(const CodeNode *arg, const CodeNode *prot, FILE *file);
 	void cpl_expr_arg		(const CodeNode *arg, const CodeNode *prot, FILE *file);
 	void cpl_arr_call		(const CodeNode *node, FILE *file);
 	bool cpl_push			(const CodeNode *node, FILE *file);
-	bool cpl_value 		(const CodeNode *node, FILE *file);
-	void cpl_id			(const CodeNode *node, FILE *file);
-	void compile 		(const CodeNode *node, FILE *file);
-	bool cpl_lvalue		(const CodeNode *node, int &offset, int &found);
-	bool cpl_rvalue		(const CodeNode *node);
+	bool cpl_value 			(const CodeNode *node, FILE *file);
+	void cpl_id				(const CodeNode *node, FILE *file);
+	void compile 			(const CodeNode *node, FILE *file);
+	bool cpl_lvalue			(const CodeNode *node, int &offset, int &found);
+	bool cpl_rvalue			(const CodeNode *node);
 
 public:
 	RegManager *regman;

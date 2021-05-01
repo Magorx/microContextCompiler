@@ -382,10 +382,6 @@ void Compiler::cpl_operation(const CodeNode *node, FILE *file) {
 				break;
 			}
 
-			if (node->R) {
-				COMPILE_R();
-			}
-
 			bool ret = id_table.declare_var(node->L->get_id(), 1);
 			if (!ret) {
 				RAISE_ERROR("Redefinition of the id [");
@@ -397,19 +393,26 @@ void Compiler::cpl_operation(const CodeNode *node, FILE *file) {
 
 			int offset, found;
 			cpl_lvalue(node->L, offset, found);
-			if (found == ID_TYPE_GLOBAL) {
-				char *name = node->L->get_id()->dup();
+			char *name = node->L->get_id()->dup();
 
-				obj.add_fixup({name, offset * (int) sizeof(long long), fxp_ABSOLUTE, sizeof(long long)});
-
-				//free(name);
+			if (!found) {
+				printf("WTFWTFWTF\n");
+				return;
 			}
 
-			// if (node->R) {
-			// 	fprintf(file, "pop ");
-			//     cpl_lvalue(node->L, file, false, false, true);
-			// 	fprintf(file, "\n");
-			// }
+			if (found == ID_TYPE_GLOBAL) {
+				obj.add_fixup({name, offset, fxp_ABSOLUTE, sizeof(long long)});
+
+				//free(name); // mem leak
+			}
+
+			if (node->R) {
+				COMPILE_R();
+
+				int r1 = regman->get_var_reg(offset, found == ID_TYPE_GLOBAL ? REGMAN_VAR_GLOBAL : REGMAN_VAR_LOCAL, name, true);
+			    cpl_mov_reg_reg(r1, REG_RAX);
+			    regman->release_var_reg(r1);
+			}
 
 			break;
 		}
