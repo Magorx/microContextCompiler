@@ -64,6 +64,7 @@ public:
 
 	void cpl_math_op    	(const int reg_dst, const int reg_src, const char op);
 	void cpl_log_op			(const int reg_dst, const int reg_src, const char op);
+	void cpl_log_conn		(const int reg_dst, const int reg_src, const char op);
 
 	void cpl_cmp_reg_reg	(const int reg_src, const int reg_dst);
 	void cpl_test_reg_reg	(const int reg_src, const int reg_dst);

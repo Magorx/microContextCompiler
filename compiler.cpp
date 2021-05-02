@@ -102,11 +102,39 @@ void Compiler::cpl_log_op(const int reg_dst, const int reg_src, const char op) {
 			RAISE_ERROR("Invalid log_op: %d\n", op);
 	}
 
-	cmd.put(log_jmp_offset + 2);
-	cpl_mov_reg_imm64(REG_RAX, 0);
-	cmd.put(cmd_JMP_REL8);
-	cmd.put(log_jmp_offset);
+	cmd.put(log_jmp_offset + 2);    // jumping to mov rax, 1
+	cpl_mov_reg_imm64(REG_RAX, 0);  // else - muov rax, 0 
+	cmd.put(cmd_JMP_REL8);		    // 					 and jump 
+	cmd.put(log_jmp_offset);		// 							  to the end
 	cpl_mov_reg_imm64(REG_RAX, 1);
+}
+
+void Compiler::cpl_log_conn(const int reg_dst, const int reg_src, const char op) {
+	if (op == OPCODE_AND) {
+		cpl_test_reg_reg(reg_dst, reg_dst);
+		cmd.put(cmd_JE_REL8);
+		cmd.put(14);
+		cpl_test_reg_reg(reg_src, reg_src);
+		cmd.put(cmd_JE_REL8);
+		cmd.put(9);
+		cpl_mov_reg_imm64(REG_RAX, 1);
+		cmd.put(cmd_JMP_REL8);
+		cmd.put(7);
+		cpl_mov_reg_imm64(REG_RAX, 0);
+	} else if (op == OPCODE_OR) {
+		cpl_test_reg_reg(reg_dst, reg_dst);
+		cmd.put(cmd_JNE_REL8);
+		cmd.put(14);
+		cpl_test_reg_reg(reg_src, reg_src);
+		cmd.put(cmd_JNE_REL8);
+		cmd.put(9);
+		cpl_mov_reg_imm64(REG_RAX, 0);
+		cmd.put(cmd_JMP_REL8);
+		cmd.put(7);
+		cpl_mov_reg_imm64(REG_RAX, 1);
+	} else {
+		RAISE_ERROR("invalid log_conn op[%d]", op);
+	}
 }
 
 void Compiler::cpl_mov_reg_imm32(const int reg_dst, const double val) {
@@ -405,17 +433,20 @@ void Compiler::cpl_operation(const CodeNode *node, FILE *file) {
 			break;
 		}
 
-		// case OPCODE_OR : {
-		// 	COMPILE_LR();
-		// 	fprintf(file, "l_or\n");
-		// 	break;
-		// }
+		case OPCODE_OR :
+		case OPCODE_AND : {
+			COMPILE_MORE_COMPLEX();
 
-		// case OPCODE_AND : {
-		// 	COMPILE_LR();
-		// 	fprintf(file, "l_and\n");
-		// 	break;
-		// }
+			int r1    = regman->get_tmp_reg();
+			int r1_id = regman->get_reg_id(r1);
+			cpl_mov_reg_reg(r1, REG_RAX);
+
+			COMPILE_ANOTHER();
+			regman->restore_reg_info(r1_id);
+
+			cpl_log_conn(REG_RAX, r1, node->get_op());
+			break;
+		}
 
 		case OPCODE_EXPR : {
 		    cpl_expr(node, file, true);
