@@ -63,37 +63,50 @@ void Compiler::cpl_math_op(const int reg_dst, const int reg_src, const char op) 
 
 void Compiler::cpl_log_op(const int reg_dst, const int reg_src, const char op) {
 	cmd.put(cmd_CMPTABLE[reg_dst][reg_src], 3);
-	cmd.put(cmd_XORTABLE[REG_RAX][REG_RAX], 3);
+	char log_jmp_offset = 7;
 
 	switch(op) {
+		case '<':
+			cmd.put(cmd_JL_REL8);
+			break;
+
+		case '>':
+			cmd.put(cmd_JG_REL8);
+			break;
+
 		case OPCODE_LE:
-			cpl_mov_reg_reg();
+			cmd.put(cmd_JLE_REL8);
 			break;
 
 		case OPCODE_GE:
-
+			cmd.put(cmd_JGE_REL8);
 			break;
 
 		case OPCODE_EQ:
-
+			cmd.put(cmd_JE_REL8);
 			break;
 
 		case OPCODE_NEQ:
-
+			cmd.put(cmd_JNE_REL8);
 			break;
 
-		case OPCODE_OR:
+		// case OPCODE_OR:
+		// 	cmd.put(cmd_JLE_REL8);
+		// 	break;
 
-			break;
-
-		case OPCODE_AND:
-
-			break;
+		// case OPCODE_AND:
+		// 	cmd.put(cmd_JLE_REL8);
+		// 	break;
 
 		default:
 			RAISE_ERROR("Invalid log_op: %d\n", op);
-
 	}
+
+	cmd.put(log_jmp_offset + 2);
+	cpl_mov_reg_imm64(REG_RAX, 0);
+	cmd.put(cmd_JMP_REL8);
+	cmd.put(log_jmp_offset);
+	cpl_mov_reg_imm64(REG_RAX, 1);
 }
 
 void Compiler::cpl_mov_reg_imm32(const int reg_dst, const double val) {
@@ -369,40 +382,28 @@ void Compiler::cpl_operation(const CodeNode *node, FILE *file) {
 			break;
 		}
 
-		// case '<' : {
-		// 	COMPILE_LR();
-		// 	fprintf(file, "lt\n");
-		// 	break;
-		// }
+		case '<':
+		case '>' :
+		case OPCODE_LE :
+		case OPCODE_GE :
+		case OPCODE_EQ :
+		case OPCODE_NEQ : {
+			COMPILE_MORE_COMPLEX();
 
-		// case '>' : {
-		// 	COMPILE_LR();
-		// 	fprintf(file, "gt\n");
-		// 	break;
-		// }
+			int r1    = regman->get_tmp_reg();
+			int r1_id = regman->get_reg_id(r1);
+			cpl_mov_reg_reg(r1, REG_RAX);
 
-		// case OPCODE_LE  : {
-		// 	COMPILE_LR();
-		// 	fprintf(file, "le\n");
-		// 	break;
-		// }
-		// case OPCODE_GE  : {
-		// 	COMPILE_LR();
-		// 	fprintf(file, "ge\n");
-		// 	break;
-		// }
+			COMPILE_ANOTHER();
+			regman->restore_reg_info(r1_id);
 
-		// case OPCODE_EQ  : {
-		// 	COMPILE_LR();
-		// 	fprintf(file, "eq\n");
-		// 	break;
-		// }
+			if (LAST_COMPILED) {
+				cpl_xchg_rax_reg(r1);
+			}
 
-		// case OPCODE_NEQ : {
-		// 	COMPILE_LR();
-		// 	fprintf(file, "neq\n");
-		// 	break;
-		// }
+			cpl_log_op(REG_RAX, r1, node->get_op());
+			break;
+		}
 
 		// case OPCODE_OR : {
 		// 	COMPILE_LR();
