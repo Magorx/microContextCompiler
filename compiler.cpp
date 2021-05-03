@@ -368,7 +368,7 @@ void Compiler::cpl_operation(const CodeNode *node, FILE *file) {
 			int r1 = 0;
 			char *name = node->L->get_id()->dup();
 			r1 = regman->get_var_reg(offset, found == ID_TYPE_GLOBAL ? REGMAN_VAR_GLOBAL : REGMAN_VAR_LOCAL, name, true);
-			//free(name);
+			free(name);
 
 			cpl_mov_reg_reg(r1, REG_RAX);
 			regman->release_var_reg(r1);
@@ -394,7 +394,7 @@ void Compiler::cpl_operation(const CodeNode *node, FILE *file) {
 			int r1 = 0;
 			char *name = node->L->get_id()->dup();
 			r1 = regman->get_var_reg(offset, found == ID_TYPE_GLOBAL ? REGMAN_VAR_GLOBAL : REGMAN_VAR_LOCAL, name);
-			//free(name);
+			free(name);
 
 			int op = asgn_op_to_op(node->get_op());
 
@@ -474,7 +474,6 @@ void Compiler::cpl_operation(const CodeNode *node, FILE *file) {
 			int offset, found;
 			cpl_lvalue(node->L, offset, found);
 			char *name = node->L->get_id()->dup();
-			//free(name); // mem leak
 
 			if (!found) {
 				printf("WTFWTFWTF\n");
@@ -492,6 +491,8 @@ void Compiler::cpl_operation(const CodeNode *node, FILE *file) {
 			    cpl_mov_reg_reg(r1, REG_RAX);
 			    regman->release_var_reg(r1);
 			}
+
+			free(name);
 
 			break;
 		}
@@ -588,16 +589,29 @@ void Compiler::cpl_operation(const CodeNode *node, FILE *file) {
 		// 	break;
 		// }
 
-		// case OPCODE_IF : {
-		// 	int cur_if_cnt = ++if_cnt;
-		// 	fprintf(file, "if_%d_cond:\n", cur_if_cnt);
-		// 	COMPILE_L();
-		// 	fprintf(file, "\npush 0\n");
-		// 	fprintf(file, "jne if_%d_true\n", cur_if_cnt);
-		// 	COMPILE_R();
-		// 	fprintf(file, "\nif_%d_end:\n", cur_if_cnt);
-		// 	break;
-		// }
+		case OPCODE_IF : {
+			regman->save_state();
+
+			char lname[MAX_LABEL_LEN];
+			sprintf(lname, SAVE_STATE_RETR_TEMPLATE, regman->get_max_state_id());
+			obj.add_fixup({lname, (int) cmd.get_size() - 4, fxp_RELATIVE});
+
+			compile(node->get_R()->get_R(), file);
+
+			sprintf(lname, LOAD_STATE_RETR_TEMPLATE, regman->get_max_state_id());
+			obj.add_fixup({lname, (int) cmd.get_size() - 4, fxp_RELATIVE});
+
+			regman->corrupt_reg(0);
+			regman->load_state();
+
+			// int cur_if_cnt = ++if_cnt;
+			// fprintf(file, "if_%d_cond:\n", cur_if_cnt);
+			// fprintf(file, "\npush 0\n");
+			// fprintf(file, "jne if_%d_true\n", cur_if_cnt);
+			// COMPILE_R();
+			// fprintf(file, "\nif_%d_end:\n", cur_if_cnt);
+			break;
+		}
 
 		// case OPCODE_FOR : {
 		// 	int cur_for_cnt = ++for_cnt;
@@ -1180,7 +1194,7 @@ bool Compiler::cpl_rvalue(const CodeNode *node) {
 
 		char *name = node->get_id()->dup();
 		int r1 = regman->get_var_reg(offset, found == ID_TYPE_GLOBAL ? REGMAN_VAR_GLOBAL : REGMAN_VAR_LOCAL, name);
-		//free(name);
+		free(name);
 
 		cpl_mov_reg_reg(REG_RAX, r1);
 		regman->release_var_reg(r1);

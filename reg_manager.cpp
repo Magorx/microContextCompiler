@@ -1,5 +1,7 @@
 #include "reg_manager.h"
 
+#define CMD_SIZE (int) compiler->cmd.get_size()
+
 RegManager::RegManager()
 {}
 
@@ -23,8 +25,9 @@ void RegManager::ctor(Compiler *compiler_) {
 
 	id_to_reg = std::unordered_map<int, RegUseInfo>();
 	id_to_stack_offset = std::unordered_map<int, int>();
-	// local_var_to_id = std::unordered_map<int, int>();
-	// globl_var_to_id = std::unordered_map<int, int>();
+	
+	states.ctor();
+	max_state_id = 0;
 }
 
 RegManager *RegManager::NEW(Compiler *compiler_) {
@@ -139,7 +142,7 @@ int RegManager::get_globl_var_reg(int offset, const char* var_name, char to_prev
 
 	if (!to_prevent_load) {
 		compiler->cpl_mov_reg_mem64(reg_info[reg].reg, 0);
-		compiler->obj.request_fixup({var_name, (int) compiler->cmd.get_size() - 4, fxp_ABSOLUTE});
+		compiler->obj.request_fixup({var_name, CMD_SIZE - 4, fxp_ABSOLUTE});
 	}
 
 	return reg;
@@ -169,7 +172,7 @@ int RegManager::get_var_reg(int offset, REGMAN_VAR_TYPE var_type, const char* va
 
 	reg_info[reg].offset   = offset;
 	reg_info[reg].var_type = var_type;
-	reg_info[reg].id_name  = var_name;
+	reg_info[reg].id_name  = var_name ? strdup(var_name) : nullptr;
 
 	reg_info[reg].last_use = ++max_use;
 	return REGMAN_REGS[reg];
@@ -178,7 +181,7 @@ int RegManager::get_var_reg(int offset, REGMAN_VAR_TYPE var_type, const char* va
 void RegManager::release_var_reg(int reg) {
 	reg = get_ind_by_reg(reg);
 	reg_info[reg].is_used = 0;
-	id_to_reg.erase(reg_info[reg].id);
+	// id_to_reg.erase(reg_info[reg].id);
 }
 
 void RegManager::release_tmp_reg(int reg) {
@@ -230,18 +233,18 @@ int RegManager::store_reg_info(const int reg) {
 			compiler->cpl_mov_mem_reg(REG_RBP_DISPL(reg_info[reg].offset * -8), reg_info[reg].reg);
 		} else {
 			compiler->cpl_mov_mem64_reg(0, reg_info[reg].reg);
-			compiler->obj.request_fixup({reg_info[reg].id_name, (int) compiler->cmd.get_size() - 4, fxp_ABSOLUTE});
+			compiler->obj.request_fixup({reg_info[reg].id_name, CMD_SIZE - 4, fxp_ABSOLUTE});
 		}
 	}
 
 	return 0;
 }
 
-int RegManager::restore_reg_info(const int id, bool to_store) {
+int RegManager::restore_reg_info(const int id, bool to_store, bool force_restore) {
 	int reg = id_to_reg[id].reg;
 	// ANNOUNCE("restore", "regman", "id[%d] -> reg[%d]", id, reg);
 
-	if (reg_info[get_ind_by_reg(reg)].id == id) {
+	if (!force_restore && reg_info[get_ind_by_reg(reg)].id == id) {
 		return 0;
 	}
 
@@ -257,7 +260,12 @@ int RegManager::restore_reg_info(const int id, bool to_store) {
 		compiler->cpl_mov_reg_mem(reg, REG_RSP_DISPL((stack_offset - cur_stack_size) * -8));
 	} else {
 		// ANNOUNCE("restore", "regman", "is a local var reg");
-		compiler->cpl_mov_reg_mem(reg, REG_RBP_DISPL(reg_info[get_ind_by_reg(reg)].offset * -8));
+		if (reg_info[get_ind_by_reg(reg)].var_type == REGMAN_VAR_LOCAL) {
+			compiler->cpl_mov_reg_mem(reg, REG_RBP_DISPL(reg_info[get_ind_by_reg(reg)].offset * -8));
+		} else {
+			compiler->cpl_mov_reg_mem64(reg_info[get_ind_by_reg(reg)].reg, 0);
+			compiler->obj.request_fixup({reg_info[get_ind_by_reg(reg)].id_name, CMD_SIZE - 4, fxp_ABSOLUTE});
+		}
 	}
 
 	return 0;
@@ -281,4 +289,93 @@ int RegManager::get_ind_by_reg(const int reg) const {
 		}
 	}
 	return -1;
+}
+
+int RegManager::save_state() {
+	RegManagerState *state = (RegManagerState*) calloc(1, sizeof(RegManagerState));
+	if (!state) {
+		RAISE_ERROR("can't allocate memory for new state save");
+		return -1;
+	}
+
+	memcpy(state->regs, reg_info, sizeof(RegUseInfo) * REGMAN_REGS_CNT);
+	state->id = ++max_state_id;
+
+	states.push_back(state);
+
+	MicroObj *obj = &compiler->obj;
+	char lname[MAX_LABEL_LEN];
+
+	compiler->cpl_jmp_rel32(0);
+	sprintf(lname, SAVE_STATE_JUMP_TEMPLATE, state->id);
+	obj->request_fixup({lname, CMD_SIZE - 4, fxp_RELATIVE});
+
+	return 0;
+}
+
+int __attribute__ ((noinline)) RegManager::load_state() {
+	if (!states.size()) {
+		RAISE_ERROR("empty saved stack buffer, nothing to load");
+		return -1;
+	}
+
+	RegManagerState *st = states[states.size() - 1];
+	MicroObj *obj = &compiler->obj;
+	char lname[MAX_LABEL_LEN];
+
+	compiler->cpl_jmp_rel32(0);
+	sprintf(lname, LOAD_STATE_JUMP_TEMPLATE, st->id);
+	obj->request_fixup({lname, CMD_SIZE - 4, fxp_RELATIVE});
+
+	// save part
+
+	sprintf(lname, SAVE_STATE_JUMP_TEMPLATE, st->id);
+	obj->add_fixup({lname, CMD_SIZE - 4, fxp_RELATIVE});
+
+	/* save logic */
+	for (int i = 0; i < REGMAN_REGS_CNT; ++i) {
+		if (st->regs[i].id != reg_info[i].id) {
+			store_reg_info(i);
+		}
+	}
+
+	compiler->cpl_jmp_rel32(0);
+	sprintf(lname, SAVE_STATE_RETR_TEMPLATE, st->id);
+	obj->request_fixup({lname, CMD_SIZE - 4, fxp_RELATIVE});
+
+	// load part
+
+	sprintf(lname, LOAD_STATE_JUMP_TEMPLATE, st->id);
+	obj->add_fixup({lname, CMD_SIZE - 4, fxp_RELATIVE});
+
+	/* save logic */
+	for (int i = 0; i < REGMAN_REGS_CNT; ++i) {
+		if (st->regs[i].id != reg_info[i].id) {
+			// store_reg_info(reg_info[i].reg);
+
+			reg_info[i] = st->regs[i];
+			restore_reg_info(st->regs[i].id, false, true);
+		}
+	}
+
+	return 0;
+}
+
+int RegManager::corrupt_reg(int reg) {
+	if (reg >= REGMAN_REGS_CNT) {
+		RAISE_ERROR("reg[%d] is >= REGMAN_REGS_CNT[%d]", reg, REGMAN_REGS_CNT);
+		return -1;
+	}
+
+
+
+	// reg_info[reg].reg = -1;
+	reg_info[reg].id = -1;
+	reg_info[reg].is_used = 0;
+
+	return 0;
+}
+
+int RegManager::get_max_state_id() const {
+	return max_state_id;
 }

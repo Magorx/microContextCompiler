@@ -30,7 +30,7 @@ struct FixupInfo {
 	{}
 
 	FixupInfo(const FixupInfo& other):
-	label(other.label),
+	label(other.label ? strdup(other.label) : nullptr),
 	displ(other.displ),
 	type(other.type),
 	global_size(other.global_size)

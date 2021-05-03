@@ -5,8 +5,9 @@
 #include <map>
 
 #include "compiler.h"
-#include "general/cpp/vector.hpp"
+#include "labels_templates.h"
 
+#include "general/cpp/vector.hpp"
 #include "general/c/announcement.h"
 
 class Compiler;
@@ -40,6 +41,11 @@ struct RegUseInfo {
 	char  var_type;
 };
 
+struct RegManagerState {
+	RegUseInfo regs[REGMAN_REGS_CNT];
+	int id;
+};
+
 class RegManager {
 private:
 // data =======================================================================
@@ -47,12 +53,13 @@ private:
 	RegUseInfo reg_info[REGMAN_REGS_CNT];
 	std::unordered_map<int, RegUseInfo> id_to_reg;
 	std::unordered_map<int, int> id_to_stack_offset;
-	std::unordered_map<int, int> local_var_to_id;
-	std::unordered_map<int, int> globl_var_to_id;
 	int max_id;
 	int max_use;
 
 	int cur_stack_size;
+
+	Vector<RegManagerState*> states;
+	int max_state_id;
 //=============================================================================
 
 	int get_local_var_reg(int offset, const char* var_name, char to_prevent_load = false);
@@ -83,7 +90,7 @@ public:
 	void release_tmp_reg(int reg);
 
 	int store_reg_info  (const int reg);
-	int restore_reg_info(const int id, bool to_store=true);
+	int restore_reg_info(const int id, bool to_store=true, bool force_restore=false);
 
 	int push(const int reg);
 	int pop (const int reg);
@@ -92,6 +99,12 @@ public:
 
 	int get_reg_id(const int reg) const;
 	int get_ind_by_reg(const int reg) const;
+	int get_max_state_id() const;
+
+	int save_state();
+	int load_state();
+
+	int corrupt_reg(int reg);
 };
 
 #endif // REG_MASTER
