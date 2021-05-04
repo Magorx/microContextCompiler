@@ -18,6 +18,9 @@
 #define FOR_CONDITION_TEMPLATE "for_condition_%d"
 #define FOR_ACTION_TEMPLATE "for_action_%d"
 
+#define FUNC_JUMPGUARD_TEMPLATE "func_%s_jg_%d"
+#define FUNC_START_TEMPLATE "func_%s_start_%d"
+
 #define SAVE_STATE_JUMP_TEMPLATE "save_pt_%d"
 #define LOAD_STATE_JUMP_TEMPLATE "load_pt_%d"
 

@@ -534,7 +534,7 @@ void Compiler::cpl_operation(const CodeNode *node, FILE *file) {
 
 			int cur_while_cnt = ++while_cnt;
 			cycles_end_stack.push_back(Loop(LOOP_TYPE_WHILE, cur_while_cnt));
-			char lname[MAX_LABEL_LEN];
+			char lname[MAX_LABEL_LEN] = {};
 
 			regman->save_state();
 
@@ -574,7 +574,7 @@ void Compiler::cpl_operation(const CodeNode *node, FILE *file) {
 			}
 
 			Loop cur_cycle = cycles_end_stack[cycles_end_stack.size() - 1];
-			char lname[MAX_LABEL_LEN];
+			char lname[MAX_LABEL_LEN] = {};
 			if (cur_cycle.type == LOOP_TYPE_WHILE) {
 				cpl_jmp_rel32(0);
 				sprintf(lname, WHILE_END_TEMPLATE, cur_cycle.number);
@@ -600,7 +600,7 @@ void Compiler::cpl_operation(const CodeNode *node, FILE *file) {
 			}
 
 			Loop cur_cycle = cycles_end_stack[cycles_end_stack.size() - 1];
-			char lname[MAX_LABEL_LEN];
+			char lname[MAX_LABEL_LEN] = {};
 			if (cur_cycle.type == LOOP_TYPE_WHILE) {
 				cpl_jmp_rel32(0);
 				sprintf(lname, WHILE_CONDITION_TEMPLATE, cur_cycle.number);
@@ -620,7 +620,7 @@ void Compiler::cpl_operation(const CodeNode *node, FILE *file) {
 
 		case OPCODE_IF : {
 			int cur_if_cnt = ++if_cnt;
-			char lname[MAX_LABEL_LEN];
+			char lname[MAX_LABEL_LEN] = {};
 
 			COMPILE_L();
 
@@ -667,7 +667,7 @@ void Compiler::cpl_operation(const CodeNode *node, FILE *file) {
 
 			int cur_for_cnt = ++for_cnt;
 			cycles_end_stack.push_back(Loop(LOOP_TYPE_FOR, cur_for_cnt));
-			char lname[MAX_LABEL_LEN];
+			char lname[MAX_LABEL_LEN] = {};
 
 			if (!node->L || !node->R || !node->L->L || !node->L->R || !node->L->L->L || !node->L->L->R) {
 				RAISE_ERROR("bad FOR node, something is missing\n");
@@ -727,13 +727,10 @@ void Compiler::cpl_operation(const CodeNode *node, FILE *file) {
 			break;
 		}
 
-		// case OPCODE_ELEM_RANDOM : {
-		// 	//fprintf(file, "push\n");
-		// 	COMPILE_L();
-		// 	COMPILE_R();
-		// 	fprintf(file, "bin_op $\n");
-		// 	break;
-		// }
+		case OPCODE_ELEM_RANDOM : {
+			cpl_mov_reg_imm64(REG_RAX, ((long long) rand() << 31) ^ rand());
+			break;
+		}
 
 		// case OPCODE_ELEM_PUTN : {
 		// 	if (node->R) {
@@ -854,82 +851,91 @@ void Compiler::cpl_operation(const CodeNode *node, FILE *file) {
 		// 	break;
 		// }
 
-		// case OPCODE_FUNC_DECL : {
-		// 	if (!node->L) {
-		// 		RAISE_ERROR("bad func decl node, func info node id is absent\n");
-		// 		LOG_ERROR_LINE_POS(node);
-		// 		break;
-		// 	}
+		case OPCODE_FUNC_DECL : {
+			if (!node->L) {
+				RAISE_ERROR("bad func decl node, func info node id is absent\n");
+				LOG_ERROR_LINE_POS(node);
+				break;
+			}
 
-		// 	if (!node->L->R) {
-		// 		RAISE_ERROR("bad func info node, func id id is absent\n");
-		// 		LOG_ERROR_LINE_POS(node);
-		// 		break;
-		// 	}
+			if (!node->L->R) {
+				RAISE_ERROR("bad func info node, func id id is absent\n");
+				LOG_ERROR_LINE_POS(node);
+				break;
+			}
 
-		// 	StringView *id = node->L->R->get_id();
-		// 	if (id_table.find_in_upper_scope(ID_TYPE_FUNC, id) != NOT_FOUND) {
-		// 		RAISE_ERROR("Redifenition of function [");
-		// 		id->print();
-		// 		printf("]\n");
-		// 		LOG_ERROR_LINE_POS(node);
-		// 	}
+			StringView *id = node->L->R->get_id();
+			if (id_table.find_in_upper_scope(ID_TYPE_FUNC, id) != NOT_FOUND) {
+				RAISE_ERROR("Redifenition of function [");
+				id->print();
+				printf("]\n");
+				LOG_ERROR_LINE_POS(node);
+			}
 
-		// 	id_table.declare_func(id, node->L->L, id_table.size());
-		// 	int offset = id_table.find_func(id);
+			char lname[MAX_LABEL_LEN] = {};
+			char *func_name = id->dup();
 
-		// 	fprintf(file, "jmp _func_");
-		// 	id->print(file);
-		// 	fprintf(file, "_%d_END\n", offset);
-		// 	fprintf(file, "_func_");
-		// 	id->print(file);
-		// 	fprintf(file, "_%d_BEGIN:\n", offset);
+			id_table.declare_func(id, node->L->L, id_table.size());
+			int offset = id_table.find_func(id);
 
-		// 	id_table.add_scope(FUNC_SCOPE);
-		// 	COMPILE_L();
-		// 	COMPILE_R();
-		// 	id_table.remove_scope();
-		// 	fprintf(file, "push 0\n");
-		// 	fprintf(file, "swp\n");
-		// 	fprintf(file, "ret\n");
-		// 	fprintf(file, "_func_");
-		// 	id->print(file);
-		// 	fprintf(file, "_%d_END:\n", offset);
-		// 	break;
-		// }
+			cpl_jmp_rel32(0);
+			sprintf(lname, FUNC_JUMPGUARD_TEMPLATE, func_name, offset);
+			obj.request_fixup({lname, (int) cmd.get_size() - 4, fxp_RELATIVE});
 
-		// case OPCODE_FUNC_INFO : {
-		// 	COMPILE_L();
+			sprintf(lname, FUNC_START_TEMPLATE, func_name, offset);
+			obj.add_fixup({lname, (int) cmd.get_size() - 4, fxp_RELATIVE});
 
-		// 	node->R->get_id()->print(file);
-		// 	fprintf(file, "_%d:\n", id_table.find_func(node->R->get_id()));
-		// 	break;
-		// }
+			id_table.add_scope(FUNC_SCOPE);
+			COMPILE_L();
+			COMPILE_R();
+			id_table.remove_scope();
+			
+			cpl_mov_reg_imm64(REG_RAX, 0);
+			cpl_ret();
+			
+			sprintf(lname, FUNC_JUMPGUARD_TEMPLATE, func_name, offset);
+			obj.add_fixup({lname, (int) cmd.get_size() - 4, fxp_RELATIVE});
 
-		// case OPCODE_FUNC_ARG_DECL : {
-		// 	if (!node->L) {
-		// 		if (node->R) {
-		// 			RAISE_ERROR("bad argument node, arg is absent\n");
-		// 			LOG_ERROR_LINE_POS(node);
-		// 		}
-		// 		break;
-		// 	}
+			free(func_name);
+			break;
+		}
 
-		// 	if (node->L->is_op(OPCODE_VAR_DEF)) {
-		// 		if (!node->L->L) {
-		// 			RAISE_ERROR("bad argument node, name of arg is absent\n");
-		// 			LOG_ERROR_LINE_POS(node);
-		// 			break;
-		// 		}
+		case OPCODE_FUNC_INFO : {
+			COMPILE_L();
 
-		// 		id_table.declare_var(node->L->L->get_id(), 1);
-		// 	} else if (node->L->is_id()) {
-		// 		id_table.declare_var(node->L->get_id(), 1);
-		// 	} 
+			// node->R->get_id()->print(file);
+			// fprintf(file, "_%d:\n", id_table.find_func(node->R->get_id()));
+			break;
+		}
 
-		// 	COMPILE_R();
-		// 	break;
-		// }
+		case OPCODE_FUNC_ARG_DECL : {
+			if (!node->L) {
+				if (node->R) {
+					RAISE_ERROR("bad argument node, arg is absent\n");
+					LOG_ERROR_LINE_POS(node);
+				}
+				break;
+			}
+
+			if (node->L->is_op(OPCODE_VAR_DEF)) {
+				if (!node->L->L) {
+					RAISE_ERROR("bad argument node, name of arg is absent\n");
+					LOG_ERROR_LINE_POS(node);
+					break;
+				}
+
+				id_table.declare_var(node->L->L->get_id(), 1);
+			} else if (node->L->is_id()) {
+				id_table.declare_var(node->L->get_id(), 1);
+			} else {
+				RAISE_ERROR("bad agrument node, unknown type\n");
+				LOG_ERROR_LINE_POS(node);
+				break;
+			}
+
+			COMPILE_R();
+			break;
+		}
 
 		// case OPCODE_FUNC_CALL : {
 		// 	if (id_table.find_func(node->R->get_id()) == NOT_FOUND) {

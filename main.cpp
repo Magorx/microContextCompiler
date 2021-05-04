@@ -32,6 +32,8 @@ union IntToQWord {
 void test();
 
 int main(const int argc, const char **argv) {
+	srand((unsigned) time(NULL));
+
 	const char *input_file  = "prog.ctx";
 	const char *output_file = "out.kc";
 	int verbosity = 0;

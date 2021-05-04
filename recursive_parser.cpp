@@ -691,7 +691,7 @@ ParseNode *RecursiveParser::parse_ELEM_FUNC() {
 
 	// 0-1 arg;
 	if (cur->is_op(OPCODE_ELEM_PUTN)   || cur->is_op(OPCODE_ELEM_PUTC) || 
-		cur->is_op(OPCODE_ELEM_MALLOC) || cur->is_op(OPCODE_RET) || cur->is_op(OPCODE_ELEM_G_FILL)) {
+		cur->is_op(OPCODE_ELEM_MALLOC) || cur->is_op(OPCODE_RET) || cur->is_op(OPCODE_ELEM_G_FILL) || cur->is_op(OPCODE_ELEM_RANDOM)) {
 
 		int op = cur->get_op();
 		NEXT();
@@ -704,7 +704,7 @@ ParseNode *RecursiveParser::parse_ELEM_FUNC() {
 	}
 
 	// 2 args;
-	if (cur->is_op(OPCODE_ELEM_G_INIT) || cur->is_op(OPCODE_ELEM_G_PUT_PIXEL) || cur->is_op(OPCODE_ELEM_RANDOM)) {
+	if (cur->is_op(OPCODE_ELEM_G_INIT) || cur->is_op(OPCODE_ELEM_G_PUT_PIXEL)) {
 		int op = cur->get_op();
 		NEXT();
 		IF_PARSED (cur_index, arg1, parse_EXPR()) {
