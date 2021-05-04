@@ -65,7 +65,7 @@ extern int THE_NOCODE;
     } while (0)
 
 #define ANNOUNCE(code, announcer, format, ...) ANNOUNCEMENT(stdout, code, announcer, format "\n", __VA_ARGS__)
-#define ANNOUNCE_NOCODE(format, ...) THE_NOCODE = 1; ANNOUNCE(THE_LAST_CODE, THE_LAST_ANNOUNCER, format, __VA_ARGS__)
+#define ANNOUNCE_NOCODE(format, ...) {THE_NOCODE = 1; ANNOUNCE(THE_LAST_CODE, THE_LAST_ANNOUNCER, format, __VA_ARGS__);}
 
 
 extern const char *ANNOUNCEMENT_ERROR;

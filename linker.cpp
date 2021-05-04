@@ -75,12 +75,16 @@ void MicroLinker::link_program(char *cmd, size_t cmd_size, size_t entry_offset, 
 		_LOG ANNOUNCE("+FX", "linker", "| fixing [%s]", to_fix.label);
 		if (fix.type == fxp_RELATIVE) {
 			int rel_fix = fix.displ - to_fix.displ;
-			_LOG ANNOUNCE_NOCODE("|-- rel displ[0x%x]", rel_fix);
+			_LOG ANNOUNCE_NOCODE("|- rel displ[0x%x]", rel_fix);
 			memcpy(cmd + to_fix.displ, &rel_fix, 4);
-		} else {
+		} else if (fix.type == fxp_ABSOLUTE) {
 			int abs_fix = GLOBL_DISPL + fix.displ + HDR_SIZE;
-			_LOG ANNOUNCE_NOCODE("|-- abs displ[0x%x]", abs_fix);
+			_LOG ANNOUNCE_NOCODE("|- abs displ[0x%x]", abs_fix);
 			memcpy(cmd + to_fix.displ, &abs_fix, 4);
+		} else if (fix.type == fxp_FIXED) {
+			int fxd_fix = fix.displ;
+			_LOG ANNOUNCE_NOCODE("|- fxd displ[0x%x]", fxd_fix);
+			memcpy(cmd + to_fix.displ, &fxd_fix, 4);
 		}
 	}
 	_LOG ANNOUNCE("===", "linker", "requested fixing end");
@@ -141,6 +145,7 @@ void MicroLinker::link_objectives(const Vector<MicroObj*> &objs, const size_t en
 			FixupInfo fx = obj->fixup[fx_i];
 			if (fixup_ht.find({fx.label}) != -1) {
 				RAISE_ERROR("duplicate fixup[%s]\n", fx.label);
+				return;
 			}
 
 			_LOG ANNOUNCE("+FX", "linker", "| adding fixup[%s] (displ %d)", fx.label, fx.displ);
@@ -151,7 +156,7 @@ void MicroLinker::link_objectives(const Vector<MicroObj*> &objs, const size_t en
 				fx.displ += cur_global_offset;
 			}
 
-			_LOG ANNOUNCE_NOCODE("|-- displ[0x%x]", fx.displ);
+			_LOG ANNOUNCE_NOCODE("|- displ[0x%x]", fx.displ);
 
 			fixup_ht.insert({fx.label, (int) fixup.size()});
 			fixup.push_back(fx);
@@ -166,7 +171,7 @@ void MicroLinker::link_objectives(const Vector<MicroObj*> &objs, const size_t en
 			to_fx.displ += cur_offset;
 
 			_LOG ANNOUNCE("?FX", "linker", "| adding to_fixup[%s]", to_fx.label);
-			_LOG ANNOUNCE_NOCODE("|-- displ[0x%x]", to_fx.displ);
+			_LOG ANNOUNCE_NOCODE("|- displ[0x%x]", to_fx.displ);
 
 			to_fixup.push_back(to_fx);
 		}

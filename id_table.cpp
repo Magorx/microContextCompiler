@@ -111,6 +111,9 @@ int IdTable::find_var(const StringView *id, int *res) const {
 	}
 
 	if (found_index < first_functive) {
+		for (int i = 0; i < found_index; ++i) {
+			offset += data[i]->get_var_cnt();
+		}
 		*res = offset * (int) sizeof(long long);
 		return ID_TYPE_GLOBAL;
 	}

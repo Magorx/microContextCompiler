@@ -161,6 +161,10 @@ int RegManager::get_var_used_reg(int offset, REGMAN_VAR_TYPE var_type) {
 }
 
 int RegManager::get_var_reg(int offset, REGMAN_VAR_TYPE var_type, const char* var_name, char to_prevent_load) {
+	_log ANNOUNCE("GVR", "regman", "requested var reg");
+	_log ANNOUNCE_NOCODE("|- name [%s]", var_name);
+	_log ANNOUNCE_NOCODE("|- offs [%d]", offset);
+
 	int reg = get_var_used_reg(offset, var_type);
 	if (reg == -1) {
 		if (var_type == REGMAN_VAR_LOCAL) {
@@ -217,7 +221,7 @@ int RegManager::get_tmp_reg(int id) {
 
 int RegManager::store_reg_info(const int reg) {
 	int id = reg_info[reg].id;
-	_log ANNOUNCE("  store", "regman", "reg[%d] -> id[%d]", reg, id);
+	_log ANNOUNCE("store", "regman", "reg[%d] -> id[%d]", reg, id);
 
 	if (reg_info[reg].var_type == REGMAN_TMP_REG) {
 		if (reg_info[reg].offset < 0) {
@@ -242,7 +246,7 @@ int RegManager::store_reg_info(const int reg) {
 
 int RegManager::restore_reg_info(const int id, bool to_store, bool force_restore) {
 	int reg = id_to_reg[id].reg;
-	// ANNOUNCE("restore", "regman", "id[%d] -> reg[%d]", id, reg);
+	_log ANNOUNCE("restore", "regman", "id[%d] -> reg[%d]", id, reg);
 
 	if (!force_restore && reg_info[get_ind_by_reg(reg)].id == id) {
 		return 0;
@@ -256,13 +260,14 @@ int RegManager::restore_reg_info(const int id, bool to_store, bool force_restore
 	reg_info[get_ind_by_reg(id_to_reg[id].reg)] = id_to_reg[id];
 
 	if (reg_info[get_ind_by_reg(reg)].var_type == REGMAN_TMP_REG) {
-		// ANNOUNCE("restore", "regman", "is a tmp reg");
+		_log ANNOUNCE_NOCODE("tmp reg");
 		compiler->cpl_mov_reg_mem(reg, REG_RSP_DISPL((stack_offset - cur_stack_size) * -8));
 	} else {
-		// ANNOUNCE("restore", "regman", "is a local var reg");
 		if (reg_info[get_ind_by_reg(reg)].var_type == REGMAN_VAR_LOCAL) {
+			_log ANNOUNCE_NOCODE("local var reg");
 			compiler->cpl_mov_reg_mem(reg, REG_RBP_DISPL(reg_info[get_ind_by_reg(reg)].offset * -8));
 		} else {
+			_log ANNOUNCE_NOCODE("globl var reg");
 			compiler->cpl_mov_reg_mem64(reg_info[get_ind_by_reg(reg)].reg, 0);
 			compiler->obj.request_fixup({reg_info[get_ind_by_reg(reg)].id_name, CMD_SIZE - 4, fxp_ABSOLUTE});
 		}
@@ -303,17 +308,17 @@ int RegManager::save_state() {
 
 	states.push_back(state);
 
-	MicroObj *obj = &compiler->obj;
-	char lname[MAX_LABEL_LEN];
+	// MicroObj *obj = &compiler->obj;
+	// char lname[MAX_LABEL_LEN];
 
-	compiler->cpl_jmp_rel32(0);
-	sprintf(lname, SAVE_STATE_JUMP_TEMPLATE, state->id);
-	obj->request_fixup({lname, CMD_SIZE - 4, fxp_RELATIVE});
+	// compiler->cpl_jmp_rel32(0);
+	// sprintf(lname, SAVE_STATE_JUMP_TEMPLATE, state->id);
+	// obj->request_fixup({lname, CMD_SIZE - 4, fxp_RELATIVE});
 
 	return 0;
 }
 
-int __attribute__ ((noinline)) RegManager::load_state() {
+int RegManager::load_state() {
 	if (!states.size()) {
 		RAISE_ERROR("empty saved stack buffer, nothing to load");
 		return -1;
@@ -323,35 +328,51 @@ int __attribute__ ((noinline)) RegManager::load_state() {
 	MicroObj *obj = &compiler->obj;
 	char lname[MAX_LABEL_LEN];
 
-	compiler->cpl_jmp_rel32(0);
-	sprintf(lname, LOAD_STATE_JUMP_TEMPLATE, st->id);
-	obj->request_fixup({lname, CMD_SIZE - 4, fxp_RELATIVE});
+	// bool to_save_load = false;
+	// for (int i = 0; i < REGMAN_REGS_CNT; ++i) {
+	// 	if (st->regs[i].id != reg_info[i].id) {
+	// 		to_save_load = true;
+	// 		break;
+	// 	}
+	// }
+
+	// if (!to_save_load) {
+	// 	sprintf(lname, SAVE_STATE_JUMP_TEMPLATE, st->id);
+	// 	obj->add_fixup({lname, 0, fxp_FIXED});
+	// 	return 0;
+	// }
+
+	// compiler->cpl_jmp_rel32(0);
+	// sprintf(lname, LOAD_STATE_JUMP_TEMPLATE, st->id);
+	// obj->request_fixup({lname, CMD_SIZE - 4, fxp_RELATIVE});
 
 	// save part
 
-	sprintf(lname, SAVE_STATE_JUMP_TEMPLATE, st->id);
-	obj->add_fixup({lname, CMD_SIZE - 4, fxp_RELATIVE});
+	// sprintf(lname, SAVE_STATE_JUMP_TEMPLATE, st->id);
+	// obj->add_fixup({lname, CMD_SIZE - 4, fxp_RELATIVE});
 
 	/* save logic */
-	for (int i = 0; i < REGMAN_REGS_CNT; ++i) {
-		if (st->regs[i].id != reg_info[i].id) {
-			store_reg_info(i);
-		}
-	}
+	// for (int i = 0; i < REGMAN_REGS_CNT; ++i) {
+	// 	if (st->regs[i].id != reg_info[i].id) {
+	// 		store_reg_info(i);
+	// 	}
+	// }
 
-	compiler->cpl_jmp_rel32(0);
-	sprintf(lname, SAVE_STATE_RETR_TEMPLATE, st->id);
-	obj->request_fixup({lname, CMD_SIZE - 4, fxp_RELATIVE});
+	// compiler->cpl_jmp_rel32(0);
+	// sprintf(lname, SAVE_STATE_RETR_TEMPLATE, st->id);
+	// obj->request_fixup({lname, CMD_SIZE - 4, fxp_RELATIVE});
 
 	// load part
 
-	sprintf(lname, LOAD_STATE_JUMP_TEMPLATE, st->id);
-	obj->add_fixup({lname, CMD_SIZE - 4, fxp_RELATIVE});
+	// sprintf(lname, LOAD_STATE_JUMP_TEMPLATE, st->id);
+	// obj->add_fixup({lname, CMD_SIZE - 4, fxp_RELATIVE});
 
 	/* save logic */
 	for (int i = 0; i < REGMAN_REGS_CNT; ++i) {
-		if (st->regs[i].id != reg_info[i].id) {
-			// store_reg_info(reg_info[i].reg);
+		if (st->regs[i].id > 0 && st->regs[i].id != reg_info[i].id) {
+			if (reg_info[i].var_type == REGMAN_VAR_LOCAL || reg_info[i].var_type == REGMAN_VAR_GLOBAL) {
+				store_reg_info(reg_info[i].reg); //~~~
+			}
 
 			reg_info[i] = st->regs[i];
 			restore_reg_info(st->regs[i].id, false, true);

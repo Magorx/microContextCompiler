@@ -13,7 +13,8 @@
 
 enum FIXUP_INFO {
 	fxp_RELATIVE = 1,
-	fxp_ABSOLUTE = 2
+	fxp_ABSOLUTE = 2,
+	fxp_FIXED    = 3
 };
 
 struct FixupInfo {

@@ -529,135 +529,203 @@ void Compiler::cpl_operation(const CodeNode *node, FILE *file) {
 		// 	break;
 		// }
 
-		// case OPCODE_WHILE : {
-		// 	int cur_while_cnt = ++while_cnt;
-
-		// 	cycles_end_stack.push_back(Loop(LOOP_TYPE_WHILE, cur_while_cnt));
-		// 	fprintf(file, "while_%d_cond:\n", cur_while_cnt);
-
-		// 	COMPILE_L();
-		// 	fprintf(file, "\npush 0\n");
-		// 	fprintf(file, "je while_%d_end\n", cur_while_cnt);
-
-		// 	COMPILE_R();
-		// 	fprintf(file, "jmp while_%d_cond\n", cur_while_cnt);
-
-		// 	fprintf(file, "\nwhile_%d_end:\n", cur_while_cnt);
-		// 	cycles_end_stack.pop_back();
-		// 	break;
-		// }
-
-		// case OPCODE_BREAK : {
-		// 	if (!cycles_end_stack.size()) {
-		// 		RAISE_ERROR("You can't use |< outside of the loop\n");
-		// 		LOG_ERROR_LINE_POS(node);
-		// 		break;
-		// 	}
-
-		// 	Loop cur_cycle = cycles_end_stack[cycles_end_stack.size() - 1];
-		// 	if (cur_cycle.type == LOOP_TYPE_WHILE) {
-		// 		fprintf(file, "jmp while_%d_end\n", cur_cycle.number);
-		// 	} else if (cur_cycle.type == LOOP_TYPE_FOR) {
-		// 		fprintf(file, "jmp for_%d_end\n", cur_cycle.number);
-		// 	} else {
-		// 		RAISE_ERROR("What cycle are you using??\n");
-		// 		LOG_ERROR_LINE_POS(node);
-		// 		break;
-		// 	}
-
-		// 	break;
-		// }
-
-		// case OPCODE_CONTINUE : {
-		// 	if (!cycles_end_stack.size()) {
-		// 		RAISE_ERROR("You can't use |< outside of the loop\n");
-		// 		LOG_ERROR_LINE_POS(node);
-		// 		break;
-		// 	}
-
-		// 	Loop cur_cycle = cycles_end_stack[cycles_end_stack.size() - 1];
-		// 	if (cur_cycle.type == LOOP_TYPE_WHILE) {
-		// 		fprintf(file, "jmp while_%d_cond\n", cur_cycle.number);
-		// 	} else if (cur_cycle.type == LOOP_TYPE_FOR) {
-		// 		fprintf(file, "jmp for_%d_action\n", cur_cycle.number);
-		// 	} else {
-		// 		RAISE_ERROR("What cycle are you using??\n");
-		// 		LOG_ERROR_LINE_POS(node);
-		// 		break;
-		// 	}
-
-		// 	break;
-		// }
-
-		case OPCODE_IF : {
+		case OPCODE_WHILE : {
 			regman->save_state();
 
+			int cur_while_cnt = ++while_cnt;
+			cycles_end_stack.push_back(Loop(LOOP_TYPE_WHILE, cur_while_cnt));
 			char lname[MAX_LABEL_LEN];
-			sprintf(lname, SAVE_STATE_RETR_TEMPLATE, regman->get_max_state_id());
+
+			regman->save_state();
+
+			sprintf(lname, WHILE_CONDITION_TEMPLATE, cur_while_cnt);
 			obj.add_fixup({lname, (int) cmd.get_size() - 4, fxp_RELATIVE});
 
-			compile(node->get_R()->get_R(), file);
+			COMPILE_L();
 
-			sprintf(lname, LOAD_STATE_RETR_TEMPLATE, regman->get_max_state_id());
-			obj.add_fixup({lname, (int) cmd.get_size() - 4, fxp_RELATIVE});
+			cpl_test_reg_reg(REG_RAX, REG_RAX);
 
-			regman->corrupt_reg(0);
+			cpl_je_rel32(0);
+			sprintf(lname, WHILE_END_TEMPLATE, cur_while_cnt);
+			obj.request_fixup({lname, (int) cmd.get_size() - 4, fxp_RELATIVE});
+
+			COMPILE_R();
+
 			regman->load_state();
 
-			// int cur_if_cnt = ++if_cnt;
-			// fprintf(file, "if_%d_cond:\n", cur_if_cnt);
-			// fprintf(file, "\npush 0\n");
-			// fprintf(file, "jne if_%d_true\n", cur_if_cnt);
-			// COMPILE_R();
-			// fprintf(file, "\nif_%d_end:\n", cur_if_cnt);
+			cpl_jmp_rel32(0);
+			sprintf(lname, WHILE_CONDITION_TEMPLATE, cur_while_cnt);
+			obj.request_fixup({lname, (int) cmd.get_size() - 4, fxp_RELATIVE});
+
+			sprintf(lname, WHILE_END_TEMPLATE, cur_while_cnt);
+			obj.add_fixup({lname, (int) cmd.get_size() - 4, fxp_RELATIVE});
+
+			regman->load_state();
+
+			cycles_end_stack.pop_back();
 			break;
 		}
 
-		// case OPCODE_FOR : {
-		// 	int cur_for_cnt = ++for_cnt;
-		// 	cycles_end_stack.push_back(Loop(LOOP_TYPE_FOR, cur_for_cnt));
+		case OPCODE_BREAK : {
+			if (!cycles_end_stack.size()) {
+				RAISE_ERROR("You can't use |< outside of the loop\n");
+				LOG_ERROR_LINE_POS(node);
+				break;
+			}
 
-		// 	if (!node->L || !node->R || !node->L->L || !node->L->R || !node->L->L->L || !node->L->L->R) {
-		// 		RAISE_ERROR("bad for node, something is missing\n");
-		// 		break;
-		// 	}
+			Loop cur_cycle = cycles_end_stack[cycles_end_stack.size() - 1];
+			char lname[MAX_LABEL_LEN];
+			if (cur_cycle.type == LOOP_TYPE_WHILE) {
+				cpl_jmp_rel32(0);
+				sprintf(lname, WHILE_END_TEMPLATE, cur_cycle.number);
+				obj.request_fixup({lname, (int) cmd.get_size() - 4, fxp_RELATIVE});
+			} else if (cur_cycle.type == LOOP_TYPE_FOR) {
+				cpl_jmp_rel32(0);
+				sprintf(lname, FOR_END_TEMPLATE, cur_cycle.number);
+				obj.request_fixup({lname, (int) cmd.get_size() - 4, fxp_RELATIVE});
+			} else {
+				RAISE_ERROR("What cycle are you using??\n");
+				LOG_ERROR_LINE_POS(node);
+				break;
+			}
+
+			break;
+		}
+
+		case OPCODE_CONTINUE : {
+			if (!cycles_end_stack.size()) {
+				RAISE_ERROR("You can't use |< outside of the loop\n");
+				LOG_ERROR_LINE_POS(node);
+				break;
+			}
+
+			Loop cur_cycle = cycles_end_stack[cycles_end_stack.size() - 1];
+			char lname[MAX_LABEL_LEN];
+			if (cur_cycle.type == LOOP_TYPE_WHILE) {
+				cpl_jmp_rel32(0);
+				sprintf(lname, WHILE_CONDITION_TEMPLATE, cur_cycle.number);
+				obj.request_fixup({lname, (int) cmd.get_size() - 4, fxp_RELATIVE});
+			} else if (cur_cycle.type == LOOP_TYPE_FOR) {
+				cpl_jmp_rel32(0);
+				sprintf(lname, FOR_ACTION_TEMPLATE, cur_cycle.number);
+				obj.request_fixup({lname, (int) cmd.get_size() - 4, fxp_RELATIVE});
+			} else {
+				RAISE_ERROR("What cycle are you using??\n");
+				LOG_ERROR_LINE_POS(node);
+				break;
+			}
+
+			break;
+		}
+
+		case OPCODE_IF : {
+			int cur_if_cnt = ++if_cnt;
+			char lname[MAX_LABEL_LEN];
+
+			COMPILE_L();
+
+			cpl_test_reg_reg(REG_RAX, REG_RAX);
 			
-		// 	id_table.add_scope();
-		// 	fprintf(file, "\nfor_%d_init_block:\n", cur_for_cnt);
-		// 	compile(node->L->L->L, file);
+			cpl_je_rel32(0);
+			sprintf(lname, IF_FALSE_TEMPLATE, cur_if_cnt);
+			obj.request_fixup({lname, (int) cmd.get_size() - 4, fxp_RELATIVE});
 
-		// 	fprintf(file, "\nfor_%d_start:\n", cur_for_cnt);
-		// 	fprintf(file, "\nfor_%d_cond:\n", cur_for_cnt);
-		// 	compile(node->L->L->R, file);
-		// 	fprintf(file, "\npush 0\n");
-		// 	fprintf(file, "je for_%d_end\n", cur_for_cnt);
+			regman->save_state();
 
-		// 	compile(node->R, file);
+			compile(node->get_R()->get_R(), file);
 
-		// 	fprintf(file, "for_%d_action:\n", cur_for_cnt);
-		//     cpl_expr(node->L->R, file, true);
-		// 	fprintf(file, "jmp for_%d_cond\n", cur_for_cnt);
+			regman->load_state();
+
+			if (node->get_R()->get_L()) {
+				cpl_jmp_rel32(0);
+				sprintf(lname, IF_END_TEMPLATE, cur_if_cnt);
+				obj.request_fixup({lname, (int) cmd.get_size() - 4, fxp_RELATIVE});
+			}
+
+			sprintf(lname, IF_FALSE_TEMPLATE, cur_if_cnt);
+			obj.add_fixup({lname, (int) cmd.get_size() - 4, fxp_RELATIVE});
+
+			if (node->get_R()->get_L()) {
+				regman->save_state();
 			
-		// 	fprintf(file, "\nfor_%d_end:\n", cur_for_cnt);
-		// 	cycles_end_stack.pop_back();
-		// 	id_table.remove_scope();
-		// 	break;
-		// }
+				sprintf(lname, SAVE_STATE_RETR_TEMPLATE, regman->get_max_state_id());
+				obj.add_fixup({lname, (int) cmd.get_size() - 4, fxp_RELATIVE});
 
-		// case OPCODE_COND_DEPENDENT : {
-		// 	int cur_if_cnt = if_cnt;
-		// 	fprintf(file, "if_%d_false:\n", cur_if_cnt);
-		// 	COMPILE_L_COMMENT();
-		// 	fprintf(file, "\njmp if_%d_end\n", cur_if_cnt);
-		// 	fprintf(file, "\nif_%d_true:\n", cur_if_cnt);
-		// 	COMPILE_R_COMMENT();
-		// 	break;
-		// }
+				compile(node->get_R()->get_L(), file);
 
-		// case OPCODE_ELEM_EXIT : {
-		// 	fprintf(file, "halt\n");
-		// 	break;
-		// }
+				regman->load_state();
+			}
+
+			sprintf(lname, IF_END_TEMPLATE, cur_if_cnt);
+			obj.add_fixup({lname, (int) cmd.get_size() - 4, fxp_RELATIVE});
+
+			break;
+		}
+
+		case OPCODE_FOR : {
+			regman->save_state();
+
+			int cur_for_cnt = ++for_cnt;
+			cycles_end_stack.push_back(Loop(LOOP_TYPE_FOR, cur_for_cnt));
+			char lname[MAX_LABEL_LEN];
+
+			if (!node->L || !node->R || !node->L->L || !node->L->R || !node->L->L->L || !node->L->L->R) {
+				RAISE_ERROR("bad FOR node, something is missing\n");
+				break;
+			}
+			
+			id_table.add_scope();
+
+			sprintf(lname, FOR_INIT_TEMPLATE, cur_for_cnt);
+			obj.add_fixup({lname, (int) cmd.get_size() - 4, fxp_RELATIVE});
+
+			compile(node->L->L->L, file);
+
+			regman->save_state();
+
+			sprintf(lname, FOR_START_TEMPLATE, cur_for_cnt);
+			obj.add_fixup({lname, (int) cmd.get_size() - 4, fxp_RELATIVE});
+
+			sprintf(lname, FOR_CONDITION_TEMPLATE, cur_for_cnt);
+			obj.add_fixup({lname, (int) cmd.get_size() - 4, fxp_RELATIVE});
+
+			compile(node->L->L->R, file);
+			
+			cpl_test_reg_reg(REG_RAX, REG_RAX);
+			
+			cpl_je_rel32(0);
+			sprintf(lname, FOR_END_TEMPLATE, cur_for_cnt);
+			obj.request_fixup({lname, (int) cmd.get_size() - 4, fxp_RELATIVE});
+
+			compile(node->R, file);
+
+			sprintf(lname, FOR_ACTION_TEMPLATE, cur_for_cnt);
+			obj.add_fixup({lname, (int) cmd.get_size() - 4, fxp_RELATIVE});
+
+		    cpl_expr(node->L->R, file);
+
+		    regman->load_state();
+
+		    cpl_jmp_rel32(0);
+			sprintf(lname, FOR_CONDITION_TEMPLATE, cur_for_cnt);
+			obj.request_fixup({lname, (int) cmd.get_size() - 4, fxp_RELATIVE});
+			
+			sprintf(lname, FOR_END_TEMPLATE, cur_for_cnt);
+			obj.add_fixup({lname, (int) cmd.get_size() - 4, fxp_RELATIVE});
+
+			cycles_end_stack.pop_back();
+			id_table.remove_scope();
+
+			regman->load_state();
+			break;
+		}
+
+		case OPCODE_ELEM_EXIT : {
+			cpl_mov_reg_imm64(REG_RAX, 60);
+			cpl_math_op(REG_RDI, REG_RDI, '^');
+			cpl_syscall();
+			break;
+		}
 
 		// case OPCODE_ELEM_RANDOM : {
 		// 	//fprintf(file, "push\n");
@@ -1220,6 +1288,10 @@ bool Compiler::cpl_lvalue(const CodeNode *node, int &offset, int &found) {
 		// printf("~~~~~~~~~~~~~~~~~~\n");
 		// printf("cur id_table:\n");
 		// id_table.dump();
+
+		// printf("finding [");
+		// node->get_id()->print();
+		// printf("]\n");
 
 		int is_found = id_table.find_var(node->get_id(), &offset);
 		found = is_found;
