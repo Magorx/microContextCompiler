@@ -56,6 +56,7 @@ private:
 	void compile 			(const CodeNode *node, FILE *file);
 	bool cpl_lvalue			(const CodeNode *node, int &offset, int &found);
 	bool cpl_rvalue			(const CodeNode *node);
+	void cpl_func_ret		();
 
 public:
 	RegManager *regman;

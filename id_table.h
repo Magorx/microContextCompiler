@@ -55,7 +55,14 @@ public:
 	bool shift_backward();
 	bool shift_forward();
 
-	int size();
+	inline int get_upper_offset() const {
+		if (!data.size()) return 0;
+		return data[data.size() - 1]->get_var_cnt() * 8;
+	}
+
+	int get_func_locals_size() const;
+
+	int size() const;
 	void dump() const;
 };
 

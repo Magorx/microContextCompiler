@@ -93,20 +93,20 @@ int IdTable::find_var(const StringView *id, int *res) const {
 	}
 
 	if (data[found_index]->is_functive() == ARG_SCOPE) {
-		bool to_add_offset = false;
-		for (int i = found_index - 1; i >= 0; --i) {
-			if (data[i]->is_functive() == FUNC_SCOPE) {
-				to_add_offset = true;
-			}
-		}
+		// bool to_add_offset = false;
+		// for (int i = found_index - 1; i >= 0; --i) {
+		// 	if (data[i]->is_functive() == FUNC_SCOPE) {
+		// 		to_add_offset = true;
+		// 	}
+		// }
 
-		if (found_index > last_functive && to_add_offset) {
-			for (int i = found_index - 1; i >= last_functive; --i) {
-				offset += data[i]->get_var_cnt();
-			}
-		}
+		// if (found_index > last_functive && to_add_offset) {
+		// 	for (int i = found_index - 1; i >= last_functive; --i) {
+		// 		offset += data[i]->get_var_cnt();
+		// 	}
+		// }
 
-		*res = offset * (int) sizeof(long long);
+		*res = (data[found_index]->get_var_cnt() - offset + 2) * (int) sizeof(long long);
 		return ID_TYPE_FOUND;
 	}
 
@@ -122,7 +122,7 @@ int IdTable::find_var(const StringView *id, int *res) const {
 		offset += data[i]->get_var_cnt();
 	}
 
-	*res = offset * (int) sizeof(long long);
+	*res = -offset * (int) sizeof(long long);
 	return ID_TYPE_FOUND;
 }
 
@@ -241,8 +241,19 @@ bool IdTable::shift_forward() {
 	}
 }
 
-int IdTable::size() {
+int IdTable::size() const {
 	return (int) data.size();
+}
+
+int IdTable::get_func_locals_size() const {
+	int cnt = 0;
+	for (int i = size() - 1; i >= 0; --i) {
+		cnt += data[i]->get_var_cnt() * (int) sizeof(long long);
+		if (data[i]->is_functive()) {
+			break;
+		}
+	}
+	return cnt;
 }
 
 void IdTable::dump() const {

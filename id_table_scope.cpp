@@ -152,7 +152,7 @@ const CodeNode *IdTableScope::get_arglist(const StringView *id) {
 	return nullptr;
 }
 
-int IdTableScope::size() {
+int IdTableScope::size() const {
 	return (int)data.size();
 }
 

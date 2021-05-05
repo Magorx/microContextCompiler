@@ -73,7 +73,7 @@ public:
 
 	const CodeNode *get_arglist(const StringView *id);
 
-	int size();
+	int size() const;
 	int is_functive();
 	void dump();
 };

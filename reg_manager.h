@@ -15,8 +15,19 @@ class Compiler;
 enum REGMAN_VAR_TYPE {
 	REGMAN_VAR_LOCAL  = 1,
 	REGMAN_VAR_GLOBAL = 2,
-	REGMAN_TMP_REG = 3
+	REGMAN_TMP_REG    = 3
 };
+
+enum REGMAN_STORE_TYPE {
+	REGMAN_ALL 	   = 3,
+	REGMAN_VARS    = 2,
+	REGMAN_GLOBALS = 1,
+	REGMAN_TMPS    = 4
+};
+
+inline bool IS_VAR(const int x) {
+	return (x == REGMAN_VAR_LOCAL || x == REGMAN_VAR_GLOBAL);
+}
 
 const int REGMAN_REGS[] = {
 	REG_R8,
@@ -89,11 +100,12 @@ public:
 	void release_var_reg(int reg);
 	void release_tmp_reg(int reg);
 
-	int store_reg_info  (const int reg);
+	int store_reg_info  (int reg);
 	int restore_reg_info(const int id, bool to_store=true, bool force_restore=false);
 
 	int push(const int reg);
 	int pop (const int reg);
+	int alter_rsp(const int drsp);
 
 	void check_restore_reg(const int reg, const int id);
 
@@ -103,6 +115,10 @@ public:
 
 	int save_state();
 	int load_state();
+	int wipe_state();
+	int rest_state();
+
+	void flush_regs(char store_type = REGMAN_ALL, char to_wipe = true);
 
 	int corrupt_reg(int reg);
 };
