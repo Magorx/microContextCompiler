@@ -106,7 +106,7 @@ int IdTable::find_var(const StringView *id, int *res) const {
 		// 	}
 		// }
 
-		*res = (data[found_index]->get_var_cnt() - offset + 2) * (int) sizeof(long long);
+		*res = (data[found_index]->get_var_cnt() - offset + 1) * (int) sizeof(long long);
 		return ID_TYPE_FOUND;
 	}
 

@@ -194,6 +194,10 @@ void RegManager::release_tmp_reg(int reg) {
 	reg = get_ind_by_reg(reg);
 	reg_info[reg].is_used = 0;
 	id_to_reg.erase(reg_info[reg].id);
+
+	if (!(reg_info[reg].offset < 0)) {
+		alter_rsp(8);
+	}
 }
 
 int RegManager::get_tmp_reg(int id) {
@@ -270,11 +274,11 @@ int RegManager::restore_reg_info(const int id, bool to_store, bool force_restore
 
 	if (reg_info[get_ind_by_reg(reg)].var_type == REGMAN_TMP_REG) {
 		_LOG ANNOUNCE_NOCODE("tmp reg");
-		compiler->cpl_mov_reg_mem(reg, REG_RSP_DISPL((stack_offset - cur_stack_size) * -1));
+		compiler->cpl_mov_reg_mem(reg, REG_RSP_DISPL((stack_offset - cur_stack_size)  * -1));
 	} else {
 		if (reg_info[get_ind_by_reg(reg)].var_type == REGMAN_VAR_LOCAL) {
 			_LOG ANNOUNCE_NOCODE("local var[%s] reg", reg_info[get_ind_by_reg(reg)].id_name);
-			compiler->cpl_mov_reg_mem(reg, REG_RBP_DISPL(reg_info[get_ind_by_reg(reg)].offset * -1));
+			compiler->cpl_mov_reg_mem(reg, REG_RBP_DISPL(reg_info[get_ind_by_reg(reg)].offset));
 		} else if (reg_info[get_ind_by_reg(reg)].var_type == REGMAN_VAR_GLOBAL) {
 			_LOG ANNOUNCE_NOCODE("globl var[%s] reg", reg_info[get_ind_by_reg(reg)].id_name);
 			compiler->cpl_mov_reg_mem64(reg_info[get_ind_by_reg(reg)].reg, 0);
@@ -406,7 +410,6 @@ int RegManager::get_max_state_id() const {
 }
 
 int RegManager::alter_rsp(const int drsp) {
-	compiler->cpl_mov_reg_imm64(REG_RAX, drsp);
-	compiler->cpl_math_op(REG_RSP, REG_RAX, '+');
-	return cur_stack_size += drsp;
+	compiler->cpl_rps_add(drsp);
+	return cur_stack_size -= drsp;
 }

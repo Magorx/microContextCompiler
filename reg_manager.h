@@ -30,6 +30,11 @@ inline bool IS_VAR(const int x) {
 }
 
 const int REGMAN_REGS[] = {
+	REG_RSI,
+	REG_RDI,
+	REG_RCX,
+	REG_RDX,
+	REG_RBX,
 	REG_R8,
 	REG_R9,
 	REG_R10,

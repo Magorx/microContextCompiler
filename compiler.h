@@ -100,6 +100,8 @@ public:
 	void cpl_syscall();
 	void cpl_nop();
 
+	void cpl_rps_add(const int imm32);
+
 	void hexdump_cmd() const;
 
 	Compiler            (const Compiler&) = delete;
