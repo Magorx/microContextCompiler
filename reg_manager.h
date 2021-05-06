@@ -79,7 +79,6 @@ private:
 
 	int get_local_var_reg(int offset    , const char* var_name, char to_prevent_load = false);
 	int get_globl_var_reg(int offset    , const char *var_name, char to_prevent_load = false);
-	int get_memry_var_reg(int offset_reg, const char *var_name, char to_prevent_load = false);
 
 public:
 	 RegManager();

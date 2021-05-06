@@ -123,9 +123,6 @@ int IdTable::find_var(const StringView *id, int *res) const {
 	}
 
 	*res = (-offset - 1) * (int) sizeof(long long);
-	printf("\n\nlocal var ");
-	id->print();
-	printf(" has offset %d\n\n", *res);
 	return ID_TYPE_FOUND;
 }
 
@@ -259,9 +256,15 @@ int IdTable::get_func_locals_size() const {
 	return cnt;
 }
 
-void IdTable::dump() const {
+void IdTable::dump(const int offset) const {
 	for (size_t i = 0; i < data.size(); ++i) {
+		if (offset) {
+			for (int j = 0; j < offset - 1; ++j) {
+				printf(" ");
+			}
+			printf(": ");
+		}
 		printf("-----[%lu]\n", i);
-		data[i]->dump();
+		data[i]->dump(offset);
 	}
 }

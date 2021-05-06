@@ -1,4 +1,6 @@
 {
+	var N = 10; // '\n'
+
 	func print_n[var x] {
 		var arr = #20;
 		? (x == 0) {
@@ -27,7 +29,28 @@
 		ret;
 	}
 
-	print_n[1576];
-	__PUT_CHAR__;
+	func print_N {
+		__PUT_CHAR__ N;
+	}
+
+	func scan_n {
+		var x = 0;
+		var d;
+		>| (1) {
+			d = @;
+			? (d < '0' || d > '9') ret x;
+
+			x = x * 10 + d - '0';
+		}
+
+		>| (d != N) {
+			d = @;
+		}
+	}
+
+	var x = scan_n;
+	print_n[x];
+	print_N;
+
 
 }

@@ -75,7 +75,7 @@ public:
 
 	int size() const;
 	int is_functive();
-	void dump();
+	void dump(const int offset = 0) const;
 };
 
 #endif // ID_TABLE_SCOPE

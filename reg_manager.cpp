@@ -147,25 +147,6 @@ int RegManager::get_globl_var_reg(int offset, const char* var_name, char to_prev
 	return reg;
 }
 
-// int RegManager::get_memry_var_reg(int offset_reg, const char *var_name, char to_prevent_load) {
-// 	int reg = get_least_used_reg();
-
-// 	reg_info[reg].reg 	  = REGMAN_REGS[reg];
-// 	reg_info[reg].is_used = 1;
-// 	reg_info[reg].id   	  = ++max_id;
-	
-// 	id_to_reg[reg_info[reg].id] = reg_info[reg];
-// 	if (!to_prevent_load) {
-// 		compiler->cpl_mov_reg_imm64(REG_RAX, ELF_BSS_VADDR);
-// 		compiler->cpl_math_op(REG_RAX, offset_reg, '+');
-
-// 		compiler->cpl_mov_reg_mem(REG_RAX, REG_RAX, 0);
-// 		compiler->cpl_mov_reg_reg(reg_info[reg].reg, REG_RAX);
-// 	}
-
-// 	return reg;
-// }
-
 int RegManager::get_var_used_reg(int offset, int var_type) {
 	for (int reg = 0; reg < REGMAN_REGS_CNT; ++reg) {
 		if (reg_info[reg].offset == offset && reg_info[reg].var_type == var_type) {
@@ -179,10 +160,10 @@ int RegManager::get_var_used_reg(int offset, int var_type) {
 }
 
 int RegManager::get_var_reg(int offset, int var_type, const char* var_name, char to_prevent_load) {
-	dump();
-	_LOG ANNOUNCE("GVR", "regman", "requested var reg");
-	_LOG ANNOUNCE_NOCODE("|- name [%s]", var_name);
-	_LOG ANNOUNCE_NOCODE("|- offs [%d]", offset);
+	_Log dump();
+	_Log ANNOUNCE("GVR", "regman", "requested var reg");
+	_Log ANNOUNCE_NOCODE("|- name [%s]", var_name);
+	_Log ANNOUNCE_NOCODE("|- offs [%d]", offset);
 
 	int reg = get_var_used_reg(offset, var_type);
 	if (reg == -1) {
@@ -190,30 +171,32 @@ int RegManager::get_var_reg(int offset, int var_type, const char* var_name, char
 			reg = get_local_var_reg(offset, var_name, to_prevent_load);
 		} else if (var_type == REGMAN_VAR_GLOBAL) {
 			reg = get_globl_var_reg(offset, var_name, to_prevent_load);
-		} /*else {
-			reg = get_memry_var_reg(offset, var_name, to_prevent_load);
-		}*/
+		}
 	}
 
 	reg_info[reg].offset   = offset;
 	reg_info[reg].var_type = var_type;
 	reg_info[reg].id_name  = var_name ? strdup(var_name) : nullptr;
 
-	_LOG ANNOUNCE_NOCODE("|- id   [%d]", reg_info[reg].id);
+	_Log ANNOUNCE_NOCODE("|- id   [%d]", reg_info[reg].id);
 
 	id_to_reg[reg_info[reg].id] = reg_info[reg];
 	reg_info[reg].last_use = ++max_use;
-	dump();
+	_log dump();
 	return REGMAN_REGS[reg];
 }
 
 void RegManager::release_var_reg(int reg) {
+	int idx = get_ind_by_reg(reg);
+	_Log ANNOUNCE("RLZ", "regman", "id[%3d] -> reg[%2d] idx[%2d] type[%d]", reg_info[idx].id, reg, idx, reg_info[idx].var_type);
 	reg = get_ind_by_reg(reg);
 	reg_info[reg].is_used = 0;
 	// id_to_reg.erase(reg_info[reg].id);
 }
 
 void RegManager::release_tmp_reg(int reg) {
+	int idx = get_ind_by_reg(reg);
+	_Log ANNOUNCE("RLZ", "regman", "id[%3d] -> reg[%2d] idx[%2d] type[%d]", reg_info[idx].id, reg, idx, reg_info[idx].var_type);
 	reg = get_ind_by_reg(reg);
 	reg_info[reg].is_used = 0;
 	id_to_reg.erase(reg_info[reg].id);
@@ -224,8 +207,8 @@ void RegManager::release_tmp_reg(int reg) {
 }
 
 int RegManager::get_tmp_reg(int id) {
-	dump();
-	_LOG ANNOUNCE("GVR", "regman", "requested tmp reg");
+	_Log dump();
+	_Log ANNOUNCE("GVR", "regman", "requested tmp reg");
 
 	if (id != 0) {
 		if (id_to_reg.find(id) != id_to_reg.end()) {
@@ -248,18 +231,25 @@ int RegManager::get_tmp_reg(int id) {
 
 	id_to_reg[reg_info[reg].id] = reg_info[reg];
 
-	_LOG ANNOUNCE_NOCODE("|- idx[%d]_id[%d]", reg, reg_info[reg].id);
-	dump();
+	_Log ANNOUNCE_NOCODE("|- idx[%2d]_id[%3d]", reg, reg_info[reg].id);
+	_log dump();
 
 	return reg_info[reg].reg;
 }
 
 int RegManager::store_reg_info(int reg) {
+	if (reg < 0) {
+		return -1;
+	}
+	if (reg > REGMAN_REGS_CNT) {
+		RAISE_ERROR("idx[%2d] > REGMAN_REGS_CNT\n", reg);
+	}
+
 	int id = reg_info[reg].id;
-	_LOG ANNOUNCE("STR", "regman", "reg[%d] -> id[%d] reg_idx[%d]", reg_info[reg].reg, id, reg);
+	_Log ANNOUNCE("STR", "regman", "id[%3d] -> reg[%2d] idx[%2d] type[%d]", id, reg_info[reg].reg, reg, reg_info[reg].var_type);
 
 	if (reg_info[reg].var_type == REGMAN_TMP_REG) {
-		_LOG ANNOUNCE_NOCODE("tmp reg");
+		_Log ANNOUNCE_NOCODE("tmp reg");
 		if (reg_info[reg].offset < 0) {
 			push(reg_info[reg].reg);
 			id_to_stack_offset[id] = cur_stack_size;
@@ -270,19 +260,13 @@ int RegManager::store_reg_info(int reg) {
 		}
 	} else {
 		if (reg_info[reg].var_type == REGMAN_VAR_LOCAL) {
-			_LOG ANNOUNCE_NOCODE("local var[%s] reg", reg_info[reg].id_name);
+			_Log ANNOUNCE_NOCODE("local var[%s] reg", reg_info[reg].id_name);
 			compiler->cpl_mov_mem_reg(REG_RBP_DISPL(reg_info[reg].offset), reg_info[reg].reg);
 		} else if (reg_info[reg].var_type == REGMAN_VAR_GLOBAL) {
-			_LOG ANNOUNCE_NOCODE("globl var[%s] reg", reg_info[reg].id_name);
+			_Log ANNOUNCE_NOCODE("globl var[%s] reg", reg_info[reg].id_name);
 			compiler->cpl_mov_mem64_reg(0, reg_info[reg].reg);
 			compiler->obj.request_fixup({reg_info[reg].id_name, CMD_SIZE - 4, fxp_ABSOLUTE});
-		} /*else if (reg_info[reg].var_type == REGMAN_VAR_MEM) {
-			compiler->cpl_mov_reg_imm64(REG_RAX, ELF_BSS_VADDR);
-			compiler->cpl_math_op(REG_RAX, offset_reg, '+');
-
-			compiler->cpl_mov_reg_mem(REG_RAX, REG_RAX, 0);
-			compiler->cpl_mov_reg_reg(reg_info[reg].reg, REG_RAX);
-		}*/
+		}
 	}
 
 	return 0;
@@ -292,9 +276,13 @@ int RegManager::restore_reg_info(const int id, bool to_store, bool force_restore
 	if (id < 0) {
 		return -1;
 	}
+	if (id_to_reg.find(id) == id_to_reg.end()) {
+		RAISE_ERROR("reg id[%d] is not found in id_to_reg table\n", id);
+		return -1;
+	}
 
 	int reg = id_to_reg[id].reg;
-	_LOG ANNOUNCE("RST", "regman", "id[%d] -> reg[%d] reg_ixd[%d]", id, reg, get_ind_by_reg(reg));
+	_Log ANNOUNCE_NOCODE("id[%3d] -> reg[%2d] idx[%2d] type[%d]", id, reg, get_ind_by_reg(reg), reg_info[reg].var_type);
 
 	if (!force_restore && reg_info[get_ind_by_reg(reg)].id == id) {
 		return 0;
@@ -308,14 +296,14 @@ int RegManager::restore_reg_info(const int id, bool to_store, bool force_restore
 	reg_info[get_ind_by_reg(id_to_reg[id].reg)] = id_to_reg[id];
 
 	if (reg_info[get_ind_by_reg(reg)].var_type == REGMAN_TMP_REG) {
-		_LOG ANNOUNCE_NOCODE("tmp reg");
+		_Log ANNOUNCE_NOCODE("tmp reg");
 		compiler->cpl_mov_reg_mem(reg, REG_RSP_DISPL((stack_offset - cur_stack_size)  * -1));
 	} else {
 		if (reg_info[get_ind_by_reg(reg)].var_type == REGMAN_VAR_LOCAL) {
-			_LOG ANNOUNCE_NOCODE("local var[%s] reg", reg_info[get_ind_by_reg(reg)].id_name);
+			_Log ANNOUNCE_NOCODE("local var[%s] reg", reg_info[get_ind_by_reg(reg)].id_name);
 			compiler->cpl_mov_reg_mem(reg, REG_RBP_DISPL(reg_info[get_ind_by_reg(reg)].offset));
 		} else if (reg_info[get_ind_by_reg(reg)].var_type == REGMAN_VAR_GLOBAL) {
-			_LOG ANNOUNCE_NOCODE("globl var[%s] reg", reg_info[get_ind_by_reg(reg)].id_name);
+			_Log ANNOUNCE_NOCODE("globl var[%s] reg", reg_info[get_ind_by_reg(reg)].id_name);
 			compiler->cpl_mov_reg_mem64(reg_info[get_ind_by_reg(reg)].reg, 0);
 			compiler->obj.request_fixup({reg_info[get_ind_by_reg(reg)].id_name, CMD_SIZE - 4, fxp_ABSOLUTE});
 		}
@@ -345,6 +333,7 @@ int RegManager::get_ind_by_reg(const int reg) const {
 }
 
 int RegManager::save_state() {
+	_Log ANNOUNCE("SAV", "regman", "saving state...");
 	RegManagerState *state = (RegManagerState*) calloc(1, sizeof(RegManagerState));
 	if (!state) {
 		RAISE_ERROR("can't allocate memory for new state save");
@@ -360,6 +349,7 @@ int RegManager::save_state() {
 }
 
 int RegManager::load_state() {
+	_Log ANNOUNCE("LOD", "regman", "loading prev state...");
 	if (!states.size()) {
 		RAISE_ERROR("empty saved stack buffer, nothing to load");
 		return -1;
@@ -371,6 +361,10 @@ int RegManager::load_state() {
 
 	/* restore logic */
 	for (int i = 0; i < REGMAN_REGS_CNT; ++i) {
+		if (!st->regs[i].is_used) {
+			continue;
+		}
+
 		if (st->regs[i].id > 0 && st->regs[i].id != reg_info[i].id) {
 			if (IS_VAR(reg_info[i].var_type)) {
 				store_reg_info(reg_info[i].reg); //~~~
@@ -385,7 +379,7 @@ int RegManager::load_state() {
 
 int RegManager::corrupt_reg(int reg) {
 	if (reg >= REGMAN_REGS_CNT) {
-		RAISE_ERROR("reg[%d] is >= REGMAN_REGS_CNT[%d]", reg, REGMAN_REGS_CNT);
+		RAISE_ERROR("reg[%2d] is >= REGMAN_REGS_CNT[%d]", reg, REGMAN_REGS_CNT);
 		return -1;
 	}
 
@@ -396,7 +390,7 @@ int RegManager::corrupt_reg(int reg) {
 }
 
 int RegManager::wipe_state() {
-	_LOG ANNOUNCE("WIP", "regman", "state wiped");
+	_Log ANNOUNCE("WIP", "regman", "state wiped");
 
 	for (int i = 0; i < REGMAN_REGS_CNT; ++i) {
 		reg_info[i].last_use = 0;
@@ -408,12 +402,11 @@ int RegManager::wipe_state() {
 }
 
 int RegManager::rest_state() {
-	_LOG ANNOUNCE("RET", "regman", "restoring state");
+	_Log ANNOUNCE("RET", "regman", "restoring state");
 
 	for (int i = 0; i < REGMAN_REGS_CNT; ++i) {
-		// printf("rest %d -> id %d used %d var_type %d off %d\n", i, reg_info[i].id, reg_info[i].is_used, reg_info[i].var_type, reg_info[i].offset);
 		if (reg_info[i].is_used || IS_VAR(reg_info[i].var_type)) {
-			_LOG ANNOUNCE_NOCODE("reg_idx[%d] -> id[%d]", i, reg_info[i].id);
+			_Log ANNOUNCE_NOCODE("id[%3d] -> reg[%2d] idx[%2d] type[%d]", i, reg_info[i].reg, i, reg_info[i].var_type);
 			restore_reg_info(reg_info[i].id, false, true);
 		}
 	}
@@ -432,7 +425,7 @@ void RegManager::flush_regs(char store_type, char to_wipe) {
 			continue;
 		}
 
-		_LOG ANNOUNCE("FSH", "regman","reg_idx[%d] -> reg[%d] | id[%d] | offset[%d]\n", i, reg_info[i].reg, reg_info[i].id, reg_info[i].offset);
+		_Log ANNOUNCE("FSH", "regman","id[%3d] -> reg[%2d] idx[%2d] type[%d]", reg_info[i].id, reg_info[i].reg, i, reg_info[i].var_type);
 		store_reg_info(i);
 	}
 

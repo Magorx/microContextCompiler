@@ -63,7 +63,7 @@ public:
 	int get_func_locals_size() const;
 
 	int size() const;
-	void dump() const;
+	void dump(const int offset = 0) const;
 };
 
 #endif // ID_TABLE

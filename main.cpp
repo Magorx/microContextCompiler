@@ -102,7 +102,7 @@ int main(const int argc, const char **argv) {
 	ByteBuffer result_cmd;
 
 	linker.link_objectives(objs, 0, "elf", &result_cmd);
-	result_cmd.hexdump();
+	_log result_cmd.hexdump();
 
 	comp.dtor();
 

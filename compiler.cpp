@@ -355,12 +355,8 @@ void Compiler::cpl_operation(const CodeNode *node, FILE *file) {
 				regman->release_tmp_reg(r1);
 			} else {
 				if (node->get_op() == '-') {
-					int r1 = regman->get_tmp_reg();
-
-					cpl_mov_reg_imm64(r1, -1);
-					cpl_math_op(REG_RAX, r1, '*');
-
-					regman->release_tmp_reg(r1);
+					cpl_mov_reg_imm64(REG_RBX, -1);
+					cpl_math_op(REG_RAX, REG_RBX, '*');
 				} else {
 					LOG_ERROR_LINE_POS(node);
 				}
@@ -463,6 +459,7 @@ void Compiler::cpl_operation(const CodeNode *node, FILE *file) {
 			}
 
 			cpl_log_op(REG_RAX, r1, node->get_op());
+			regman->release_tmp_reg(r1);
 			break;
 		}
 
@@ -478,6 +475,7 @@ void Compiler::cpl_operation(const CodeNode *node, FILE *file) {
 			regman->restore_reg_info(r1_id);
 
 			cpl_log_conn(REG_RAX, r1, node->get_op());
+			regman->release_tmp_reg(r1);
 			break;
 		}
 
@@ -776,19 +774,32 @@ void Compiler::cpl_operation(const CodeNode *node, FILE *file) {
 			break;
 		}
 
-		// case OPCODE_ELEM_PUTN : {
-		// 	if (node->R) {
-		// 		COMPILE_R();
-		// 		fprintf(file, "dup\n");
-		// 		fprintf(file, "out\n");
-		// 	} else {
-		// 		fprintf(file, "push %d\n", '\n');
-		// 		fprintf(file, "dup\n");
-		// 		fprintf(file, "out_c\n");
-		// 	}
+		case OPCODE_ELEM_INPUT : {
+			if (node->R) {
+				RAISE_ERROR("bad, input can't have arguments\n");
+				LOG_ERROR_LINE_POS(node);
+			} else {
+				cpl_push_reg(REG_RSI);
+				cpl_push_reg(REG_RDX);
+				cpl_push_reg(REG_RDI);
 
-		// 	break;
-		// }
+				cpl_mov_reg_imm64(REG_RAX, 0);
+				cpl_mov_reg_imm64(REG_RDI, 0);
+				cpl_rps_add(-8);
+				cpl_mov_reg_reg(REG_RSI, REG_RSP);
+				cpl_mov_reg_imm64(REG_RDX, 1);
+				cpl_syscall();
+				cpl_pop_reg(REG_RAX);
+				cmd.put(0x48, 0x0f);
+				cmd.put(0xb6, 0xc0);
+
+				cpl_pop_reg(REG_RDI);
+				cpl_pop_reg(REG_RDX);
+				cpl_pop_reg(REG_RSI);
+			}
+
+			break;
+		}
 
 		case OPCODE_ELEM_PUTC : {
 			if (node->R) {
@@ -930,7 +941,7 @@ void Compiler::cpl_operation(const CodeNode *node, FILE *file) {
 			}
 
 			regman->flush_regs();
-			ANNOUNCE("WIP", "compiler", "wiping regman due to func compiling start");
+			_Log ANNOUNCE("WIP", "compiler", "wiping regman due to func compiling start");
 			regman->wipe_state();
 
 			char lname[MAX_LABEL_LEN] = {};
@@ -963,7 +974,7 @@ void Compiler::cpl_operation(const CodeNode *node, FILE *file) {
 
 			free(func_name);
 
-			ANNOUNCE("WIP", "compiler", "wiping regman due to func being compiled");
+			_Log ANNOUNCE("WIP", "compiler", "wiping regman due to func being compiled");
 			regman->wipe_state();
 			break;
 		}
@@ -1314,11 +1325,10 @@ void Compiler::cpl_arr_lvalue(const CodeNode *node, FILE *file) {
 	}
 
 	char *vname = id->get_id()->dup();
-	printf("!!! search for [%s] offset [%d]\n", vname, offset);
-	regman->dump();
+	_log regman->dump();
 	int r1 = regman->get_var_reg(offset, found_to_var_type(found), vname);
 	cpl_mov_reg_reg(REG_RBX, r1);
-	regman->release_var_reg(r1);
+	_log regman->release_var_reg(r1);
 
 	while (args && args->L) {
 		CodeNode *arg = args->L;
@@ -1375,18 +1385,18 @@ bool Compiler::cpl_value(const CodeNode *node, FILE *file) {
 bool Compiler::cpl_rvalue(const CodeNode *node) {
 	if (node->is_id()) {
 		char *vname = node->get_id() ? node->get_id()->dup() : nullptr;
-		_LOG ANNOUNCE("RVL", "cpl_rvalue", "searching for var[%s] in id_table:", vname);
+		_log ANNOUNCE("RVL", "cpl_rvalue", "searching for var[%s] in id_table:", vname);
 		if (vname) free(vname);
 
-		_LOG printf("==================\n");
-		_LOG id_table.dump();
+		_log ANNOUNCE("DMP", "id_table", "==================");
+		_log id_table.dump(THE_LAST_ANNOUNCER_LEN + THE_LAST_CODE_LEN + 5);
 
 		int offset = 0;
 		int found = id_table.find_var(node->get_id(), &offset);
 
-		_LOG printf("\nfound = %d", found);
-		_LOG printf("\noffst = %d", offset);
-		_LOG printf("\n==================\n");
+		_log ANNOUNCE_NOCODE("found = %d", found);
+		_log ANNOUNCE_NOCODE("offst = %d", offset);
+		_log ANNOUNCE("===", "id_table", "==================");
 
 		if (found == NOT_FOUND) {
 			RAISE_ERROR("can't find varname [");
@@ -1397,7 +1407,7 @@ bool Compiler::cpl_rvalue(const CodeNode *node) {
 		}
 
 		char *name = node->get_id()->dup();
-		int r1 = regman->get_var_reg(offset, found == ID_TYPE_GLOBAL ? REGMAN_VAR_GLOBAL : REGMAN_VAR_LOCAL, name);
+		int r1 = regman->get_var_reg(offset, found_to_var_type(found), name);
 		free(name);
 
 		cpl_mov_reg_reg(REG_RAX, r1);

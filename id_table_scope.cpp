@@ -160,8 +160,14 @@ int IdTableScope::is_functive() {
 	return functive;
 }
 
-void IdTableScope::dump() {
+void IdTableScope::dump(const int offset) const {
 	for (size_t i = 0; i < data.size(); ++i) {
+		if (offset) {
+			for (int j = 0; j < offset - 1; ++j) {
+				printf(" ");
+			}
+			printf(": ");
+		}
 		printf("[%lu] ", i);
 		data[i].id->print();
 		printf("\n");
