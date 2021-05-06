@@ -107,7 +107,7 @@ bool LexicalParser::try_collect_long_op() {
 		ADD_TOKEN(T_NUMBER, (double) *(cur + 1));
 		cur += 3;
 		return true;
-	} else if (StringView::starts_with(cur, "~")) {
+	} else if (StringView::starts_with(cur, "`")) {
 		cur += 1; // I am ignoring it with purpose!
 		return true;
 	} 
@@ -250,6 +250,10 @@ Vector<Token> *LexicalParser::parse(const char *expression) {
 	ADD_TOKEN(T_END, 0);
 
 	Vector<Token> *ret = tokens;
+
+	// for (int i = 0; i < ret->size(); ++i) {
+	// 	(*ret)[i].dump();
+	// }
 
 	cur    = nullptr;
 	tokens = nullptr;

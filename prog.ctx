@@ -1,5 +1,7 @@
 {
-	var N = 10; // '\n'
+	var _N = 10; // '\n'\
+	// var _SRC_W = 30;
+	// var _SRC_H = 10;
 
 	func print_n[var x] {
 		var arr = #20;
@@ -30,27 +32,53 @@
 	}
 
 	func print_N {
-		__PUT_CHAR__ N;
+		__PUT_CHAR__ _N;
 	}
 
 	func scan_n {
 		var x = 0;
+		var sign = 1;
 		var d;
 		>| (1) {
 			d = @;
-			? (d < '0' || d > '9') ret x;
+			? (d == '-') {
+				sign = sign * -1;
+			} : {
+				? (d < '0' || d > '9') |<;
 
-			x = x * 10 + d - '0';
+				x = x * 10 + d - '0';
+			}
 		}
 
-		>| (d != N) {
-			d = @;
+		>| ((d == _N || d == ' ') == 0) d = @;
+
+		ret x * sign;
+	}
+
+	func scan_n_arr[len] {
+		var arr = #len;
+		>> (var i = 0 | i < len | i += 1) {
+			arr[i] = scan_n;
+		}
+		ret arr;
+	}
+
+	func print_n_arr[arr][len] {
+		>> (var i = 0 | i < len | i += 1) {
+			print_n[arr[i]];
+			__PUT_CHAR__ ' ';
 		}
 	}
 
-	var x = scan_n;
-	print_n[x];
+	func print_c[var c] {
+		__PUT_CHAR__ c;
+	}
+
+	func sort_arr[arr][len] >> (var i = 0 | i < len | i += 1) >> (var j = i + 1 | j < len | j += 1) ? (arr[i] > arr[j]) arr[i] ~ arr[j];
+
+	var len = scan_n;
+	var arr = scan_n_arr;
+	sort_arr;
+	print_n_arr;
 	print_N;
-
-
 }

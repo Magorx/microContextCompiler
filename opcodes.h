@@ -1,3 +1,5 @@
+OPDEF(OPCODE_EXCHANGE, 4 , "~", "~", "")
+
 OPDEF(OPCODE_LE   , 5 , "<=", "<=", "")
 OPDEF(OPCODE_GE   , 6 , ">=", ">=", "")
 OPDEF(OPCODE_EQ   , 7 , "==", "==", "")

@@ -301,6 +301,7 @@ void Compiler::cpl_operation(const CodeNode *node, FILE *file) {
 
 	#define COMPILE_MORE_COMPLEX() if (L_COMPLEX > R_COMPLEX) {COMPILE_L(); LAST_COMPILED = 0;} else {COMPILE_R(); LAST_COMPILED = 1;}
 	#define COMPILE_ANOTHER() if (LAST_COMPILED) {COMPILE_L(); LAST_COMPILED = 0;} else {COMPILE_R(); LAST_COMPILED = 1;}
+	#define IS_ARR(node) (node->is_op(OPCODE_FUNC_CALL) && id_table.find_func(node->R->get_id()) == NOT_FOUND)
 
 	CHECK_ERROR();
 
@@ -404,6 +405,87 @@ void Compiler::cpl_operation(const CodeNode *node, FILE *file) {
 			break;
 		}
 
+		case OPCODE_EXCHANGE : {
+		    if (node->L->is_id()) {
+		    	int offset1, found1;
+				cpl_lvalue(node->L, offset1, found1);
+				char *name1 = node->L->get_id()->dup();
+				int r1 = regman->get_var_reg(offset1, found1, name1);
+				free(name1);
+
+		    	if (node->R->is_id()) {
+					int offset2, found2;
+					cpl_lvalue(node->R, offset2, found2);
+
+					char *name2 = node->R->get_id()->dup();
+					int r2 = regman->get_var_reg(offset2, found2, name2);
+					free(name2);
+
+					cpl_mov_reg_reg(REG_RAX, r1);
+					cpl_mov_reg_reg(r1, r2);
+					cpl_mov_reg_reg(r2, REG_RAX);
+					
+					regman->release_var_reg(r2);
+		    	} else if (IS_ARR(node->R)) {
+					cpl_arr_lvalue(node->R, file);
+					cpl_mov_reg_mem(REG_RBX, REG_RAX, 0);
+					cpl_mov_mem_reg(REG_RAX, 0, r1);
+					cpl_mov_reg_reg(r1, REG_RBX);
+		    	} else {
+		    		RAISE_ERROR("bad exchange operand\n");
+		    		LOG_ERROR_LINE_POS(node);
+		    		return;
+		    	}
+
+		    	regman->release_var_reg(r1);
+		    } else if (IS_ARR(node->L)) {
+		    	cpl_arr_lvalue(node->L, file);
+
+		    	if (node->R->is_id()) {
+		    		int offset2, found2;
+					cpl_lvalue(node->R, offset2, found2);
+
+					char *name2 = node->R->get_id()->dup();
+					int r2 = regman->get_var_reg(offset2, found2, name2);
+					free(name2);
+
+					cpl_mov_reg_mem(REG_RBX, REG_RAX, 0);
+					cpl_mov_mem_reg(REG_RAX, 0, r2);
+					cpl_mov_reg_reg(r2, REG_RBX);
+
+					regman->release_var_reg(r2);
+		    	} else if (IS_ARR(node->R)) {
+		    		cpl_push_reg(REG_RAX);
+
+		    		cpl_arr_lvalue(node->R, file);
+
+		    		int r1    = regman->get_tmp_reg();
+					int r1_id = regman->get_reg_id(r1);
+					cpl_mov_reg_mem(r1, REG_RAX, 0);
+
+					cpl_push_reg(REG_RAX);
+					cpl_mov_reg_mem(REG_RAX, REG_RSP, 8);
+					cpl_mov_reg_mem(REG_RBX, REG_RAX, 0);
+					cpl_mov_mem_reg(REG_RAX, 0, r1);
+					cpl_pop_reg(REG_RAX);
+					cpl_mov_mem_reg(REG_RAX, 0, REG_RBX);
+
+					regman->release_tmp_reg(r1);
+
+					cpl_rps_add(8);
+		    	} else {
+		    		RAISE_ERROR("bad exchange operand\n");
+		    		LOG_ERROR_LINE_POS(node);
+		    		return;
+		    	}
+		    } else {
+	    		RAISE_ERROR("bad exchange operand\n");
+	    		LOG_ERROR_LINE_POS(node);
+	    		return;
+		    }
+			break;
+		}
+
 		case OPCODE_ASGN_ADD :
 		case OPCODE_ASGN_SUB :
 		case OPCODE_ASGN_MUL :
@@ -503,7 +585,7 @@ void Compiler::cpl_operation(const CodeNode *node, FILE *file) {
 			}
 
 			int offset, found;
-			cpl_lvalue(node->L, offset, found);
+			cpl_lvalue(node->L, offset, found, true);
 			char *name = node->L->get_id()->dup();
 
 			if (found == NOT_FOUND) {
@@ -1421,11 +1503,11 @@ bool Compiler::cpl_rvalue(const CodeNode *node) {
 	return true;
 }
 
-bool Compiler::cpl_lvalue(const CodeNode *node, int &offset, int &found) {
+bool Compiler::cpl_lvalue(const CodeNode *node, int &offset, int &found, char is_initialization) {
 	assert(node);
 
 	if (node->is_id()) {
-		if (node->get_id()->starts_with("_") && !node->get_id()->starts_with("_)")) {
+		if (node->get_id()->starts_with("_") && !node->get_id()->starts_with("_)") && !is_initialization) {
 			RAISE_ERROR("_varname is a constant, dont change it please: [");
 			node->get_id()->print();
 			printf("]\n");

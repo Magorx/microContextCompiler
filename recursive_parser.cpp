@@ -370,7 +370,8 @@ ParseNode *RecursiveParser::parse_EXPR() {
 							|| cur->is_op(OPCODE_ASGN_SUB)
 							|| cur->is_op(OPCODE_ASGN_MUL)
 							|| cur->is_op(OPCODE_ASGN_DIV)
-							|| cur->is_op(OPCODE_ASGN_POW)) {
+							|| cur->is_op(OPCODE_ASGN_POW)
+							|| cur->is_op(OPCODE_EXCHANGE)) {
 			int op = cur->get_op();
 			NEXT();
 
@@ -390,7 +391,8 @@ ParseNode *RecursiveParser::parse_EXPR() {
 							|| cur->is_op(OPCODE_ASGN_SUB)
 							|| cur->is_op(OPCODE_ASGN_MUL)
 							|| cur->is_op(OPCODE_ASGN_DIV)
-							|| cur->is_op(OPCODE_ASGN_POW)) {
+							|| cur->is_op(OPCODE_ASGN_POW)
+							|| cur->is_op(OPCODE_EXCHANGE)) {
 			int op = cur->get_op();
 			NEXT();
 
@@ -936,9 +938,8 @@ ParseNode *RecursiveParser::parse(Vector<Token> *expression) {
 	if (!ERROR) {
 		return res;
 	} else {
-		ANNOUNCE("ERR", "parser", "an error occured during grammar parsing");
-		ANNOUNCE("ERR", "parser", "line [%d] | pos [%d]", ERRPOS->line, ERRPOS->pos);
-		//ERRPOS->dump();
+		ANNOUNCE("ERR", "recursive_parser", "an error occured during grammar parsing");
+		ANNOUNCE("ERR", "recursive_parser", "line [%d] | pos [%d]", ERRPOS->line, ERRPOS->pos);
 		return nullptr;
 	}
 }
