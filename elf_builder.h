@@ -78,6 +78,10 @@ extern const int ENTRY_POINT;
 extern const int ELF_TEXT_OFFSET;
 extern const int ELF_DATA_OFFSET;
 
+extern const int ELF_BSS_OFFSET;
+extern const int ELF_BSS_VADDR;
+extern const int ELF_BSS_SIZE;
+
 struct SectionShstrtab {
     const char names[2][10] = {
         "aaaa",

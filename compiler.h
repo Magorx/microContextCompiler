@@ -49,14 +49,17 @@ private:
 	void cpl_default_arg	(const CodeNode *arg, const CodeNode *prot, FILE *file);
 	void cpl_context_arg	(const CodeNode *arg, const CodeNode *prot, FILE *file);
 	void cpl_expr_arg		(const CodeNode *arg, const CodeNode *prot, FILE *file);
-	void cpl_arr_call		(const CodeNode *node, FILE *file);
+	void cpl_arr_rvalue		(const CodeNode *node, FILE *file);
+	void cpl_arr_lvalue		(const CodeNode *node, FILE *file);
 	bool cpl_push			(const CodeNode *node, FILE *file);
 	bool cpl_value 			(const CodeNode *node, FILE *file);
 	void cpl_id				(const CodeNode *node, FILE *file);
 	void compile 			(const CodeNode *node, FILE *file);
 	bool cpl_lvalue			(const CodeNode *node, int &offset, int &found);
 	bool cpl_rvalue			(const CodeNode *node);
-	void cpl_func_ret		();
+
+	void cpl_func_ret	();
+	void cpl_calloc		(const int size);
 
 public:
 	RegManager *regman;
@@ -145,5 +148,7 @@ inline int asgn_op_to_op(int op) {
 			return 0;
 	}
 }
+
+#define MEMVAR "RMX"
 
 #endif // COMPILER

@@ -15,7 +15,8 @@ class Compiler;
 enum REGMAN_VAR_TYPE {
 	REGMAN_VAR_LOCAL  = 1,
 	REGMAN_VAR_GLOBAL = 2,
-	REGMAN_TMP_REG    = 3
+	REGMAN_TMP_REG    = 3,
+	REGMAN_VAR_MEM    = 4,
 };
 
 enum REGMAN_STORE_TYPE {
@@ -26,15 +27,10 @@ enum REGMAN_STORE_TYPE {
 };
 
 inline bool IS_VAR(const int x) {
-	return (x == REGMAN_VAR_LOCAL || x == REGMAN_VAR_GLOBAL);
+	return (x == REGMAN_VAR_LOCAL || x == REGMAN_VAR_GLOBAL || x == REGMAN_VAR_MEM);
 }
 
 const int REGMAN_REGS[] = {
-	REG_RSI,
-	REG_RDI,
-	REG_RCX,
-	REG_RDX,
-	REG_RBX,
 	REG_R8,
 	REG_R9,
 	REG_R10,
@@ -42,7 +38,10 @@ const int REGMAN_REGS[] = {
 	REG_R12,
 	REG_R13,
 	REG_R14,
-	REG_R15
+	REG_R15,
+	REG_RSI,
+	REG_RDI,
+	REG_RCX,
 };
 const int REGMAN_REGS_CNT = sizeof(REGMAN_REGS) / sizeof(REGMAN_REGS[0]);
 
@@ -78,8 +77,9 @@ private:
 	int max_state_id;
 //=============================================================================
 
-	int get_local_var_reg(int offset, const char* var_name, char to_prevent_load = false);
-	int get_globl_var_reg(int offset, const char *var_name, char to_prevent_load = false);
+	int get_local_var_reg(int offset    , const char* var_name, char to_prevent_load = false);
+	int get_globl_var_reg(int offset    , const char *var_name, char to_prevent_load = false);
+	int get_memry_var_reg(int offset_reg, const char *var_name, char to_prevent_load = false);
 
 public:
 	 RegManager();
@@ -95,11 +95,11 @@ public:
 	static void DELETE(RegManager *classname);
 //=============================================================================
 	int  get_least_used_reg();
-	int  get_var_used_reg(int offset, REGMAN_VAR_TYPE var_type);
+	int  get_var_used_reg(int offset, int var_type);
 	void disable_reg(const int reg);
 	void enable_reg (const int reg);
 
-	int get_var_reg(int offset, REGMAN_VAR_TYPE var_type, const char* var_name, char to_prevent_load = false);
+	int get_var_reg(int offset, int var_type, const char* var_name, char to_prevent_load = false);
 	int get_tmp_reg(int id = 0);
 
 	void release_var_reg(int reg);
@@ -126,6 +126,8 @@ public:
 	void flush_regs(char store_type = REGMAN_ALL, char to_wipe = true);
 
 	int corrupt_reg(int reg);
+
+	void dump() const;
 };
 
 #endif // REG_MASTER

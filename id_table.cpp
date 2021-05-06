@@ -122,7 +122,10 @@ int IdTable::find_var(const StringView *id, int *res) const {
 		offset += data[i]->get_var_cnt();
 	}
 
-	*res = -offset * (int) sizeof(long long);
+	*res = (-offset - 1) * (int) sizeof(long long);
+	printf("\n\nlocal var ");
+	id->print();
+	printf(" has offset %d\n\n", *res);
 	return ID_TYPE_FOUND;
 }
 
