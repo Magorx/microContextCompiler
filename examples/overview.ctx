@@ -1,5 +1,5 @@
 {
-	Here are some features of my language:
+	Here are some features of Context language:
 
 		+ - * / ^ - math operators
 
@@ -57,7 +57,7 @@
 		        #(-expr) - that's how to free some memory
 		var a = #; 		 - to get cur free
 
-	Here are functions and calling conventions:
+	Here is calling convention:
 
 		func f[var a][var b = 7][var c = x + y][d][e] {... ret something;}
 		If no return operator is used, function will be compiled as if there was ret 0; at the end.

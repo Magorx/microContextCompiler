@@ -17,10 +17,10 @@ Run ```make``` to compiler ```kmcc``` - kMicroContextCompiler that will compile 
 
 
 # Context language overview
-<img src="pics/1.jpg">
-<img src="pics/2.jpg">
-<img src="pics/3.jpg">
-<img src="pics/4.jpg">  
+<img src="pics/1.png">
+<img src="pics/2.png">
+<img src="pics/3.png">
+<img src="pics/4.png">  
 
 Check out examples of programms in examples folder!
 
