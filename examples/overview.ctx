@@ -1,0 +1,99 @@
+{
+	Here are some features of my language:
+
+		+ - * / ^ - math operators
+
+		a = 5 - assignment
+		a ~ b - exchange of lvalues
+
+		+= -= /= *= ^= - guess what
+		% x y     - random
+		@         - input
+		09231     - numbers
+		'x'       - chars
+		()        - brackets
+
+		var a     - variables
+		var _a    - constants, starting from ONE '_' symbol
+
+		var __VERY_IMPORTANT__  - with nice color included
+
+		{
+			{scopes & code blocks}
+		}
+
+		? () {} : {} - ?if? with :else:
+
+		>| ()              - while loop
+		>> (init|cond|act) - for loop
+		                     alongside with
+		|< - break
+		<< - continue
+
+		< <= >= > != == - logic operators
+		|| &&           - logic connectors
+
+	Here are more features:
+
+		// one line comments
+
+		/*
+			and many lines of course!
+		* / (<- space for bigger comment not to be interrupted) */
+
+		/> ultra important info               \
+		\> inside a comment closed only by-> </
+
+		` absolutely ignored symbol 'bibka' for highlighting `
+		` thanks for such, Sublime Text                      `
+
+		var a[999] - static arrays with const length
+		a[1] = x   - expressions with them
+
+		var b = 188; - well, there are no types, so anything can be
+		b[4][5^6];   - interpreted as a pointer
+
+		var a = #( expr) - calloc 'expr' double values in one block by stack allocator
+		        #(-expr) - that's how to free some memory
+		var a = #; 		 - to get cur free
+
+	Here are functions and calling conventions:
+
+		func f[var a][var b = 7][var c = x + y][d][e] {... ret something;}
+		If no return operator is used, function will be compiled as if there was ret 0; at the end.
+
+		We've just defined a function, that has 5 arguments. Lets call it:
+
+		var b = 15  ;
+		var x = 9   ;
+		var y = -4  ;
+		var d = 0   ;
+		var e = 0.03;
+
+		f[42][.][][]; // equal to f[42][b][x + y][d][e];
+
+		What the hell...
+		Rules:
+			1. If the argument is explicit (expression like 42 or 4 + k), it is calculated and passed as expected
+
+			2. If the argument is '.' ("Dot"), the name of this arg in func definition will be searched for 
+			   in the calling scope. Compilation will fail if there's no such variable.
+
+			3. If the argument is empty ([] or just not mentioned, like 'e' in the example), it is set to the default
+			   value, BUT
+			   
+			   3.1. If arg in the func definition is "var var_name" without "= some_expr", 
+			        it is REQUIRED to be explicit or '.'
+
+			   3.2. If arg in the func definition is just "var_name", it will be enterprited 
+			        as being called with '.' (without obligation to put this '.' explicitly)
+
+			   3.3. If arg in the func definition is "var var_name = expr", expr will be calculated as being
+			        used in the calling scope. Won't be compiled, if some vars are missing, of course
+
+
+	And basic OPERATORS to connect language to x86:
+
+		__PUT_CHAR__   '0' + 5; 	   - prints char of given expression
+		__SLEEP___ seconds millisecond - nanosleep syscall
+}
