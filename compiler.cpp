@@ -1814,11 +1814,34 @@ bool Compiler::compile(const CodeNode *prog, const char *filename) {
 	compile(prog, file);
 	fclose(file);
 
+	cpl_mov_reg_imm64(REG_RAX, 60);
+	cpl_math_op(REG_RDI, REG_RDI, '^');
+	cpl_syscall();
+
 	if (ANNOUNCEMENT_ERROR) {
 		fprintf(file, "AN ERROR OCCURED DURING COMPILATION IUCK\n");
 		ANNOUNCE("ERR", "kncc", "An error occured during compilation");
 		return false;
 	}
+
+	MicroLinker linker;
+	linker.ctor();
+
+	Vector<MicroObj*> objs = {};
+	objs.ctor();
+
+	obj.set_prog((byte*) cmd.get_data(), cmd.get_size());
+
+	objs.push_back(&obj);
+
+	ByteBuffer result_cmd;
+
+	linker.link_objectives(objs, 0, filename, &result_cmd);
+	_log result_cmd.hexdump();
+
+	char chmod_exec_command[100];
+	sprintf(chmod_exec_command, "chmod +x %s", filename);
+	system(chmod_exec_command);
 	
 	return true;
 }

@@ -16,7 +16,9 @@
 
 #include "machine_codes/defines.h"
 #include "reg_manager.h"
+
 #include "micro_obj.h"
+#include "linker.h"
 
 typedef unsigned char byte;
 
