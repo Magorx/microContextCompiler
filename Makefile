@@ -19,7 +19,6 @@ CFLAGS = $(STANDARD) $(WARNINGS) $(OPTIMIZATION) -lm -std=c++17
 all: kncc
 
 update: all
-	cp $(CUR_PROG) bin
 	cp $(CUR_PROG) examples
 
 kncc: main.cpp compiler.o micro_obj.o id_table_scope.o id_table.o compiler_options.o recursive_parser.o lexical_parser.o lex_token.o announcement.o code_node.o opcodes.h byte_buffer.o machine_codes/defines.h reg_manager.o debug.o hashtable.o ht_node.h linker.o elf_builder.o

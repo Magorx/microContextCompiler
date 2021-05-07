@@ -1,10 +1,6 @@
 {
 //=============================================================================
 	var _N = 10; // '\n'\
-	func print_N {
-		__PUT_CHAR__ _N;
-	}
-
 	var _SCR_W = 50;
 	var _SCR_H = 25;
 	var SCR;
@@ -38,7 +34,11 @@
 
 		#(-20);
 		ret;
-	}	
+	}
+
+	func print_N {
+		__PUT_CHAR__ _N;
+	}
 
 	func scan_n {
 		var x = 0;
@@ -177,5 +177,13 @@
 		}
 	}
 
-	main;
+	// main;
+	
+	func sort_arr[arr][len] >> (var i = 0 | i < len | i += 1) >> (var j = i + 1 | j < len | j += 1) ? (arr[i] > arr[j]) arr[i] ~ arr[j];
+
+	var len = scan_n;
+	var arr = scan_n_arr;
+	sort_arr;
+	print_n_arr;
+	print_N;
 }
