@@ -29,6 +29,7 @@
 	} else
 
 #define SET_ERR(errcode, errpos) do {ERROR = errcode; ERRPOS = errpos;} while (0)
+#define LOG_ERR(token) RAISE_ERROR("token from line %d pos %d\n", token->line, token->pos)
 
 bool RecursiveParser::is_id_char(const char c) {
 	return ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z') || c == '_';
@@ -56,6 +57,7 @@ bool RecursiveParser::is_multiplicative(const Token *t) {
 
 ParseNode *RecursiveParser::parse_ID() {
 	if (!cur->is_id()) {
+		//RAISE_ERROR("bad id provided\n");
 		SET_ERR(ERROR_SYNTAX, cur);
 		return nullptr;
 	}
@@ -693,7 +695,8 @@ ParseNode *RecursiveParser::parse_ELEM_FUNC() {
 
 	// 0-1 arg;
 	if (cur->is_op(OPCODE_ELEM_PUTN)   || cur->is_op(OPCODE_ELEM_PUTC) || 
-		cur->is_op(OPCODE_ELEM_MALLOC) || cur->is_op(OPCODE_RET) || cur->is_op(OPCODE_ELEM_G_FILL) || cur->is_op(OPCODE_ELEM_RANDOM)) {
+		cur->is_op(OPCODE_ELEM_MALLOC) || cur->is_op(OPCODE_RET) 
+		|| cur->is_op(OPCODE_ELEM_G_FILL) || cur->is_op(OPCODE_ELEM_RANDOM)) {
 
 		int op = cur->get_op();
 		NEXT();
@@ -706,7 +709,7 @@ ParseNode *RecursiveParser::parse_ELEM_FUNC() {
 	}
 
 	// 2 args;
-	if (cur->is_op(OPCODE_ELEM_G_INIT) || cur->is_op(OPCODE_ELEM_G_PUT_PIXEL)) {
+	if (cur->is_op(OPCODE_ELEM_G_INIT) || cur->is_op(OPCODE_ELEM_G_PUT_PIXEL) || cur->is_op(OPCODE_SLEEP)) {
 		int op = cur->get_op();
 		NEXT();
 		IF_PARSED (cur_index, arg1, parse_EXPR()) {

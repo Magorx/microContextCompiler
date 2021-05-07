@@ -155,6 +155,7 @@ void Compiler::cpl_mov_reg_imm64(const int reg_dst, const double val) {
 }
 
 void Compiler::cpl_mov_reg_reg(const int reg_dst, const int reg_src) {
+	_log ANNOUNCE("MOV", "compiler", "reg[%d] <- reg[%d]\n", reg_dst, reg_src);
 	cmd.put(cmd_MOV_TABLE[reg_dst][reg_src], 3);
 }
 
@@ -263,6 +264,7 @@ void Compiler::cpl_jmp_rel32 (const int offset) {
 
 
 void Compiler::cpl_call_rel32(const int offset) {
+	_log ANNOUNCE("CAL", "compiler", "calling rel 32");
 	cmd.put(cmd_CALL_REL32);
 	cmd.put((byte*) &offset, 4);
 }
@@ -516,7 +518,44 @@ void Compiler::cpl_operation(const CodeNode *node, FILE *file) {
 				cpl_math_op(REG_RAX, r1, op);
 				cpl_mov_reg_reg(r1, REG_RAX);
 			}
+
+			cpl_mov_reg_reg(REG_RAX, r1);
 			regman->release_var_reg(r1);
+
+			break;
+		}
+
+		case OPCODE_SLEEP : {
+			if (!node->L || !node->R) {
+				RAISE_ERROR("bad sleep argument\n");
+				LOG_ERROR_LINE_POS(node);
+				return;
+			}
+
+			cpl_push_reg(REG_RSI);
+			cpl_push_reg(REG_RDI);
+			cpl_push_reg(REG_R11);
+
+			COMPILE_R();
+			cpl_push_reg(REG_RAX);
+
+			COMPILE_L();
+			
+			cpl_push_reg(REG_RAX);
+			cpl_mov_reg_reg(REG_RDI, REG_RSP);
+
+			cpl_math_op(REG_RSI, REG_RSI, '^');
+
+			cpl_mov_reg_imm64(REG_RAX, 35);
+
+			cpl_syscall();
+
+			cpl_pop_reg(REG_RAX);
+			cpl_pop_reg(REG_RAX);
+
+			cpl_pop_reg(REG_R11);
+			cpl_pop_reg(REG_RDI);
+			cpl_pop_reg(REG_RSI);
 
 			break;
 		}
@@ -864,6 +903,7 @@ void Compiler::cpl_operation(const CodeNode *node, FILE *file) {
 				cpl_push_reg(REG_RSI);
 				cpl_push_reg(REG_RDX);
 				cpl_push_reg(REG_RDI);
+				cpl_push_reg(REG_R11);
 
 				cpl_mov_reg_imm64(REG_RAX, 0);
 				cpl_mov_reg_imm64(REG_RDI, 0);
@@ -875,6 +915,7 @@ void Compiler::cpl_operation(const CodeNode *node, FILE *file) {
 				cmd.put(0x48, 0x0f);
 				cmd.put(0xb6, 0xc0);
 
+				cpl_pop_reg(REG_R11);
 				cpl_pop_reg(REG_RDI);
 				cpl_pop_reg(REG_RDX);
 				cpl_pop_reg(REG_RSI);
@@ -1102,7 +1143,9 @@ void Compiler::cpl_operation(const CodeNode *node, FILE *file) {
 			    // RAISE_ERROR("NO ARRAYS YET MAN\n");
 			    // LOG_ERROR_LINE_POS(node);
 			} else {
+				_log ANNOUNCE("CAL", "compiler", "calling func from line %d\n", node->line);
 			    cpl_func_call(node, file);
+			    _log ANNOUNCE("===", "compiler", "done func from line %d\n", node->line);
 			}
 			break;
 		}
@@ -1213,8 +1256,8 @@ void Compiler::cpl_func_call(const CodeNode *node, FILE *file) {
 		return;
 	}
 
-// 	//=====================================================================
-// 	// here we definetly will compile a function
+ 	//=====================================================================
+ 	// here we definetly will compile a function
 
 	regman->flush_regs(REGMAN_TMPS, false);
 
@@ -1492,6 +1535,7 @@ bool Compiler::cpl_rvalue(const CodeNode *node) {
 		int r1 = regman->get_var_reg(offset, found_to_var_type(found), name);
 		free(name);
 
+		_log ANNOUNCE("RVL", "cpl_rvalue", "moving from rvalue to rax");
 		cpl_mov_reg_reg(REG_RAX, r1);
 		regman->release_var_reg(r1);
 	} else {

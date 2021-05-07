@@ -45,6 +45,7 @@ OPDEF(OPCODE_ELEM_G_DRAW_OFF  , 112, "", "", "")
 OPDEF(OPCODE_ELEM_G_DRAW_TICK , 113, "__G_TICK__", "__G_TICK__", "")
 OPDEF(OPCODE_ELEM_G_FILL      , 114, "__G_FILL__", "__G_FILL__", "")
 OPDEF(OPCODE_ELEM_G_PUT_PIXEL , 115, "__PUT_PIXEL__", "__PUT_PIXEL__", "")
+OPDEF(OPCODE_SLEEP,             116,  "__SLEEP__", "__SLEEP__", "")
 
 OPDEF(OPCODE_VAR         , 200, "var", "var ", "")
 OPDEF(OPCODE_FUNC        , 201, "func", "func ", "")

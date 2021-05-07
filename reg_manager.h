@@ -31,17 +31,17 @@ inline bool IS_VAR(const int x) {
 }
 
 const int REGMAN_REGS[] = {
-	REG_R8,
-	REG_R9,
-	REG_R10,
-	REG_R11,
-	REG_R12,
-	REG_R13,
-	REG_R14,
-	REG_R15,
-	REG_RSI,
-	REG_RDI,
-	REG_RCX,
+	REG_R8,  // 8
+	REG_R9,  // 9
+	REG_R10, // 10
+	REG_R11, // 11
+	REG_R12, // 12
+	REG_R13, // 13
+	REG_R14, // 14
+	REG_R15, // 15
+	REG_RSI, // 6
+	REG_RDI, // 7
+	REG_RCX, // 1
 };
 const int REGMAN_REGS_CNT = sizeof(REGMAN_REGS) / sizeof(REGMAN_REGS[0]);
 

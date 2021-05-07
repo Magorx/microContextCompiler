@@ -13,7 +13,7 @@ const int ELF_DATA_OFFSET = 0x0000;
 
 const int ELF_BSS_OFFSET = 0;
 const int ELF_BSS_VADDR = 0x500000;
-const int ELF_BSS_SIZE = 10000;
+const int ELF_BSS_SIZE = 5000000;
 
 void build_elf(const char *prog, const size_t prog_size, size_t entry_offset, FILE *file, int global_data_size, bool to_add_exit_code_zero) {
     ELF_Header elf_h ;

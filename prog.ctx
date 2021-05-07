@@ -1,7 +1,12 @@
 {
+//=============================================================================
 	var _N = 10; // '\n'\
-	// var _SRC_W = 30;
-	// var _SRC_H = 10;
+	var _SCR_W = 50;
+	var _SCR_H = 25;
+	var SCR;
+
+	var _CIRC_FIX_MUL = 16;
+	var _CIRC_FIX_DIV = 10;
 
 	func print_n[var x] {
 		var arr = #20;
@@ -74,11 +79,122 @@
 		__PUT_CHAR__ c;
 	}
 
-	func sort_arr[arr][len] >> (var i = 0 | i < len | i += 1) >> (var j = i + 1 | j < len | j += 1) ? (arr[i] > arr[j]) arr[i] ~ arr[j];
+//=============================================================================
+	func mod[var x][var y] {
+		ret x - x / y * y;
+	}
 
-	var len = scan_n;
-	var arr = scan_n_arr;
-	sort_arr;
-	print_n_arr;
-	print_N;
+	func abs[var x] ? (x < 0) ret x * -1; : ret x;
+
+	func min[var x][var y] ? (x < y) ret x; : ret y;
+	func man[var x][var y] ? (x > y) ret x; : ret y;
+
+	var RND_SEED = abs[%];
+
+	func rnd {
+		var a = 2097152;
+		var b = 34359738368;
+		var c = 16;
+		RND_SEED = RND_SEED ^ (RND_SEED * a);
+		RND_SEED = RND_SEED ^ (RND_SEED / b);
+		RND_SEED = RND_SEED ^ (RND_SEED * c);
+		ret RND_SEED;
+	}
+
+//=============================================================================
+
+	func g_init_scr {
+		SCR = #_SCR_H;
+		>> (var y = 0 | y < _SCR_H | y += 1) {
+			SCR[y] = #_SCR_W;
+			>> (var x = 0 | x < _SCR_W | x += 1) {
+				SCR[y][x] = '.';
+			}
+		}
+	}
+
+	func clr_scr {
+		>> (var y = 0 | y < _SCR_H | y += 1) {
+			>> (var x = 0 | x < _SCR_W | x += 1) {
+				SCR[y][x] = '.';
+			}
+		}
+	}
+
+	func CLR {
+		>> (var y = 0 | y < 30 | y += 1) __PUT_CHAR__ _N;
+	}
+
+	func g_tick {
+		CLR;
+		>> (var y = 0 | y < _SCR_H | y += 1) {
+			>> (var x = 0 | x < _SCR_W | x += 1) {
+				//print_n[x];
+				__PUT_CHAR__ SCR[y][x];
+			}
+			__PUT_CHAR__ _N;
+		}
+		__SLEEP__ 0 100000000;
+	}
+
+	func draw_circle[var fill_char = '#'][x][y][radius] {
+		radius = radius * radius;
+		>> (var j = 0 | j < _SCR_H | j += 1) {
+			>> (var i = 0 | i < _SCR_W | i += 1) {
+				var R = (i - x) * (i - x) * 11 / 20 + (j - y) * (j - y);
+				? (R < radius) SCR[j][i] = fill_char;
+			}
+		}
+	}
+
+	//func main {
+		g_init_scr;
+
+		var _chars_cnt = 10;
+		var chars[10];
+		chars[0] = '.';
+		chars[1] = '*';
+		chars[2] = '~';
+		chars[3] = '@';
+		chars[4] = '&';
+		chars[5] = '^';
+		chars[6] = '+';
+		chars[7] = '`';
+		chars[8] = '"';
+		chars[9] = ''';
+
+		>| (1) {
+			var x = mod[rnd][_SCR_W];
+			var y = mod[rnd][_SCR_H];
+			var fill_char = chars[mod[rnd][_chars_cnt]];
+			var max_rad = min[mod[rnd][_SCR_H / 2]][4];
+
+			>> (var radius = 1 | radius <= max_rad | radius += 1) {
+				draw_circle[.];
+				g_tick;
+			}
+		}
+	//}
+
+	/*
+	var x = _SCR_W / 2;
+	var y = _SCR_H / 2;
+	var radius = 3;
+	>> (var tick = 0 | tick < 10 | tick += 1) {
+		radius += 1;
+		? (radius > _SCR_H) {radius = 0; clr_scr;}
+		print_n[radius];
+
+		draw_circle;
+		g_tick;
+	}
+	*/
+	
+	// func sort_arr[arr][len] >> (var i = 0 | i < len | i += 1) >> (var j = i + 1 | j < len | j += 1) ? (arr[i] > arr[j]) arr[i] ~ arr[j];
+
+	// var len = scan_n;
+	// var arr = scan_n_arr;
+	// sort_arr;
+	// print_n_arr;
+	// print_N;
 }
