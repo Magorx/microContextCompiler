@@ -6,10 +6,11 @@ The language is made as a joke in term of syntax and some over architecture deci
 
 ## How to use
 Run ```make``` to compiler ```kmcc``` - kMicroContextCompiler that will compile programms into x86
+
 ```./kmcc``` to compile ```prog.ctx``` into ```elf```
 ```./kmcc input_filename``` to compile it into ```elf```
 ```./kmcc input_filename output_filename``` to get guess what
-```
+
 
 
 
