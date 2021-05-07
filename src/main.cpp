@@ -1,7 +1,31 @@
 #include <cstdlib>
 #include <cstdio>
 
-#include "src/compiler.h"
+#include "general/c/debug.h"
+#include "general/warnings.h"
+
+#include "compiler.h"
+#include "reg_stack.h"
+#include "byte_buffer.h"
+
+union IntToQWord {
+	int i;
+	char c[4];
+
+	IntToQWord(char c1, char c2, char c3, char c4) {
+		c[0] = c1;
+		c[1] = c2;
+		c[2] = c3;
+		c[3] = c4;
+	}
+
+	IntToQWord(const char *str) {
+		c[0] = str[0];
+		c[1] = str[1];
+		c[2] = str[2];
+		c[3] = str[3];
+	}
+};
 
 int main(const int argc, const char **argv) {
 	srand((unsigned) time(NULL));
